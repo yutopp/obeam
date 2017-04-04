@@ -1,0 +1,12 @@
+.omakedb
+.omakedb.lock
+*.omc
+
+*.a
+*.o
+*.cmi
+*.cmx
+*.cmxa
+
+obeam-sample
+obeam-sample.opt

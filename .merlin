@@ -1,0 +1,8 @@
+S src
+B src
+PKG bitstring
+PKG camlzip
+PKG ppx_bitstring
+PKG ppx_deriving.show
+EXT ppx_bitstring
+EXT ppx_deriving.show
