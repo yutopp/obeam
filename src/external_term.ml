@@ -32,6 +32,7 @@ let uncompress_form size buf =
 
 type t =
   | SmallInteger of int
+  | Integer of int32
   | Atom of string
   | SmallTuple of int * t list
   | Nil
@@ -58,6 +59,13 @@ let rec parse_etf (_, buf) =
      ; rest  : -1 : bitstring
      |} ->
      Ok (SmallInteger value, rest)
+
+  (* INTEGER_EXT *)
+  | {| 98    : 1*8
+     ; value : 4*8 : bigendian
+     ; rest  : -1 : bitstring
+     |} ->
+     Ok (Integer value, rest)
 
   (* ATOM_EXT *)
   | {| 100  : 1*8
