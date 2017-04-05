@@ -37,6 +37,7 @@ type t =
   | Nil
   | String of string
   | List of t list
+  | NewFloat of float
 [@@deriving show]
 
 
@@ -100,6 +101,13 @@ let rec parse_etf (_, buf) =
        >> act parse_etf (fun n p -> (p @ [n]))
      in
      parser list_buf |> map (fun list -> List list)
+
+  (* NEW_FLOAT_EXT *)
+  | {| 70    : 1*8
+     ; value : 8*8
+     ; rest  : -1 : bitstring
+     |} ->
+     Ok (NewFloat (Int64.float_of_bits value), rest)
 
   (* unknown *)
   | {| head : 1*8; _ |} ->
