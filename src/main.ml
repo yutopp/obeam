@@ -21,7 +21,8 @@ let () =
      let _ =
        match External_term.parse abst.Chunk_parser.abst_buf with
        | Ok (expr, _) ->
-          Printf.printf "%s\n" (External_term.show expr)
+          Printf.printf "%s\n" (expr |> External_term.show);
+          Printf.printf "%s\n" (expr |> Ast.of_etf |> Ast.show);
        | Error msg ->
           Printf.printf "Failed: %s" msg
      in

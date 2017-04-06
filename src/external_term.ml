@@ -36,7 +36,7 @@ type t =
   | SmallTuple of int * t list
   | Nil
   | String of string
-  | List of t list
+  | List of t list * t
   | NewFloat of float
 [@@deriving show]
 
@@ -98,9 +98,9 @@ let rec parse_etf (_, buf) =
        (* elements *)
        list parse_etf (Int32.to_int len)
        (* tail *)
-       >> act parse_etf (fun n p -> (p @ [n]))
+       >> act parse_etf (fun n p -> (p, n))
      in
-     parser list_buf |> map (fun list -> List list)
+     parser list_buf |> map (fun (list, tail) -> List (list, tail))
 
   (* NEW_FLOAT_EXT *)
   | {| 70    : 1*8

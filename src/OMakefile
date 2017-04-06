@@ -139,6 +139,7 @@ FILES[] =
     external_term
     aux
     combinator
+    ast
 
 LIB = obeam
 
