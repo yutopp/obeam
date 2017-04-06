@@ -161,7 +161,6 @@ and form_of_sf sf =
                   Sf.List f_clauses]) ->
      DeclFun (line, name, arity, f_clauses |> List.map cls_of_sf)
 
-
   (* function specification *)
   | Sf.Tuple (4, [Sf.Atom "attribute";
                   Sf.Integer line;
