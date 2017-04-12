@@ -1,0 +1,25 @@
+opam-version: "1.2"
+name: "obeam"
+version: "0.0.1"
+maintainer: "yutopp <yutopp@gmail.com>"
+author: "yutopp <yutopp@gmail.com>"
+homepage: "https://github.com/yutopp/obeam"
+bug-reports: "https://github.com/yutopp/obeam/issues"
+license: "Boost License Version 1.0"
+dev-repo: "https://github.com/yutopp/obeam.git"
+
+available: [ocaml-version >= "4.03.0"]
+
+build: [[ "omake" "PREFIX=%{prefix}%" ]]
+install: [[ "omake" "install" "PREFIX=%{prefix}%" ]]
+remove: [[ "omake" "uninstall" ]]
+
+depends: [
+  "ppx_bitstring"
+  "camlzip"
+  "ppx_deriving" {build}
+]
+
+depopts: [
+  "time"
+]

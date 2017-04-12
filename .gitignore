@@ -4,9 +4,13 @@
 
 *.a
 *.o
+
 *.cmi
 *.cmx
+*.cmo
+*.cma
 *.cmxa
 
 obeam-sample
 obeam-sample.opt
+*.run

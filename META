@@ -1,0 +1,3 @@
+version="0.0.1"
+archive(byte)="obeam.cma"
+archive(native)="obeam.cmxa"
