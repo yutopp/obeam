@@ -1,8 +1,11 @@
 S src
 B src
+S test
+B test
 PKG bitstring
 PKG camlzip
 PKG ppx_bitstring
 PKG ppx_deriving.show
+PKG oUnit
 EXT ppx_bitstring
 EXT ppx_deriving.show

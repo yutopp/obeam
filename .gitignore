@@ -10,7 +10,15 @@
 *.cmo
 *.cma
 *.cmxa
+*.annot
+*.log
+*.out
+*.cache
 
 obeam-sample
 obeam-sample.opt
 *.run
+
+test/test*.beam
+test/obeam_test
+test/obeam_test.opt

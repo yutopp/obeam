@@ -23,6 +23,8 @@ module SimpleForm =
       match etf with
       | ETF.SmallInteger v ->
          Integer v
+      | ETF.Integer v ->
+         Integer (Int32.to_int v)
       | ETF.Atom name ->
          Atom name
       | ETF.SmallTuple (n, xs) ->
@@ -45,6 +47,10 @@ let raise_unknown_error form sf =
                            form
                            (SimpleForm.show sf))
 
+(**)
+type line_t = int
+[@@deriving show]
+
 (* http://erlang.org/doc/apps/erts/absform.html *)
 type t =
   | AbstractCode of form_t
@@ -52,12 +58,12 @@ type t =
 and form_t =
   | ModDecl of form_t list
 
-  | AttrExport of int * (string * int) list
-  | AttrImport of int * (string * int) list
-  | AttrMod of int * string
-  | AttrFile of int * string * int
-  | DeclFun of int * string * int * clause_t list
-  | SpecFun of int * string option * string * int * type_t list
+  | AttrExport of line_t * (string * int) list
+  | AttrImport of line_t * (string * int) list
+  | AttrMod of line_t * string
+  | AttrFile of line_t * string * line_t
+  | DeclFun of line_t * string * int * clause_t list
+  | SpecFun of line_t * string option * string * int * type_t list
   | DeclRecord
   | DeclType
   | AttrWild
@@ -65,38 +71,44 @@ and form_t =
   | FormEof
 
 and literal_t =
-  | LitAtom of int * string
-  | LitInteger of int * int
-  | LitString of int * string
+  | LitAtom of line_t * string
+  | LitInteger of line_t * int
+  | LitString of line_t * string
 
 and pattern_t =
-  | PatUniversal of int
-  | PatVar of int * string
+  | PatUniversal of line_t
+  | PatVar of line_t * string
 
 and expr_t =
   | ExprBody of expr_t list
-  | ExprBinOp of int * string * expr_t * expr_t
-  | ExprVar of int * string
+  | ExprBinOp of line_t * string * expr_t * expr_t
+  | ExprVar of line_t * string
   | ExprLit of literal_t
 
 and clause_t =
-  | ClsFun of int * pattern_t list * guard_t list * expr_t
+  | ClsCase of line_t * pattern_t * guard_sequence_t option * expr_t
+  | ClsFun of line_t * pattern_t list * guard_sequence_t option * expr_t
 
+and guard_sequence_t =
+  | GuardSeq of guard_t list
 and guard_t =
-  unit
+  | Guard of guard_test_t list
+and guard_test_t =
+  | GuardTestCall of line_t * literal_t * guard_test_t list
+  | GuardTestVar of line_t * string
 
 and type_t =
-  | TyAnn of int * type_t * type_t
-  | TyPredef of int * string * type_t list
-  | TyProduct of int * type_t list
-  | TyVar of int * string
+  | TyAnn of line_t * type_t * type_t
+  | TyPredef of line_t * string * type_t list
+  | TyProduct of line_t * type_t list
+  | TyVar of line_t * string
 
-  | TyContFun of int * type_t * type_t
-  | TyFun of int * type_t * type_t
+  | TyContFun of line_t * type_t * type_t
+  | TyFun of line_t * type_t * type_t
 
   | TyCont of type_t list
-  | TyContRel of int * type_t * type_t * type_t
-  | TyContIsSubType of int
+  | TyContRel of line_t * type_t * type_t * type_t
+  | TyContIsSubType of line_t
 [@@deriving show]
 
 (*
@@ -159,7 +171,7 @@ and form_of_sf sf =
                   Sf.Atom name;
                   Sf.Integer arity;
                   Sf.List f_clauses]) ->
-     DeclFun (line, name, arity, f_clauses |> List.map cls_of_sf)
+     DeclFun (line, name, arity, f_clauses |> List.map (cls_of_sf ~in_function:true))
 
   (* function specification *)
   | Sf.Tuple (4, [Sf.Atom "attribute";
@@ -264,21 +276,99 @@ and expr_of_sf sf =
 (*
  * 7.5  Clauses
  *)
-and cls_of_sf sf =
+and cls_of_sf ?(in_function=false) sf =
   let module Sf = SimpleForm in
-  match sf with
-  (* function clause *)
+  match sf, in_function with
+  (* case clause P -> B *)
+  | Sf.Tuple (5, [
+                 Sf.Atom "clause";
+                 Sf.Integer line;
+                 Sf.List [pattern];
+                 Sf.List [];
+                 body
+               ]), false ->
+     ClsCase (line, pattern |> pat_of_sf, None, body |> expr_of_sf)
+
+  (* case clause P -> B when Gs *)
+  | Sf.Tuple (5, [
+                 Sf.Atom "clause";
+                 Sf.Integer line;
+                 Sf.List [pattern];
+                 guards;
+                 body
+               ]), false ->
+     ClsCase (line,
+              pattern |> pat_of_sf,
+              Some (guards |> guard_sequence_of_sf),
+              body |> expr_of_sf)
+
+  (* function clause ( Ps ) -> B *)
   | Sf.Tuple (5, [
                  Sf.Atom "clause";
                  Sf.Integer line;
                  Sf.List patterns;
                  Sf.List [];
                  body
-               ]) ->
-     ClsFun (line, patterns |> List.map pat_of_sf, [], body |> expr_of_sf)
+               ]), true ->
+     ClsFun (line, patterns |> List.map pat_of_sf, None, body |> expr_of_sf)
+
+  (* function clause ( Ps ) when Gs -> B *)
+  | Sf.Tuple (5, [
+                 Sf.Atom "clause";
+                 Sf.Integer line;
+                 Sf.List patterns;
+                 guards;
+                 body
+               ]), true ->
+     ClsFun (line,
+             patterns |> List.map pat_of_sf,
+             Some (guards |> guard_sequence_of_sf),
+             body |> expr_of_sf)
 
   | _ ->
      raise_unknown_error "cls" sf
+
+(*
+ * 7.6  Guards
+ *)
+and guard_sequence_of_sf sf =
+  let module Sf = SimpleForm in
+  match sf with
+  (* empty or non-empty sequence *)
+  | Sf.List forms ->
+     GuardSeq (forms |> List.map guard_of_sf)
+
+  | _ ->
+     raise_unknown_error "guard_sequence" sf
+
+and guard_of_sf sf =
+  let module Sf = SimpleForm in
+  match sf with
+  (* non-empty sequence *)
+  | Sf.List forms when List.length forms > 0 ->
+     Guard (forms |> List.map guard_test_of_sf)
+
+  | _ ->
+     raise_unknown_error "guard" sf
+
+and guard_test_of_sf sf =
+  let module Sf = SimpleForm in
+  match sf with
+  (* function call *)
+  | Sf.Tuple (4, [
+                 Sf.Atom "call";
+                 Sf.Integer line;
+                 name;
+                 Sf.List args
+               ]) ->
+     GuardTestCall (line, name |> lit_of_sf, args |> List.map guard_test_of_sf)
+
+  (* variable pattern *)
+  | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom id]) ->
+     GuardTestVar (line, id)
+
+  | _ ->
+     raise_unknown_error "guard_test" sf
 
 (*
  * 7.7  Types
