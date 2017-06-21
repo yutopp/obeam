@@ -18,24 +18,10 @@
 # Phony targets are scoped, so you probably want to declare them first.
 #
 
-.PHONY: test clean
-
-########################################################################
-# Subdirectories.
-# You may want to include some subdirectories in this project.
-# If so, define the subdirectory targets and uncomment this section.
-#
-
-# .SUBDIRS:
+.PHONY: clean
 
 ########################################################################
 # OCaml configuration.
-# Delete this section if you are not building OCaml files.
-#
-
-################################################
-# Configuration.  You may want to modify any of these configuration
-# variables.
 #
 
 #
@@ -46,7 +32,7 @@ OCAMLINCLUDES += ../src
 #
 # Various options
 #
-
+# OCAMLFLAGS    +=
 # OCAMLCFLAGS   +=
 OCAMLOPTFLAGS += -annot
 # OCAML_LINK_FLAGS +=
@@ -58,25 +44,13 @@ OCAMLOPTFLAGS += -annot
 #
 
 FILES[] =
-    util
-    abs_form_test
+    main
 
-#
-PROGRAM = obeam_test
+PROGRAM = obeam_sample
 OCAML_LIBS += ../src/obeam
-# OCAML_CLIBS +=
-# OCAML_OTHER_LIBS +=
-# OCAML_LIB_FLAGS +=
-#
 
-OCamlProgram($(PROGRAM), $(FILES))
-
-########################################################################
-#
-
-test: $(PROGRAM)
-    ./$(PROGRAM)
+.DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))
 
 clean:
-    rm -f *~ *.opt *.cmi *.cmx *.cmt *.cmti *.cmp *.cmxa *.omc *.annot \
-          *.o *.a *.out *.s *.bc *.log *.cache $(PROGRAM)
+    rm -f *~ *.opt *.cmi *.cmx *.cmt *.cmti *.cmp *.cmo *.cma *.cmxa *.omc \
+        *.o *.a *.out *.run *.s *.bc *.log *.cache *.annot $(PROGRAM) $(LIB)

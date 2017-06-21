@@ -9,7 +9,13 @@
 (* SAMPLE *)
 
 let () =
-  let beam_buf = Bitstring.bitstring_of_file "test.beam" in
+  let beam_filename =
+    match Sys.argv with
+    | [|_; n|] -> n
+    | _ -> failwith (Printf.sprintf "format: %s <beam_filename>" Sys.argv.(0))
+  in
+
+  let beam_buf = Bitstring.bitstring_of_file beam_filename in
   match Chunk.parse_layout beam_buf with
   | Ok (layout, _) ->
      let {

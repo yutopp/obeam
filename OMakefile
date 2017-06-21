@@ -15,14 +15,22 @@
 # THE USE OR OTHER DEALINGS IN THE FILE.
 
 ########################################################################
-# The standard OMakefile.
-# You will usually need to modify this file for your project.
+# OCaml configuration.
 
-########################################################################
-# Phony targets are scoped, so you probably want to declare them first.
 #
+# This project requires ocamlfind
+#
+USE_OCAMLFIND = true
 
-# .PHONY: all install clean
+OCAMLPACKS[] =
+    ppx_bitstring
+    ppx_deriving.show
+    camlzip
+
+if $(not $(OCAMLFIND_EXISTS))
+    eprintln(This project requires ocamlfind, but is was not found.)
+    eprintln(You need to install ocamlfind and run "omake --configure".)
+    exit 1
 
 ########################################################################
 # Subdirectories.
@@ -30,4 +38,4 @@
 # If so, define the subdirectory targets and uncomment this section.
 #
 
-.SUBDIRS: src test
+.SUBDIRS: src test sample

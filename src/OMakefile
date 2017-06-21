@@ -35,21 +35,6 @@
 #
 
 #
-# This project requires ocamlfind (default - false).
-#
-USE_OCAMLFIND = true
-
-OCAMLPACKS[] =
-    ppx_bitstring
-    ppx_deriving.show
-    camlzip
-
-if $(not $(OCAMLFIND_EXISTS))
-    eprintln(This project requires ocamlfind, but is was not found.)
-    eprintln(You need to install ocamlfind and run "omake --configure".)
-    exit 1
-
-#
 # Include path
 #
 # OCAMLINCLUDES +=
@@ -67,7 +52,7 @@ BYTE_ENABLED = true
 #
 # OCAMLFLAGS    +=
 # OCAMLCFLAGS   +=
-# OCAMLOPTFLAGS +=
+OCAMLOPTFLAGS += -annot
 # OCAML_LINK_FLAGS +=
 # OCAML_BYTE_LINK_FLAGS +=
 # OCAML_NATIVE_LINK_FLAGS +=
@@ -95,18 +80,6 @@ FILES[] =
 LIB = obeam
 
 .DEFAULT: $(OCamlLibrary $(LIB), $(FILES))
-
-################################################
-# Build an OCaml program
-#
-
-FILES[] =
-    main
-
-PROGRAM = obeam-sample
-OCAML_LIBS += obeam
-
-.DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))
 
 install:
     $(OCAMLFIND) install obeam \

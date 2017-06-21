@@ -14,10 +14,10 @@
 *.log
 *.out
 *.cache
-
-obeam-sample
-obeam-sample.opt
 *.run
+
+sample/obeam_sample
+sample/obeam_sample.opt
 
 test/test*.beam
 test/obeam_test

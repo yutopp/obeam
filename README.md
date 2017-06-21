@@ -15,3 +15,9 @@ opam install ppx_bitstring camlzip ppx_deriving
 opam pin add obeam .
 opam install obeam.0.0.1
 ```
+
+### Run Example
+```
+omake
+./sample/obeam_sample <beam_filename>
+```
