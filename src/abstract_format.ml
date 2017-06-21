@@ -6,48 +6,12 @@
  * http://www.boost.org/LICENSE_1_0.txt)
  *)
 
-module SimpleForm =
-  struct
-    type t =
-      | Integer of int
-      | Atom of string
-      | Tuple of int * t list
-      | String of string
-      | List of t list
-      | Float of float
-    [@@deriving show]
-
-    (* from External term format *)
-    let rec of_etf etf =
-      let module ETF = External_term in
-      match etf with
-      | ETF.SmallInteger v ->
-         Integer v
-      | ETF.Integer v ->
-         Integer (Int32.to_int v)
-      | ETF.Atom name ->
-         Atom name
-      | ETF.SmallTuple (n, xs) ->
-         Tuple (n, xs |> List.map of_etf)
-      | ETF.Nil ->
-         List []
-      | ETF.String v ->
-         String v
-      | ETF.List (xs, ETF.Nil) ->
-         List (xs |> List.map of_etf)
-      | ETF.List (xs, tail) ->
-         (* TODO: fix *)
-         failwith "unsupported"
-      | ETF.NewFloat v ->
-         Float v
-  end
+module Sf = Simple_term_format
 
 let raise_unknown_error form sf =
-  failwith (Printf.sprintf "%s: unknown / %s"
-                           form
-                           (SimpleForm.show sf))
+  failwith (Printf.sprintf "%s: unknown / %s" form (Sf.show sf))
 
-(**)
+(* line number *)
 type line_t = int
 [@@deriving show]
 
@@ -115,11 +79,14 @@ and type_t =
  * Entry
  *)
 let rec of_sf sf =
-  let module Sf = SimpleForm in
   match sf with
-  | Sf.Tuple (2, [Sf.Atom "raw_abstract_v1"; code]) ->
-     AbstractCode (code |> form_of_sf)
-
+  | Sf.Tuple (2, [Sf.Atom "raw_abstract_v1"; forms]) ->
+     AbstractCode (forms |> form_of_sf)
+  (* is it suitable here? *)
+  | Sf.Tuple (3, [Sf.Atom "debug_info_v1";
+                  Sf.Atom "erl_abstract_code";
+                  Sf.Tuple (2, [forms; _options])]) ->
+     AbstractCode (forms |> form_of_sf)
   | _ ->
      raise_unknown_error "root" sf
 
@@ -127,7 +94,6 @@ let rec of_sf sf =
  * 7.1  Module Declarations and Forms
  *)
 and form_of_sf sf =
-  let module Sf = SimpleForm in
   match sf with
   (* module declaration *)
   | Sf.List forms ->
@@ -199,7 +165,6 @@ and form_of_sf sf =
      raise_unknown_error "form" sf
 
 and fa_list_of_sf sf =
-  let module Sf = SimpleForm in
   match sf with
   | Sf.Tuple (2, [Sf.Atom name; Sf.Integer arity]) ->
      (name, arity)
@@ -211,7 +176,6 @@ and fa_list_of_sf sf =
  * 7.2  Atomic Literals
  *)
 and lit_of_sf sf =
-  let module Sf = SimpleForm in
   match sf with
   | Sf.Tuple (3, [Sf.Atom "atom"; Sf.Integer line; Sf.Atom v]) ->
      LitAtom (line, v)
@@ -235,7 +199,6 @@ and lit_of_sf sf =
  * 7.3  Patterns
  *)
 and pat_of_sf sf =
-  let module Sf = SimpleForm in
   match sf with
   (* a variable pattern *)
   | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom "_"]) ->
@@ -252,7 +215,6 @@ and pat_of_sf sf =
  * 7.4  Expressions
  *)
 and expr_of_sf sf =
-  let module Sf = SimpleForm in
   match sf with
   | Sf.List es ->
      ExprBody (es |> List.map expr_of_sf)
@@ -277,7 +239,6 @@ and expr_of_sf sf =
  * 7.5  Clauses
  *)
 and cls_of_sf ?(in_function=false) sf =
-  let module Sf = SimpleForm in
   match sf, in_function with
   (* case clause P -> B *)
   | Sf.Tuple (5, [
@@ -332,7 +293,6 @@ and cls_of_sf ?(in_function=false) sf =
  * 7.6  Guards
  *)
 and guard_sequence_of_sf sf =
-  let module Sf = SimpleForm in
   match sf with
   (* empty or non-empty sequence *)
   | Sf.List forms ->
@@ -342,7 +302,6 @@ and guard_sequence_of_sf sf =
      raise_unknown_error "guard_sequence" sf
 
 and guard_of_sf sf =
-  let module Sf = SimpleForm in
   match sf with
   (* non-empty sequence *)
   | Sf.List forms when List.length forms > 0 ->
@@ -352,7 +311,6 @@ and guard_of_sf sf =
      raise_unknown_error "guard" sf
 
 and guard_test_of_sf sf =
-  let module Sf = SimpleForm in
   match sf with
   (* function call *)
   | Sf.Tuple (4, [
@@ -374,7 +332,6 @@ and guard_test_of_sf sf =
  * 7.7  Types
  *)
 and type_of_sf sf =
-  let module Sf = SimpleForm in
   match sf with
   (* annotated type *)
   | Sf.Tuple (3, [Sf.Atom "ann_type";
@@ -404,7 +361,6 @@ and type_of_sf sf =
      raise_unknown_error "type" sf
 
 and fun_type_of_sf sf =
-  let module Sf = SimpleForm in
   match sf with
   (* constrained function type *)
   | Sf.Tuple (4, [Sf.Atom "type";
@@ -425,7 +381,6 @@ and fun_type_of_sf sf =
      raise_unknown_error "fun_type" sf
 
 and cont_of_sf sf =
-  let module Sf = SimpleForm in
   match sf with
   | Sf.List constraints ->
      TyCont (constraints |> List.map cont_of_sf)
@@ -445,4 +400,4 @@ and cont_of_sf sf =
 
 (**)
 let of_etf etf =
-  SimpleForm.of_etf etf |> of_sf
+  etf |> Sf.of_etf |> of_sf

@@ -85,11 +85,12 @@ BYTE_ENABLED = true
 #
 
 FILES[] =
-    chunk_parser
-    external_term
+    chunk
+    external_term_format
+    simple_term_format
+    abstract_format
+    parser_combinator
     aux
-    combinator
-    ast
 
 LIB = obeam
 

@@ -41,4 +41,4 @@ let eol (value, buffer) =
   | 0 ->
      Ok (value, buffer)
   | _ ->
-     Error "not empty"
+     Error ("eol / not empty", buffer)

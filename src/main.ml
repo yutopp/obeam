@@ -6,26 +6,39 @@
  * http://www.boost.org/LICENSE_1_0.txt)
  *)
 
+(* SAMPLE *)
+
 let () =
   let beam_buf = Bitstring.bitstring_of_file "test.beam" in
-  match Chunk_parser.parse_layout beam_buf with
+  match Chunk.parse_layout beam_buf with
   | Ok (layout, _) ->
      let {
-       Chunk_parser.cl_abst = opt_abst;
+       Chunk.cl_abst = opt_abst;
+       Chunk.cl_dbgi = opt_dbgi;
      } = layout in
-     let abst =
+     let debug_info_buf =
        match opt_abst with
-       | Some abst -> abst
-       | None -> failwith "abst chunk is not found"
+       | Some abst ->
+          abst.Chunk.abst_buf
+       | None ->
+          begin
+            match opt_dbgi with
+            | Some dbgi ->
+               dbgi.Chunk.dbgi_buf
+            | None ->
+               failwith "abst and dbgi chunk is not found"
+          end
      in
      let _ =
-       match External_term.parse abst.Chunk_parser.abst_buf with
+       match External_term_format.parse debug_info_buf with
        | Ok (expr, _) ->
-          Printf.printf "%s\n" (expr |> External_term.show);
-          Printf.printf "%s\n" (expr |> Ast.of_etf |> Ast.show);
-       | Error msg ->
-          Printf.printf "Failed: %s" msg
+          Printf.printf "%s\n" (expr |> External_term_format.show);
+          Printf.printf "%s\n" (expr |> Abstract_format.of_etf |> Abstract_format.show);
+       | Error (msg, rest) ->
+          Printf.printf "Failed to parse etf: %s\n" msg;
+          Bitstring.hexdump_bitstring stdout rest
      in
      ()
-  | Error msg ->
-     Printf.printf "Failed : %s\n" msg;
+  | Error (msg, rest) ->
+     Printf.printf "Failed to parse chunk: %s\n" msg;
+     Bitstring.hexdump_bitstring stdout rest

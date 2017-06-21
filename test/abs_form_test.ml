@@ -12,28 +12,37 @@ open OUnit2
 let assert_equals_abs_form_by_erl_file expect_ast filename test_ctx =
   let beam_filename = Util.generate_beam_from_erl filename in
   let beam_buf = Bitstring.bitstring_of_file beam_filename in
-  match Chunk_parser.parse_layout beam_buf with
+  match Chunk.parse_layout beam_buf with
   | Ok (layout, _) ->
      let {
-       Chunk_parser.cl_abst = opt_abst;
+       Chunk.cl_abst = opt_abst;
+       Chunk.cl_dbgi = opt_dbgi;
      } = layout in
-     let abst =
+     let parse_result =
        match opt_abst with
-       | Some abst -> abst
-       | None -> failwith "abst chunk is not found"
+       | Some abst ->
+          External_term_format.parse abst.Chunk.abst_buf
+       | None ->
+          begin
+            match opt_dbgi with
+            | Some dbgi ->
+               External_term_format.parse dbgi.Chunk.dbgi_buf
+            | None ->
+               failwith "abst and dbgi chunk is not found"
+          end
      in
      let _ =
-       match External_term.parse abst.Chunk_parser.abst_buf with
+       match parse_result with
        | Ok (etf, _) ->
           (*let () = etf |> External_term.show |> Printf.printf "%s\n" in*)
-          let actual_ast = etf |> Ast.of_etf in
-          assert_equal ?printer:(Some Ast.show)
+          let actual_ast = etf |> Abstract_format.of_etf in
+          assert_equal ?printer:(Some Abstract_format.show)
                        expect_ast actual_ast
-       | Error msg ->
+       | Error (msg, _rest) ->
           failwith (Printf.sprintf "Failed: %s" msg)
      in
      ()
-  | Error msg ->
+  | Error (msg, _rest) ->
      failwith (Printf.sprintf "Failed : %s\n" msg)
 
 let assert_equals_abs_form_f f test_ctx =
@@ -42,6 +51,7 @@ let assert_equals_abs_form_f f test_ctx =
 
 (* test cases *)
 let template_01 () =
+  let module Ast = Abstract_format in
   ("test01.erl",
    Ast.AbstractCode
      (Ast.ModDecl
@@ -79,6 +89,7 @@ let template_01 () =
   )
 
 let template_02 () =
+  let module Ast = Abstract_format in
   ("test02.erl",
    Ast.AbstractCode
      (Ast.ModDecl
@@ -140,6 +151,7 @@ let template_02 () =
   )
 
 let template_03 () =
+  let module Ast = Abstract_format in
   ("test03.erl",
    Ast.AbstractCode
      (Ast.ModDecl
