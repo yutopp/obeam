@@ -18,6 +18,7 @@ depends: [
   "ppx_bitstring"
   "camlzip"
   "omake"        {build}
+  "ocamlfind"    {build}
   "ppx_deriving" {build}
   "ounit"        {build}
   "bisect_ppx"   {build}

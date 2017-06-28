@@ -83,7 +83,7 @@ LIB = obeam
 
 install:
     $(OCAMLFIND) install obeam \
-        ../META *.cmi *.cma *.cmxa
+        ../META *.cmi *.cma *.cmxa *.a
 
 uninstall:
     $(OCAMLFIND) remove obeam
