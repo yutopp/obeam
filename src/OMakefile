@@ -90,4 +90,4 @@ uninstall:
 
 clean:
     rm -f *~ *.opt *.cmi *.cmx *.cmt *.cmti *.cmp *.cmo *.cma *.cmxa *.omc \
-        *.o *.a *.out *.run *.s *.bc *.log *.cache *.annot $(PROGRAM) $(LIB)
+        *.o *.a *.out *.run *.s *.bc *.log *.cache *.annot $(LIB)
