@@ -18,6 +18,5 @@ opam install obeam.0.0.1
 
 ### Run Example
 ```
-omake
-./sample/obeam_sample <beam_filename>
+omake && example/read_beam <beam_filename>
 ```

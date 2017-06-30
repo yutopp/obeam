@@ -6,7 +6,8 @@
  * http://www.boost.org/LICENSE_1_0.txt)
  *)
 
-(* SAMPLE *)
+(* EXAMPLE: BEAM reader *)
+open Obeam
 
 let () =
   let beam_filename =

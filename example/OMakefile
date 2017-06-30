@@ -43,14 +43,11 @@ OCAMLOPTFLAGS += -annot
 # Build an OCaml program
 #
 
-FILES[] =
-    main
-
-PROGRAM = obeam_sample
 OCAML_LIBS += ../src/obeam
 
-.DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))
+.DEFAULT: $(OCamlProgram read_beam, read_beam)
 
 clean:
     rm -f *~ *.opt *.cmi *.cmx *.cmt *.cmti *.cmp *.cmo *.cma *.cmxa *.omc \
-        *.o *.a *.out *.run *.s *.bc *.log *.cache *.annot $(PROGRAM) $(LIB)
+          *.o *.a *.out *.run *.s *.bc *.log *.cache *.annot \
+          read_beam
