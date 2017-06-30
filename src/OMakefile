@@ -76,6 +76,7 @@ FILES[] =
     abstract_format
     parser_combinator
     aux
+    obeam
 
 LIB = obeam
 
@@ -83,7 +84,7 @@ LIB = obeam
 
 install:
     $(OCAMLFIND) install obeam \
-        ../META *.cmi *.cma *.cmxa *.a
+        ../META $(LIB).cmi $(LIB).cma $(LIB).cmxa $(LIB).a
 
 uninstall:
     $(OCAMLFIND) remove obeam
