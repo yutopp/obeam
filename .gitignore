@@ -8,6 +8,7 @@
 *.cmi
 *.cmx
 *.cmo
+*.cmt
 *.cma
 *.cmxa
 *.annot
@@ -15,9 +16,6 @@
 *.out
 *.cache
 *.run
-
-sample/obeam_sample
-sample/obeam_sample.opt
 
 test/test*.beam
 test/obeam_test

@@ -22,7 +22,7 @@ type t =
 
 (* from External term format *)
 let rec of_etf etf =
-  let module ETF = External_term_format in
+  let module ETF = Obeam_external_term_format in
   match etf with
   | ETF.SmallInteger v ->
      Integer v

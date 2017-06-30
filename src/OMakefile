@@ -29,6 +29,9 @@
 # Delete this section if you are not building OCaml files.
 #
 
+LIB = obeam
+PACKAGE_NAME = Obeam
+
 ################################################
 # Configuration.  You may want to modify any of these configuration
 # variables.
@@ -50,9 +53,10 @@ BYTE_ENABLED = true
 #
 # Various options
 #
-# OCAMLFLAGS    +=
+OCAMLFLAGS    += -annot -bin-annot
+# OCAMLDEPFLAGS += -as-map
 # OCAMLCFLAGS   +=
-OCAMLOPTFLAGS += -annot
+OCAMLOPTFLAGS += -for-pack Obeam
 # OCAML_LINK_FLAGS +=
 # OCAML_BYTE_LINK_FLAGS +=
 # OCAML_NATIVE_LINK_FLAGS +=
@@ -70,21 +74,19 @@ OCAMLOPTFLAGS += -annot
 #
 
 FILES[] =
-    chunk
-    external_term_format
-    simple_term_format
-    abstract_format
-    parser_combinator
-    aux
+    obeam_chunk
+    obeam_external_term_format
+    obeam_simple_term_format
+    obeam_abstract_format
+    obeam_parser_combinator
+    obeam_aux
     obeam
-
-LIB = obeam
 
 .DEFAULT: $(OCamlLibrary $(LIB), $(FILES))
 
 install:
     $(OCAMLFIND) install obeam \
-        ../META $(LIB).cmi $(LIB).cma $(LIB).cmxa $(LIB).a
+        ../META *.cmx *.cmi *.cma *.cmxa *.a
 
 uninstall:
     $(OCAMLFIND) remove obeam

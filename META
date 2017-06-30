@@ -1,6 +1,6 @@
 name="obeam"
-version="0.0.1"
+version="0.0.2"
 description = "Utility library for parsing BEAM format"
-requires = "ppx_bitstring camlzip ppx_deriving"
+requires = "ppx_bitstring ppx_deriving camlzip"
 archive(byte)="obeam.cma"
 archive(native)="obeam.cmxa"

@@ -6,7 +6,7 @@ obeam (御-BEAM) is a utility library for parsing BEAM format(and Erlang Externa
 ### Requirements
 ```
 # `ppx_bitstring` will require `time` command which is not a builtin function
-opam install ppx_bitstring camlzip ppx_deriving
+opam install ppx_bitstring ppx_deriving camlzip
 ```
 
 ### OPAM
@@ -18,5 +18,5 @@ opam install obeam.0.0.1
 
 ### Run Example
 ```
-omake && example/read_beam <beam_filename>
+omake example && example/read_beam <beam_filename>
 ```

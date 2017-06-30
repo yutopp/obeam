@@ -1,19 +1,6 @@
-module Chunk =
-  struct
-    include Chunk
-  end
+module Chunk = Obeam_chunk
 
-module Simple_term_format =
-  struct
-    include Simple_term_format
-  end
+module Simple_term_format = Obeam_simple_term_format
+module External_term_format = Obeam_external_term_format
 
-module External_term_format =
-  struct
-    include External_term_format
-  end
-
-module Abstract_format =
-  struct
-    include Abstract_format
-  end
+module Abstract_format = Obeam_abstract_format

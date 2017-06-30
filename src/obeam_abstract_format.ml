@@ -6,7 +6,7 @@
  * http://www.boost.org/LICENSE_1_0.txt)
  *)
 
-module Sf = Simple_term_format
+module Sf = Obeam_simple_term_format
 
 let raise_unknown_error form sf =
   failwith (Printf.sprintf "%s: unknown / %s" form (Sf.show sf))

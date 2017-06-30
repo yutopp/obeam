@@ -18,7 +18,7 @@
 # Phony targets are scoped, so you probably want to declare them first.
 #
 
-.PHONY: clean
+.PHONY: example clean
 
 ########################################################################
 # OCaml configuration.
@@ -44,8 +44,9 @@ OCAMLOPTFLAGS += -annot
 #
 
 OCAML_LIBS += ../src/obeam
+OCAMLPACKS[] += obeam
 
-.DEFAULT: $(OCamlProgram read_beam, read_beam)
+example: $(OCamlProgram read_beam, read_beam)
 
 clean:
     rm -f *~ *.opt *.cmi *.cmx *.cmt *.cmti *.cmp *.cmo *.cma *.cmxa *.omc \

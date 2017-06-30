@@ -47,7 +47,7 @@ type t =
 
 (* http://erlang.org/doc/apps/erts/erl_ext_dist.html *)
 let rec parse_etf (_, buf) =
-  let open Parser_combinator in
+  let open Obeam_parser_combinator in
   match%bitstring buf with
   (* 11.4 SMALL_INTEGER_EXT *)
   | {| 97    : 1*8
