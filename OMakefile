@@ -24,6 +24,7 @@ USE_OCAMLFIND = true
 
 OCAMLPACKS[] =
     ppx_bitstring
+    ppx_deriving
     ppx_deriving.show
     camlzip
 
@@ -38,4 +39,4 @@ if $(not $(OCAMLFIND_EXISTS))
 # If so, define the subdirectory targets and uncomment this section.
 #
 
-.SUBDIRS: src test sample
+.SUBDIRS: src test example
