@@ -15,7 +15,8 @@ install: [[ "omake" "install" "PREFIX=%{prefix}%" ]]
 remove: [[ "omake" "uninstall" ]]
 
 depends: [
-  "ppx_bitstring" {>= "1.3.3"}
+  "bitstring"     {>= "2.0.4"}
+  "ppx_bitstring" {>= "2.0.0"}
   "ppx_deriving"  {>= "4.1"}
   "camlzip"       {>= "1.07"}
   "omake"         {build}

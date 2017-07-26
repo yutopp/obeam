@@ -23,6 +23,7 @@
 USE_OCAMLFIND = true
 
 OCAMLPACKS[] =
+    bitstring
     ppx_bitstring
     ppx_deriving
     ppx_deriving.show
