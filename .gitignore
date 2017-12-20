@@ -1,22 +1,4 @@
-.omakedb
-.omakedb.lock
-*.omc
+_build/
 
-*.a
-*.o
-
-*.cmi
-*.cmx
-*.cmo
-*.cmt
-*.cma
-*.cmxa
-*.annot
-*.log
-*.out
-*.cache
-*.run
-
-test/test*.beam
-test/obeam_test
-test/obeam_test.opt
+*.beam
+!test/*.beam

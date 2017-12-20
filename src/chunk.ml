@@ -38,7 +38,7 @@ type atom_chunk_layout_t = {
 }
 
 let parse_atom_chunk_layout (_, buffer) =
-  let open Obeam_aux in
+  let open Aux in
   match%bitstring buffer with
   | {| "Atom" : 4*8 : string
      ; size   : 4*8 : bigendian
@@ -61,7 +61,7 @@ type atu8_chunk_layout_t = {
 }
 
 let parse_atu8_chunk_layout (_, buffer) =
-  let open Obeam_aux in
+  let open Aux in
   match%bitstring buffer with
   | {| "AtU8" : 4*8 : string
      ; size   : 4*8 : bigendian
@@ -88,7 +88,7 @@ type code_chunk_layout_t = {
 }
 
 let parse_code_chunk_layout (_, buffer) =
-  let open Obeam_aux in
+  let open Aux in
   match%bitstring buffer with
   | {| "Code"         : 4*8 : string
      ; size           : 4*8 : bigendian
@@ -118,7 +118,7 @@ type strt_chunk_layout_t = {
 }
 
 let parse_strt_chunk_layout (_, buffer) =
-  let open Obeam_aux in
+  let open Aux in
   match%bitstring buffer with
   | {| "StrT" : 4*8 : string
      ; size   : 4*8 : bigendian
@@ -138,7 +138,7 @@ type impt_chunk_layout_t = {
 }
 
 let parse_impt_chunk_layout (_, buffer) =
-  let open Obeam_aux in
+  let open Aux in
   match%bitstring buffer with
   | {| "ImpT" : 4*8 : string
      ; size   : 4*8 : bigendian
@@ -159,7 +159,7 @@ type expt_chunk_layout_t = {
 }
 
 let parse_expt_chunk_layout (_, buffer) =
-  let open Obeam_aux in
+  let open Aux in
   match%bitstring buffer with
   | {| "ExpT" : 4*8 : string
      ; size   : 4*8 : bigendian
@@ -180,7 +180,7 @@ type litt_chunk_layout_t = {
 }
 
 let parse_litt_chunk_layout (_, buffer) =
-  let open Obeam_aux in
+  let open Aux in
   match%bitstring buffer with
   | {| "LitT" : 4*8 : string
      ; size   : 4*8 : bigendian
@@ -200,7 +200,7 @@ type line_chunk_layout_t = {
 }
 
 let parse_line_chunk_layout (_, buffer) =
-  let open Obeam_aux in
+  let open Aux in
   match%bitstring buffer with
   | {| "Line" : 4*8 : string
      ; size   : 4*8 : bigendian
@@ -220,7 +220,7 @@ type attr_chunk_layout_t = {
 }
 
 let parse_attr_chunk_layout (_, buffer) =
-  let open Obeam_aux in
+  let open Aux in
   match%bitstring buffer with
   | {| "Attr" : 4*8 : string
      ; size   : 4*8 : bigendian
@@ -240,7 +240,7 @@ type cinf_chunk_layout_t = {
 }
 
 let parse_cinf_chunk_layout (_, buffer) =
-  let open Obeam_aux in
+  let open Aux in
   match%bitstring buffer with
   | {| "CInf" : 4*8 : string
      ; size   : 4*8 : bigendian
@@ -260,7 +260,7 @@ type abst_chunk_layout_t = {
 }
 
 let parse_abst_chunk_layout (_, buffer) =
-  let open Obeam_aux in
+  let open Aux in
   match%bitstring buffer with
   | {| "Abst" : 4*8 : string
      ; size   : 4*8 : bigendian
@@ -280,7 +280,7 @@ type dbgi_chunk_layout_t = {
 }
 
 let parse_dbgi_chunk_layout (_, buffer) =
-  let open Obeam_aux in
+  let open Aux in
   match%bitstring buffer with
   | {| "Dbgi" : 4*8 : string
      ; size   : 4*8 : bigendian
@@ -300,7 +300,7 @@ type loct_chunk_layout_t = {
 }
 
 let parse_loct_chunk_layout (_, buffer) =
-  let open Obeam_aux in
+  let open Aux in
   match%bitstring buffer with
   | {| "LocT" : 4*8 : string
      ; size   : 4*8 : bigendian
@@ -363,7 +363,7 @@ let parse_layout buffer =
      ; "BEAM" : 4*8 : string
      ; buf    : ((Int32.to_int length)-4)*8 : bitstring
      |} ->
-     let open Obeam_parser_combinator in
+     let open Parser.Combinator in
      let chunks_layout_parser =
          act parse_atom_chunk_layout (fun n p -> {p with cl_atom = Some n})
        / act parse_atu8_chunk_layout (fun n p -> {p with cl_atu8 = Some n})
@@ -383,7 +383,7 @@ let parse_layout buffer =
        / act parse_dbgi_chunk_layout (fun n p -> {p with cl_dbgi = Some n})
        / act parse_loct_chunk_layout (fun n p -> {p with cl_loct = Some n})
      in
-     let parser = repeat chunks_layout_parser >> Obeam_aux.eol in
+     let parser = repeat chunks_layout_parser >> Aux.eol in
      parser (empty_chunks_layout_table, buf)
   | {| _ |} ->
      Error ("failed to read header", buffer)

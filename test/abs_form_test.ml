@@ -10,6 +10,7 @@ open OUnit2
 
 (* cheker utils *)
 let assert_equals_abs_form_by_erl_file expect_ast filename test_ctx =
+  let open Obeam in
   let beam_filename = Util.generate_beam_from_erl filename in
   let beam_buf = Bitstring.bitstring_of_file beam_filename in
   match Chunk.parse_layout beam_buf with
@@ -51,7 +52,7 @@ let assert_equals_abs_form_f f test_ctx =
 
 (* test cases *)
 let template_01 () =
-  let module Ast = Abstract_format in
+  let module Ast = Obeam.Abstract_format in
   ("test01.erl",
    Ast.AbstractCode
      (Ast.ModDecl
@@ -89,7 +90,7 @@ let template_01 () =
   )
 
 let template_02 () =
-  let module Ast = Abstract_format in
+  let module Ast = Obeam.Abstract_format in
   ("test02.erl",
    Ast.AbstractCode
      (Ast.ModDecl
@@ -151,7 +152,7 @@ let template_02 () =
   )
 
 let template_03 () =
-  let module Ast = Abstract_format in
+  let module Ast = Obeam.Abstract_format in
   ("test03.erl",
    Ast.AbstractCode
      (Ast.ModDecl

@@ -1,0 +1,18 @@
+B ../_build/default/src
+B ../_build/default/test
+FLG -w -40
+PKG bitstring
+PKG camlzip
+PKG compiler-libs
+PKG compiler-libs.common
+PKG oUnit
+PKG oUnit.advanced
+PKG ocaml-migrate-parsetree
+PKG ppx_bitstring
+PKG ppx_deriving
+PKG ppx_deriving.runtime
+PKG ppx_tools_versioned
+PKG result
+PKG str
+PKG unix
+S ../src

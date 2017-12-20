@@ -13,10 +13,12 @@ opam install ppx_bitstring ppx_deriving camlzip
 #### Pin
 ```
 opam pin add obeam .
-opam install obeam.0.0.1
+opam install obeam.0.0.3
 ```
 
 ### Run Example
 ```
-omake example && example/read_beam <beam_filename>
+make test
+erlc test/test01.erl
+_build/default/example/read_beam.exe test01.beam
 ```
