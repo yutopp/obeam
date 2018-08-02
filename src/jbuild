@@ -3,6 +3,6 @@
 (library
  ((name obeam)
   (public_name obeam)
-  (libraries (bitstring ppx_bitstring ppx_deriving camlzip))
-  (preprocess (pps (ppx_deriving.show ppx_bitstring)))
+  (libraries (bitstring ppx_deriving camlzip))
+  (preprocess (pps (ppx_deriving.show bitstring.ppx)))
   (synopsis "Utility library for parsing BEAM and Erlang Term format")))
