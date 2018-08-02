@@ -1,8 +1,6 @@
-(jbuild_version 1)
-
 (library
- ((name obeam)
+  (name obeam)
   (public_name obeam)
-  (libraries (bitstring ppx_deriving camlzip))
-  (preprocess (pps (ppx_deriving.show bitstring.ppx)))
-  (synopsis "Utility library for parsing BEAM and Erlang Term format")))
+  (libraries bitstring ppx_deriving camlzip)
+  (preprocess (pps ppx_deriving.show bitstring.ppx))
+  (synopsis "Utility library for parsing BEAM and Erlang Term format"))
