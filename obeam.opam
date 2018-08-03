@@ -11,17 +11,17 @@ dev-repo: "https://github.com/yutopp/obeam.git"
 available: [ocaml-version >= "4.04.2"]
 
 build: [
-  ["jbuilder" "build" "-p" name "-j" jobs]
+  ["dune" "build" "-p" name "-j" jobs]
 ]
 build-test: [
-  ["jbuilder" "runtest" "-p" name]
+  ["dune" "runtest" "-p" name]
 ]
 
 depends: [
   "bitstring"     {>= "3.0.0"}
   "ppx_deriving"  {>= "4.2"}
   "camlzip"       {>= "1.07"}
-  "jbuilder"      {build}
+  "dune"          {build}
   "ounit"         {build}
   "bisect_ppx"    {build}
 ]
