@@ -1,13 +1,13 @@
 .PHONY: build example test install clean
 
 build:
-	jbuilder build
+	dune build
 
 test:
-	jbuilder runtest
+	dune runtest
 
 install:
-	jbuilder build @install
+	dune build @install
 
 clean:
-	jbuilder clean
+	dune clean
