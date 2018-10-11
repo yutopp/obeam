@@ -1,3 +1,0 @@
-B ../_build/default/lib/.obeam.objs
-S .
-FLG -open Obeam -w -40

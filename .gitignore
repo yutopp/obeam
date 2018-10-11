@@ -1,4 +1,6 @@
 _build/
 
+.merlin
+
 *.beam
 !test/*.beam
