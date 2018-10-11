@@ -35,6 +35,7 @@ let bitstring_printer fmt buf =
 type t =
   | SmallInteger of int
   | Integer of int32
+  | Float of string (* float is stored as string *)
   | Atom of string
   | SmallTuple of int * t list
   | Nil
@@ -49,19 +50,26 @@ type t =
 let rec parse_etf (_, buf) =
   let open Parser.Combinator in
   match%bitstring buf with
-  (* 11.4 SMALL_INTEGER_EXT *)
+  (* 4. SMALL_INTEGER_EXT *)
   | {| 97    : 1*8
      ; value : 1*8
      ; rest  : -1 : bitstring
      |} ->
      Ok (SmallInteger value, rest)
 
-  (* 11.5 INTEGER_EXT *)
+  (* 5. INTEGER_EXT *)
   | {| 98    : 1*8
      ; value : 4*8 : bigendian
      ; rest  : -1 : bitstring
      |} ->
      Ok (Integer value, rest)
+
+  (* 6. FLOAT_EXT *)
+  | {| 99    : 1*8
+     ; value : 31*8 : string
+     ; rest  : -1 : bitstring
+     |} ->
+     Ok (Float value, rest)
 
   (* 11.7 ATOM_EXT *)
   | {| 100  : 1*8

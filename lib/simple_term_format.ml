@@ -28,6 +28,8 @@ let rec of_etf etf =
      Integer v
   | ETF.Integer v ->
      Integer (Int32.to_int v)
+  | ETF.Float v ->
+     Float (Scanf.sscanf v "%f" (fun f -> f))
   | ETF.Atom name ->
      Atom name
   | ETF.SmallTuple (n, xs) ->
