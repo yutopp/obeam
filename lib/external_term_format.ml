@@ -46,11 +46,11 @@ type t =
   | SmallAtomUtf8 of string
 [@@deriving show]
 
-(* http://erlang.org/doc/apps/erts/erl_ext_dist.html *)
+(* http://erlang.org/doc/apps/erts/erl_ext_dist.html, 2018/10/11 *)
 let rec parse_etf (_, buf) =
   let open Parser.Combinator in
   match%bitstring buf with
-  (* compressed term format *)
+  (* 12.1: compressed term format *)
   | {| 80   : 1*8
      ; size : 4*8 : bigendian
      ; buf  : -1 : bitstring
@@ -58,36 +58,34 @@ let rec parse_etf (_, buf) =
      let data = uncompress_form ((Int32.to_int size)+1) buf in
      parse_etf ([], data)
 
-  (* 4. SMALL_INTEGER_EXT *)
+  (* 12.2 and 12.3 are not implemented *)
+
+  (* 12.4: SMALL_INTEGER_EXT *)
   | {| 97    : 1*8
      ; value : 1*8
      ; rest  : -1 : bitstring
      |} ->
      Ok (SmallInteger value, rest)
 
-  (* 5. INTEGER_EXT *)
+  (* 12.5: INTEGER_EXT *)
   | {| 98    : 1*8
      ; value : 4*8 : bigendian
      ; rest  : -1 : bitstring
      |} ->
      Ok (Integer value, rest)
 
-  (* 6. FLOAT_EXT *)
+  (* 12.6: FLOAT_EXT *)
   | {| 99    : 1*8
      ; value : 31*8 : string
      ; rest  : -1 : bitstring
      |} ->
      Ok (Float value, rest)
 
-  (* 11.7 ATOM_EXT *)
-  | {| 100  : 1*8
-     ; len  : 2*8
-     ; name : len * 8 : string
-     ; rest : -1 : bitstring
-     |} ->
-     Ok (Atom name, rest)
+  (* 12.7: REFERENCE_EXT *)
+  (* 12.8: PORT_EXT *)
+  (* 12.9: PID_EXT *)
 
-  (* 11.11 SMALL_TUPLE_EXT *)
+  (* 12.10 SMALL_TUPLE_EXT *)
   | {| 104      : 1*8
      ; arity    : 1*8
      ; elem_buf : -1 : bitstring
@@ -95,13 +93,16 @@ let rec parse_etf (_, buf) =
      list parse_etf arity elem_buf
      |> map (fun list -> SmallTuple (arity, list))
 
-  (* 11.14 NIL_EXT *)
+  (* 12.11 LARGE_TUPLE_EXT *)
+  (* 12.12 MAP_EXT *)
+
+  (* 12.13 NIL_EXT *)
   | {| 106   : 1*8
      ; rest  : -1 : bitstring
      |} ->
      Ok (Nil, rest)
 
-  (* 11.15 STRING_EXT *)
+  (* 12.14 STRING_EXT *)
   | {| 107   : 1*8
      ; len   : 2*8
      ; chars : len*8 : string
@@ -109,7 +110,7 @@ let rec parse_etf (_, buf) =
      |} ->
      Ok (String chars, rest)
 
-  (* 11.16 LIST_EXT *)
+  (* 12.15 LIST_EXT *)
   | {| 108      : 1*8
      ; len      : 4*8
      ; list_buf : -1 : bitstring
@@ -122,7 +123,7 @@ let rec parse_etf (_, buf) =
      in
      parser list_buf |> map (fun (list, tail) -> List (list, tail))
 
-  (* 11.17 BINARY_EXT *)
+  (* 12.16 BINARY_EXT *)
   | {| 109   : 1*8
      ; len   : 2*8
      ; data  : len*8 : bitstring
@@ -130,20 +131,40 @@ let rec parse_etf (_, buf) =
      |} ->
      Ok (Binary data, rest)
 
-  (* 11.26 NEW_FLOAT_EXT *)
+  (* 12.17 SMALL_BIG_EXT *)
+  (* 12.18 LARGE_BIG_EXT *)
+  (* 12.19 NEW_REFERENCE_EXT *)
+  (* 12.20 FUN_EXT *)
+  (* 12.21 NEW_FUN_EXT *)
+  (* 12.22 EXPORT_EXT *)
+  (* 12.23 BIT_BINARY_EXT *)
+
+  (* 12.24 NEW_FLOAT_EXT *)
   | {| 70    : 1*8
      ; value : 8*8
      ; rest  : -1 : bitstring
      |} ->
      Ok (NewFloat (Int64.float_of_bits value), rest)
 
-  (* 11.28 SMALL_ATOM_UTF8_EXT *)
+  (* 12.25 ATOM_UTF8_EXT *)
+
+  (* 12.26 SMALL_ATOM_UTF8_EXT *)
   | {| 119   : 1*8
      ; len   : 1*8
      ; name  : len*8 : string
      ; rest  : -1 : bitstring
      |} ->
      Ok (SmallAtomUtf8 name, rest)
+
+  (* 12.27 ATOM_EXT (deprecated) *)
+  | {| 100  : 1*8
+     ; len  : 2*8
+     ; name : len * 8 : string
+     ; rest : -1 : bitstring
+     |} ->
+     Ok (Atom name, rest)
+
+  (* 12.28  SMALL_ATOM_EXT (deprecated) *)
 
   (* unknown *)
   | {| head : 1*8; _ |} ->
