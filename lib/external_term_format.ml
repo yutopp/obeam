@@ -50,6 +50,14 @@ type t =
 let rec parse_etf (_, buf) =
   let open Parser.Combinator in
   match%bitstring buf with
+  (* compressed term format *)
+  | {| 80   : 1*8
+     ; size : 4*8 : bigendian
+     ; buf  : -1 : bitstring
+     |} ->
+     let data = uncompress_form ((Int32.to_int size)+1) buf in
+     parse_etf ([], data)
+
   (* 4. SMALL_INTEGER_EXT *)
   | {| 97    : 1*8
      ; value : 1*8
@@ -144,11 +152,8 @@ let rec parse_etf (_, buf) =
 let parse buf =
   match%bitstring buf with
   | {| 131  : 1*8
-     ; 80   : 1*8
-     ; size : 4*8 : bigendian
-     ; buf  : -1 : bitstring
+     ; rest : -1 : bitstring
      |} ->
-     let data = uncompress_form ((Int32.to_int size)+1) buf in
-     parse_etf ([], data)
+     parse_etf ([], rest)
   | {| _ |} ->
      Error ("unsupported version", buf)
