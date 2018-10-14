@@ -43,6 +43,7 @@ type t =
   | Binary of Bitstring.t [@printer bitstring_printer]
   | List of t list * t
   | NewFloat of float
+  | AtomUtf8 of string
   | SmallAtomUtf8 of string
 [@@deriving show]
 
@@ -147,6 +148,12 @@ let rec parse_etf (_, buf) =
      Ok (NewFloat (Int64.float_of_bits value), rest)
 
   (* 12.25 ATOM_UTF8_EXT *)
+  | {| 118  : 1*8
+     ; len  : 2*8
+     ; name : len * 8 : string
+     ; rest : -1 : bitstring
+     |} ->
+     Ok (AtomUtf8 name, rest)
 
   (* 12.26 SMALL_ATOM_UTF8_EXT *)
   | {| 119   : 1*8

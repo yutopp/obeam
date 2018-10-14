@@ -47,5 +47,6 @@ let rec of_etf etf =
      failwith "unsupported"
   | ETF.NewFloat v ->
      Float v
+  | ETF.AtomUtf8 name
   | ETF.SmallAtomUtf8 name ->
      Atom name
