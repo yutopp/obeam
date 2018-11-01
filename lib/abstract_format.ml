@@ -40,6 +40,7 @@ and literal_t =
   | LitString of line_t * string
 
 and pattern_t =
+  | PatMap of line_t * assoc_t list
   | PatUniversal of line_t
   | PatVar of line_t * string
 
@@ -206,6 +207,10 @@ and lit_of_sf sf =
  *)
 and pat_of_sf sf =
   match sf with
+  (* a map pattern *)
+  | Sf.Tuple (3, [Sf.Atom "map"; Sf.Integer line; Sf.List assocs]) ->
+     PatMap (line, assocs |> List.map assoc_of_sf)
+
   (* a variable pattern *)
   | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom "_"]) ->
      PatUniversal line
