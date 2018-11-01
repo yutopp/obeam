@@ -91,7 +91,7 @@ let rec of_sf sf =
      raise_unknown_error "root" sf
 
 (*
- * 7.1  Module Declarations and Forms
+ * 8.1  Module Declarations and Forms
  *)
 and form_of_sf sf =
   match sf with
@@ -173,7 +173,7 @@ and fa_list_of_sf sf =
      raise_unknown_error "fa_list" sf
 
 (*
- * 7.2  Atomic Literals
+ * 8.2  Atomic Literals
  *)
 and lit_of_sf sf =
   match sf with
@@ -196,7 +196,7 @@ and lit_of_sf sf =
      raise_unknown_error "literal" sf
 
 (*
- * 7.3  Patterns
+ * 8.3  Patterns
  *)
 and pat_of_sf sf =
   match sf with
@@ -212,7 +212,7 @@ and pat_of_sf sf =
      raise_unknown_error "pattern" sf
 
 (*
- * 7.4  Expressions
+ * 8.4  Expressions
  *)
 and expr_of_sf sf =
   match sf with
@@ -236,7 +236,7 @@ and expr_of_sf sf =
      ExprLit (v |> lit_of_sf)
 
 (*
- * 7.5  Clauses
+ * 8.5  Clauses
  *)
 and cls_of_sf ?(in_function=false) sf =
   match sf, in_function with
@@ -290,7 +290,7 @@ and cls_of_sf ?(in_function=false) sf =
      raise_unknown_error "cls" sf
 
 (*
- * 7.6  Guards
+ * 8.6  Guards
  *)
 and guard_sequence_of_sf sf =
   match sf with
@@ -329,7 +329,7 @@ and guard_test_of_sf sf =
      raise_unknown_error "guard_test" sf
 
 (*
- * 7.7  Types
+ * 8.7  Types
  *)
 and type_of_sf sf =
   match sf with
