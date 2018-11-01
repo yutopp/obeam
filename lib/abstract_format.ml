@@ -66,6 +66,8 @@ and guard_t =
   | Guard of guard_test_t list
 and guard_test_t =
   | GuardTestCall of line_t * literal_t * guard_test_t list
+  | GuardTestMapCreation of line_t * assoc_t list
+  | GuardTestMapUpdate of line_t * guard_test_t * assoc_t list
   | GuardTestVar of line_t * string
 
 and type_t =
@@ -357,6 +359,14 @@ and guard_test_of_sf sf =
                  Sf.List args
                ]) ->
      GuardTestCall (line, name |> lit_of_sf, args |> List.map guard_test_of_sf)
+
+  (* a map creation *)
+  | Sf.Tuple (3, [Sf.Atom "map"; Sf.Integer line; Sf.List assocs]) ->
+     GuardTestMapCreation (line, assocs |> List.map assoc_of_sf)
+
+  (* a map update *)
+  | Sf.Tuple (4, [Sf.Atom "map"; Sf.Integer line; m; Sf.List assocs]) ->
+     GuardTestMapUpdate (line, m |> guard_test_of_sf, assocs |> List.map assoc_of_sf)
 
   (* variable pattern *)
   | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom id]) ->
