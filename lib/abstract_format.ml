@@ -40,21 +40,22 @@ and literal_t =
   | LitString of line_t * string
 
 and pattern_t =
-  | PatMap of line_t * assoc_t list
+  | PatMap of line_t * pattern_assoc_t list
   | PatUniversal of line_t
   | PatVar of line_t * string
+and pattern_assoc_t =
+  | PatAssocExact of line_t * pattern_t * pattern_t
 
 and expr_t =
   | ExprBody of expr_t list
-  | ExprMapCreation of line_t * assoc_t list
-  | ExprMapUpdate of line_t * expr_t * assoc_t list
+  | ExprMapCreation of line_t * expr_assoc_t list
+  | ExprMapUpdate of line_t * expr_t * expr_assoc_t list
   | ExprBinOp of line_t * string * expr_t * expr_t
   | ExprVar of line_t * string
   | ExprLit of literal_t
-
-and assoc_t =
-  | Assoc of line_t * expr_t * expr_t
-  | AssocExact of line_t * expr_t * expr_t
+and expr_assoc_t =
+  | ExprAssoc of line_t * expr_t * expr_t
+  | ExprAssocExact of line_t * expr_t * expr_t
 
 and clause_t =
   | ClsCase of line_t * pattern_t * guard_sequence_t option * expr_t
@@ -66,9 +67,12 @@ and guard_t =
   | Guard of guard_test_t list
 and guard_test_t =
   | GuardTestCall of line_t * literal_t * guard_test_t list
-  | GuardTestMapCreation of line_t * assoc_t list
-  | GuardTestMapUpdate of line_t * guard_test_t * assoc_t list
+  | GuardTestMapCreation of line_t * guard_assoc_t list
+  | GuardTestMapUpdate of line_t * guard_test_t * guard_assoc_t list
   | GuardTestVar of line_t * string
+and guard_assoc_t =
+  | GuardTestAssoc of line_t * guard_test_t * guard_test_t
+  | GuardTestAssocExact of line_t * guard_test_t * guard_test_t
 
 and type_t =
   | TyAnn of line_t * type_t * type_t
@@ -211,7 +215,7 @@ and pat_of_sf sf =
   match sf with
   (* a map pattern *)
   | Sf.Tuple (3, [Sf.Atom "map"; Sf.Integer line; Sf.List assocs]) ->
-     PatMap (line, assocs |> List.map assoc_of_sf)
+     PatMap (line, assocs |> List.map pat_assoc_of_sf)
 
   (* a variable pattern *)
   | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom "_"]) ->
@@ -223,6 +227,15 @@ and pat_of_sf sf =
 
   | _ ->
      raise_unknown_error "pattern" sf
+
+and pat_assoc_of_sf sf =
+  match sf with
+  (* an exact association *)
+  | Sf.Tuple (4, [Sf.Atom "map_field_exact"; Sf.Integer line; k; v]) ->
+     PatAssocExact (line, k |> pat_of_sf, v |> pat_of_sf)
+
+  | _ ->
+     raise_unknown_error "association" sf
 
 (*
  * 7.4  Expressions
@@ -236,14 +249,14 @@ and expr_of_sf sf =
   | Sf.Tuple (3, [Sf.Atom "map";
                   Sf.Integer line;
                   Sf.List assocs]) ->
-     ExprMapCreation (line, assocs |> List.map assoc_of_sf)
+     ExprMapCreation (line, assocs |> List.map expr_assoc_of_sf)
 
   (* a map update *)
   | Sf.Tuple (4, [Sf.Atom "map";
                   Sf.Integer line;
                   m;
                   Sf.List assocs]) ->
-     ExprMapUpdate (line, m |> expr_of_sf, assocs |> List.map assoc_of_sf)
+     ExprMapUpdate (line, m |> expr_of_sf, assocs |> List.map expr_assoc_of_sf)
 
   (* an operator expression binary *)
   | Sf.Tuple (5, [Sf.Atom "op";
@@ -261,15 +274,15 @@ and expr_of_sf sf =
   | v ->
      ExprLit (v |> lit_of_sf)
 
-and assoc_of_sf sf =
+and expr_assoc_of_sf sf =
   match sf with
   (* an association *)
   | Sf.Tuple (4, [Sf.Atom "map_field_assoc"; Sf.Integer line; k; v]) ->
-     Assoc (line, k |> expr_of_sf, v |> expr_of_sf)
+     ExprAssoc (line, k |> expr_of_sf, v |> expr_of_sf)
 
   (* an exact association *)
   | Sf.Tuple (4, [Sf.Atom "map_field_exact"; Sf.Integer line; k; v]) ->
-     AssocExact (line, k |> expr_of_sf, v |> expr_of_sf)
+     ExprAssocExact (line, k |> expr_of_sf, v |> expr_of_sf)
 
   | _ ->
      raise_unknown_error "association" sf
@@ -362,11 +375,11 @@ and guard_test_of_sf sf =
 
   (* a map creation *)
   | Sf.Tuple (3, [Sf.Atom "map"; Sf.Integer line; Sf.List assocs]) ->
-     GuardTestMapCreation (line, assocs |> List.map assoc_of_sf)
+     GuardTestMapCreation (line, assocs |> List.map guard_test_assoc_of_sf)
 
   (* a map update *)
   | Sf.Tuple (4, [Sf.Atom "map"; Sf.Integer line; m; Sf.List assocs]) ->
-     GuardTestMapUpdate (line, m |> guard_test_of_sf, assocs |> List.map assoc_of_sf)
+     GuardTestMapUpdate (line, m |> guard_test_of_sf, assocs |> List.map guard_test_assoc_of_sf)
 
   (* variable pattern *)
   | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom id]) ->
@@ -374,6 +387,19 @@ and guard_test_of_sf sf =
 
   | _ ->
      raise_unknown_error "guard_test" sf
+
+and guard_test_assoc_of_sf sf =
+  match sf with
+  (* an association *)
+  | Sf.Tuple (4, [Sf.Atom "map_field_assoc"; Sf.Integer line; k; v]) ->
+     GuardTestAssoc (line, k |> guard_test_of_sf, v |> guard_test_of_sf)
+
+  (* an exact association *)
+  | Sf.Tuple (4, [Sf.Atom "map_field_exact"; Sf.Integer line; k; v]) ->
+     GuardTestAssocExact (line, k |> guard_test_of_sf, v |> guard_test_of_sf)
+
+  | _ ->
+     raise_unknown_error "association" sf
 
 (*
  * 7.7  Types
