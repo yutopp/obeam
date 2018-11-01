@@ -14,6 +14,7 @@ type t =
   | Integer of int
   | Atom of string
   | Tuple of int * t list
+  | Map of int * (t * t) list
   | String of string
   | Binary of string
   | List of t list
@@ -34,6 +35,8 @@ let rec of_etf etf =
      Atom name
   | ETF.SmallTuple (n, xs) ->
      Tuple (n, xs |> List.map of_etf)
+  | ETF.Map (a, ps) ->
+     Map (Int32.to_int a, ps |> List.map (fun (k, v) -> (of_etf k, of_etf v)))
   | ETF.Nil ->
      List []
   | ETF.String v ->

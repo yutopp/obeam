@@ -45,9 +45,14 @@ and pattern_t =
 
 and expr_t =
   | ExprBody of expr_t list
+  | ExprMapCreation of line_t * assoc_t list
   | ExprBinOp of line_t * string * expr_t * expr_t
   | ExprVar of line_t * string
   | ExprLit of literal_t
+
+and assoc_t =
+  | Assoc of line_t * expr_t * expr_t
+  | AssocExact of line_t * expr_t * expr_t
 
 and clause_t =
   | ClsCase of line_t * pattern_t * guard_sequence_t option * expr_t
@@ -219,6 +224,12 @@ and expr_of_sf sf =
   | Sf.List es ->
      ExprBody (es |> List.map expr_of_sf)
 
+  (* a map creation *)
+  | Sf.Tuple (3, [Sf.Atom "map";
+                  Sf.Integer line;
+                  Sf.List assocs]) ->
+     ExprMapCreation (line, assocs |> List.map assoc_of_sf)
+
   (* an operator expression binary *)
   | Sf.Tuple (5, [Sf.Atom "op";
                   Sf.Integer line;
@@ -234,6 +245,19 @@ and expr_of_sf sf =
   (* atomic literal *)
   | v ->
      ExprLit (v |> lit_of_sf)
+
+and assoc_of_sf sf =
+  match sf with
+  (* an association *)
+  | Sf.Tuple (4, [Sf.Atom "map_field_assoc"; Sf.Integer line; k; v]) ->
+     Assoc (line, k |> expr_of_sf, v |> expr_of_sf)
+
+  (* an exact association *)
+  | Sf.Tuple (4, [Sf.Atom "map_field_exact"; Sf.Integer line; k; v]) ->
+     AssocExact (line, k |> expr_of_sf, v |> expr_of_sf)
+
+  | _ ->
+     raise_unknown_error "association" sf
 
 (*
  * 7.5  Clauses

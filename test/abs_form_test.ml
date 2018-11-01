@@ -178,12 +178,50 @@ let template_03 () =
          Ast.FormEof])
   )
 
+let template_04 () =
+  let module Ast = Obeam.Abstract_format in
+  ("test04.erl",
+   Ast.AbstractCode
+     (Ast.ModDecl
+        [(Ast.AttrFile (1, "test04.erl", 1));
+         (Ast.AttrMod (1, "test04"));
+         (Ast.AttrExport (3, [("f", 0)]));
+         (Ast.DeclFun (5, "f", 0,
+                       [(Ast.ClsFun
+                           (5, [], None,
+                            (Ast.ExprBody
+                               [(Ast.ExprMapCreation
+                                   (6,
+                                    [(Ast.Assoc
+                                        (6,
+                                         (Ast.ExprLit
+                                            (Ast.LitAtom (6, "a"))),
+                                         (Ast.ExprLit
+                                            (Ast.LitInteger (6, 0)))
+                                     ));
+                                     (Ast.Assoc
+                                        (6,
+                                         (Ast.ExprLit
+                                            (Ast.LitAtom (6, "b"))),
+                                         (Ast.ExprLit
+                                            (Ast.LitInteger (6, 42)))
+                                     ))
+                                    ]
+                                ))
+                            ])
+                        ))
+                       ]
+         ));
+         Ast.FormEof])
+  )
+
 let rec suite =
   "parse_abs_form_in_beam_suite" >:::
     [
       "template_01" >:: assert_equals_abs_form_f template_01;
       "template_02" >:: assert_equals_abs_form_f template_02;
       "template_03" >:: assert_equals_abs_form_f template_03;
+      "template_04" >:: assert_equals_abs_form_f template_04;
     ]
 
 let () =
