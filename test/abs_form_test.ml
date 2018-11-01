@@ -182,37 +182,42 @@ let template_04 () =
   let module Ast = Obeam.Abstract_format in
   ("test04.erl",
    Ast.AbstractCode
-     (Ast.ModDecl
-        [(Ast.AttrFile (1, "test04.erl", 1));
-         (Ast.AttrMod (1, "test04"));
-         (Ast.AttrExport (3, [("f", 0)]));
-         (Ast.DeclFun (5, "f", 0,
-                       [(Ast.ClsFun
-                           (5, [], None,
-                            (Ast.ExprBody
-                               [(Ast.ExprMapCreation
-                                   (6,
-                                    [(Ast.Assoc
-                                        (6,
-                                         (Ast.ExprLit
-                                            (Ast.LitAtom (6, "a"))),
-                                         (Ast.ExprLit
-                                            (Ast.LitInteger (6, 0)))
-                                     ));
-                                     (Ast.Assoc
-                                        (6,
-                                         (Ast.ExprLit
-                                            (Ast.LitAtom (6, "b"))),
-                                         (Ast.ExprLit
-                                            (Ast.LitInteger (6, 42)))
-                                     ))
-                                    ]
-                                ))
-                            ])
-                        ))
-                       ]
-         ));
-         Ast.FormEof])
+   (Ast.ModDecl
+      [(Ast.AttrFile (1, "test04.erl", 1));
+        (Ast.AttrMod (1, "test04"));
+        (Ast.AttrExport (3, [("f", 0)]));
+        (Ast.DeclFun (5, "f", 0,
+           [(Ast.ClsFun (5, [], None,
+               (Ast.ExprBody
+                  [(Ast.ExprMapUpdate (6,
+                      (Ast.ExprMapCreation (6,
+                         [(Ast.Assoc (6,
+                             (Ast.ExprLit
+                                (Ast.LitAtom (6, "a"))),
+                             (Ast.ExprLit
+                                (Ast.LitInteger (6, 1)))
+                             ));
+                           (Ast.Assoc (6,
+                              (Ast.ExprLit
+                                 (Ast.LitAtom (6, "b"))),
+                              (Ast.ExprLit
+                                 (Ast.LitInteger (6, 2)))
+                              ))
+                           ]
+                         )),
+                      [(Ast.Assoc (6,
+                          (Ast.ExprLit
+                             (Ast.LitAtom (6, "c"))),
+                          (Ast.ExprLit
+                             (Ast.LitInteger (6, 3)))
+                          ))
+                        ]
+                      ))
+                    ])
+               ))
+             ]
+           ));
+        Ast.FormEof])
   )
 
 let rec suite =

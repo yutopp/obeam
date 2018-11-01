@@ -46,6 +46,7 @@ and pattern_t =
 and expr_t =
   | ExprBody of expr_t list
   | ExprMapCreation of line_t * assoc_t list
+  | ExprMapUpdate of line_t * expr_t * assoc_t list
   | ExprBinOp of line_t * string * expr_t * expr_t
   | ExprVar of line_t * string
   | ExprLit of literal_t
@@ -229,6 +230,13 @@ and expr_of_sf sf =
                   Sf.Integer line;
                   Sf.List assocs]) ->
      ExprMapCreation (line, assocs |> List.map assoc_of_sf)
+
+  (* a map update *)
+  | Sf.Tuple (4, [Sf.Atom "map";
+                  Sf.Integer line;
+                  m;
+                  Sf.List assocs]) ->
+     ExprMapUpdate (line, m |> expr_of_sf, assocs |> List.map assoc_of_sf)
 
   (* an operator expression binary *)
   | Sf.Tuple (5, [Sf.Atom "op";
