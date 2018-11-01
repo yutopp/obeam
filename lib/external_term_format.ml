@@ -126,8 +126,8 @@ let rec parse_etf (_, buf) =
 
   (* 12.16 BINARY_EXT *)
   | {| 109   : 1*8
-     ; len   : 2*8
-     ; data  : len*8 : bitstring
+     ; len   : 4*8
+     ; data  : Int32.to_int len * 8 : bitstring
      ; rest  : -1 : bitstring
      |} ->
      Ok (Binary data, rest)
