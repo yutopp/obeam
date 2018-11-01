@@ -38,6 +38,7 @@ type t =
   | Float of string (* float is stored as string *)
   | Atom of string
   | SmallTuple of int * t list
+  | Map of int32 * (t * t) list
   | Nil
   | String of string
   | Binary of Bitstring.t [@printer bitstring_printer]
@@ -96,6 +97,18 @@ let rec parse_etf (_, buf) =
 
   (* 12.11 LARGE_TUPLE_EXT *)
   (* 12.12 MAP_EXT *)
+  | {| 116       : 1*8
+     ; arity     : 4*8 : bigendian
+     ; pairs_buf : -1 : bitstring
+     |} ->
+     let forget p (_, buf) = p ([], buf) in
+     let parse_pair =
+       forget parse_etf >>= fun k ->
+       forget parse_etf >>= fun v ->
+       return (k, v)
+     in
+     list parse_pair (Int32.to_int arity) pairs_buf
+     |> map (fun pairs -> Map (arity, pairs))
 
   (* 12.13 NIL_EXT *)
   | {| 106   : 1*8
