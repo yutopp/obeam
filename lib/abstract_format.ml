@@ -43,6 +43,7 @@ and pattern_t =
   | PatMap of line_t * pattern_assoc_t list
   | PatUniversal of line_t
   | PatVar of line_t * string
+  | PatLit of literal_t
 and pattern_assoc_t =
   | PatAssocExact of line_t * pattern_t * pattern_t
 
@@ -69,7 +70,9 @@ and guard_test_t =
   | GuardTestCall of line_t * literal_t * guard_test_t list
   | GuardTestMapCreation of line_t * guard_assoc_t list
   | GuardTestMapUpdate of line_t * guard_test_t * guard_assoc_t list
+  | GuardTestBinOp of line_t * string * guard_test_t * guard_test_t
   | GuardTestVar of line_t * string
+  | GuardTestLit of literal_t
 and guard_assoc_t =
   | GuardTestAssoc of line_t * guard_test_t * guard_test_t
   | GuardTestAssocExact of line_t * guard_test_t * guard_test_t
@@ -225,8 +228,9 @@ and pat_of_sf sf =
   | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom id]) ->
      PatVar (line, id)
 
-  | _ ->
-     raise_unknown_error "pattern" sf
+  (* atomic literal *)
+  | v ->
+     PatLit (v |> lit_of_sf)
 
 and pat_assoc_of_sf sf =
   match sf with
@@ -381,12 +385,17 @@ and guard_test_of_sf sf =
   | Sf.Tuple (4, [Sf.Atom "map"; Sf.Integer line; m; Sf.List assocs]) ->
      GuardTestMapUpdate (line, m |> guard_test_of_sf, assocs |> List.map guard_test_assoc_of_sf)
 
+  (* a binary operator *)
+  | Sf.Tuple (5, [Sf.Atom "op"; Sf.Integer line; Sf.Atom op; gt1; gt2]) ->
+     GuardTestBinOp (line, op, gt1 |> guard_test_of_sf, gt2 |> guard_test_of_sf)
+
   (* variable pattern *)
   | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom id]) ->
      GuardTestVar (line, id)
 
-  | _ ->
-     raise_unknown_error "guard_test" sf
+  (* atomic literal *)
+  | v ->
+     GuardTestLit (v |> lit_of_sf)
 
 and guard_test_assoc_of_sf sf =
   match sf with
