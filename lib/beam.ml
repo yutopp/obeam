@@ -19,7 +19,7 @@
  * ImpT
  * ExpT
  *
- * FunT x
+ * FunT
  * LitT
  * Line
  *
@@ -175,6 +175,27 @@ let parse_expt_chunk_layout (_, buffer) =
      Error "Failed to parse export_table_chunk"
 
 
+type funt_chunk_layout_t = {
+  funt_buf : Bitstring.t;
+}
+
+let parse_funt_chunk_layout (_, buffer) =
+  let open Aux in
+  match%bitstring buffer with
+  | {| "FunT" : 4*8 : string
+     ; size   : 4*8 : bigendian
+     ; count  : 4*8 : bigendian
+     ; buf    : content_size_bits size 1 : bitstring
+     ; rest   : -1 : bitstring
+     |} ->
+     let v = {
+       funt_buf = buf;
+     } in
+     Ok (v, rest)
+  | {| _ |} ->
+     Error "Failed to parse function_table_chunk"
+
+
 type litt_chunk_layout_t = {
   litt_buf : Bitstring.t;
 }
@@ -323,7 +344,7 @@ type chunks_layout_table_t = {
   cl_impt : impt_chunk_layout_t option;
   cl_expt : expt_chunk_layout_t option;
 
-  (* funt : funt_chunk_layout_t option; *)
+  cl_funt : funt_chunk_layout_t option;
   cl_litt : litt_chunk_layout_t option;
   cl_line : line_chunk_layout_t option;
 
@@ -344,7 +365,7 @@ let empty_chunks_layout_table =
     cl_impt = None;
     cl_expt = None;
 
-    (* funt = None; *)
+    cl_funt = None;
     cl_litt = None;
     cl_line = None;
 
@@ -372,7 +393,7 @@ let parse_layout buffer =
        / act parse_impt_chunk_layout (fun n p -> {p with cl_impt = Some n})
        / act parse_expt_chunk_layout (fun n p -> {p with cl_expt = Some n})
 
-       (* / funt *)
+       / act parse_funt_chunk_layout (fun n p -> {p with cl_funt = Some n})
        / act parse_litt_chunk_layout (fun n p -> {p with cl_litt = Some n})
        / act parse_line_chunk_layout (fun n p -> {p with cl_line = Some n})
 
