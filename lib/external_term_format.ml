@@ -8,15 +8,15 @@
 
 let uncompress_form size buf =
   (* for input *)
-  let pos = ref 0 in
+  let pos = ref 0 in (* A position in bytes *)
   let fill in_buf =
-    let buf_size = Bytes.length in_buf in
-    let rest_size = (Bitstring.bitstring_length buf / 8) - (!pos*8) in
-    let size = min buf_size rest_size in
-    let subbitstr = Bitstring.subbitstring buf (!pos*8) (size*8) in
-    Bytes.blit_string (subbitstr |> Bitstring.string_of_bitstring) 0 in_buf 0 size;
-    pos := !pos + size;
-    size
+    let in_size = Bytes.length in_buf in
+    let origin_rest_size = (Bitstring.bitstring_length buf / 8) - !pos in
+    let copy_size = min in_size origin_rest_size in
+    let subbitstr = Bitstring.subbitstring buf (!pos*8) (copy_size*8) in
+    Bytes.blit_string (subbitstr |> Bitstring.string_of_bitstring) 0 in_buf 0 copy_size;
+    pos := !pos + copy_size;
+    copy_size
   in
   (* for output *)
   let out_mem = Buffer.create size in
@@ -24,7 +24,7 @@ let uncompress_form size buf =
     Buffer.add_bytes out_mem out_buf
   in
   (* uncompress *)
-  Zlib.uncompress fill export;
+  let () = Zlib.uncompress fill export in
   (* to bitstring *)
   Buffer.sub out_mem 0 size
   |> Bitstring.bitstring_of_string
