@@ -68,12 +68,12 @@ and guard_t =
   | Guard of guard_test_t list
 and guard_test_t =
   | GuardTestCall of line_t * literal_t * guard_test_t list
-  | GuardTestMapCreation of line_t * guard_assoc_t list
-  | GuardTestMapUpdate of line_t * guard_test_t * guard_assoc_t list
+  | GuardTestMapCreation of line_t * guard_test_assoc_t list
+  | GuardTestMapUpdate of line_t * guard_test_t * guard_test_assoc_t list
   | GuardTestBinOp of line_t * string * guard_test_t * guard_test_t
   | GuardTestVar of line_t * string
   | GuardTestLit of literal_t
-and guard_assoc_t =
+and guard_test_assoc_t =
   | GuardTestAssoc of line_t * guard_test_t * guard_test_t
   | GuardTestAssocExact of line_t * guard_test_t * guard_test_t
 
