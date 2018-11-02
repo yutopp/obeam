@@ -37,6 +37,18 @@ module Combinator = struct
     | Error _ as err ->
        err
 
+  (* bind *)
+  let (>>=) pa pb ctx =
+    match pa ctx with
+    | Ok ((result, rest) as c) ->
+       pb result c
+    | Error _ as err ->
+       err
+
+  (* return *)
+  let return a (_, rest) =
+    Ok (a, rest)
+
   (**)
   let act p action ctx =
     match p ctx with
