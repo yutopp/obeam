@@ -6,7 +6,7 @@
  * http://www.boost.org/LICENSE_1_0.txt)
  *)
 
-let uncompress_form size buf =
+let uncompress_form uncompressed_size buf =
   (* for input *)
   let pos = ref 0 in (* A position in bytes *)
   let fill in_buf =
@@ -19,15 +19,14 @@ let uncompress_form size buf =
     copy_size
   in
   (* for output *)
-  let out_mem = Buffer.create size in
+  let out_mem = Buffer.create uncompressed_size in
   let export out_buf len =
-    Buffer.add_bytes out_mem out_buf
+    Buffer.add_bytes out_mem (Bytes.sub out_buf 0 len)
   in
   (* uncompress *)
   let () = Zlib.uncompress fill export in
   (* to bitstring *)
-  Buffer.sub out_mem 0 size
-  |> Bitstring.bitstring_of_string
+  Buffer.sub out_mem 0 uncompressed_size |> Bitstring.bitstring_of_string
 
 let bitstring_printer fmt buf =
   Format.fprintf fmt "%s" (Bitstring.string_of_bitstring buf)
@@ -57,7 +56,7 @@ let rec parse_etf (_, buf) =
      ; size : 4*8 : bigendian
      ; buf  : -1 : bitstring
      |} ->
-     let data = uncompress_form ((Int32.to_int size)+1) buf in
+     let data = uncompress_form (Int32.to_int size) buf in
      parse_etf ([], data)
 
   (* 12.2 and 12.3 are not implemented *)
