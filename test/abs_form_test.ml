@@ -175,6 +175,40 @@ let template_03 () =
                             (Ast.ExprBody [(Ast.ExprLit (Ast.LitInteger (6, 2)))])))
                        ]
                       ));
+         (Ast.DeclFun (8, "g", 1,
+                       [(Ast.ClsFun
+                           (8, [(Ast.PatVar (8, "R"))],
+                            None,
+                            (Ast.ExprBody
+                               [(Ast.ExprCase
+                                   (9,
+                                    (Ast.ExprVar (9, "R")),
+                                    [(Ast.ClsCase
+                                        (10,
+                                         (Ast.PatLit
+                                            (Ast.LitAtom (10, "ok"))),
+                                         None,
+                                         (Ast.ExprBody
+                                            [(Ast.ExprLit
+                                                (Ast.LitInteger (10, 1)))
+                                         ])
+                                     ));
+                                     (Ast.ClsCase
+                                        (11,
+                                         (Ast.PatLit
+                                            (Ast.LitAtom (11, "error"))),
+                                         None,
+                                         (Ast.ExprBody
+                                            [(Ast.ExprLit
+                                                (Ast.LitInteger (11, 2)))
+                                         ])
+                                     ))
+                                    ]
+                                ))
+                            ])
+                        ))
+                       ]
+         ));
          Ast.FormEof])
   )
 
