@@ -332,11 +332,11 @@ let template_05 () =
   ("test05.erl",
    Ast.AbstractCode
      (Ast.ModDecl
-        [(Ast.AttrFile (1, "test01.erl", 1)); (Ast.AttrMod (1, "test01"));
+        [(Ast.AttrFile (1, "test05.erl", 1)); (Ast.AttrMod (1, "test05"));
          (Ast.DeclRecord (3, [(3, "a", None, None);
                               (4, "b", Some (Ast.ExprLit (Ast.LitInteger (4, 42))), None);
                               (5, "c", None, Some (Ast.TyPredef (5, "string", [])));
-                              (6, "c", Some (Ast.ExprLit (Ast.LitInteger (6, 57))), Some (Ast.TyPredef (6, "integer", [])))]));
+                              (6, "d", Some (Ast.ExprLit (Ast.LitInteger (6, 57))), Some (Ast.TyPredef (6, "integer", [])))]));
          Ast.FormEof])
   )
 
