@@ -23,13 +23,14 @@ and form_t =
   | ModDecl of form_t list
 
   | AttrExport of line_t * (string * int) list
+  | AttrExportType of line_t * (string * int) list
   | AttrImport of line_t * (string * int) list
   | AttrMod of line_t * string
   | AttrFile of line_t * string * line_t
   | DeclFun of line_t * string * int * clause_t list
   | SpecFun of line_t * string option * string * int * type_t list
   | DeclRecord of line_t * (line_t * string * expr_t option * type_t option) list
-  | DeclType
+  | DeclType of line_t * bool * string * (line_t * string) list * type_t
   | AttrWild
 
   | FormEof
@@ -120,17 +121,25 @@ and form_of_sf sf =
   | Sf.Tuple (4, [Sf.Atom "attribute";
                   Sf.Integer line;
                   Sf.Atom "export";
-                  Sf.List fa_list
+                  Sf.List name_and_arity_list
                  ]) ->
-     AttrExport (line, fa_list |> List.map fa_list_of_sf)
+     AttrExport (line, name_and_arity_list |> List.map name_and_arity_of_sf)
+
+  (* attribute -export_type *)
+  | Sf.Tuple (4, [Sf.Atom "attribute";
+                  Sf.Integer line;
+                  Sf.Atom "export_type";
+                  Sf.List name_and_arity_list
+                 ]) ->
+     AttrExportType (line, name_and_arity_list |> List.map name_and_arity_of_sf)
 
   (* attribute -import *)
   | Sf.Tuple (4, [Sf.Atom "attribute";
                   Sf.Integer line;
                   Sf.Atom "import";
-                  Sf.List fa_list
+                  Sf.List name_and_arity_list
                  ]) ->
-     AttrImport (line, fa_list |> List.map fa_list_of_sf)
+     AttrImport (line, name_and_arity_list |> List.map name_and_arity_of_sf)
 
   (* attribute -module *)
   | Sf.Tuple (4, [Sf.Atom "attribute";
@@ -182,6 +191,17 @@ and form_of_sf sf =
                  ]) ->
     DeclRecord (line, record_fields |> List.map record_field_of_sf)
 
+  (* attribute -type and -opaque *)
+  | Sf.Tuple (4, [Sf.Atom "attribute";
+                  Sf.Integer line;
+                  Sf.Atom attribute;
+                  Sf.Tuple (3, [Sf.Atom name;
+                                t;
+                                Sf.List tvars
+                               ]);
+                 ]) when attribute = "type" || attribute = "opaque" ->
+    DeclType (line, attribute = "opaque", name, tvars |> List.map tvar_of_sf, type_of_sf t)
+
   (* eof *)
   | Sf.Tuple (2, [Sf.Atom "eof"; Sf.Integer line]) ->
      FormEof
@@ -189,13 +209,13 @@ and form_of_sf sf =
   | _ ->
      raise_unknown_error "form" sf
 
-and fa_list_of_sf sf =
+and name_and_arity_of_sf sf =
   match sf with
   | Sf.Tuple (2, [Sf.Atom name; Sf.Integer arity]) ->
      (name, arity)
 
   | _ ->
-     raise_unknown_error "fa_list" sf
+     raise_unknown_error "name and arity" sf
 
 and record_field_of_sf sf =
   match sf with
@@ -233,6 +253,17 @@ and record_field_of_sf sf =
 
   | _ ->
      raise_unknown_error "record_field" sf
+
+and tvar_of_sf sf =
+  match sf with
+  | Sf.Tuple (3, [Sf.Atom "var";
+                  Sf.Integer line;
+                  Sf.Atom tvar
+                 ]) ->
+    (line, tvar)
+
+  | _ ->
+     raise_unknown_error "type variable" sf
 
 (*
  * 8.2  Atomic Literals

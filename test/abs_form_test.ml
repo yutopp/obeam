@@ -220,36 +220,45 @@ let template_04 () =
       [(Ast.AttrFile (1, "test04.erl", 1));
         (Ast.AttrMod (1, "test04"));
         (Ast.AttrExport (3, [("f", 0); ("g", 1); ("h", 1)]));
-        (Ast.DeclFun (5, "f", 0,
-           [(Ast.ClsFun (5, [], None,
+        (Ast.AttrExportType (4, [("tuple", 2); ("int", 0)]));
+        (Ast.DeclType (6, false, "tuple", [(6, "A"); (6, "B")],
+           (Ast.TyPredef (6, "tuple",
+              [(Ast.TyVar (6, "A"));
+                (Ast.TyVar (6, "B"))]
+              ))
+           ));
+        (Ast.DeclType (7, true, "int", [],
+           (Ast.TyPredef (7, "integer", []))));
+        (Ast.DeclFun (9, "f", 0,
+           [(Ast.ClsFun (9, [], None,
                (Ast.ExprBody
-                  [(Ast.ExprMapUpdate (5,
-                      (Ast.ExprMapCreation (5,
-                         [(Ast.ExprAssoc (5,
+                  [(Ast.ExprMapUpdate (9,
+                      (Ast.ExprMapCreation (9,
+                         [(Ast.ExprAssoc (9,
                              (Ast.ExprLit
-                                (Ast.LitAtom (5, "a"))),
+                                (Ast.LitAtom (9, "a"))),
                              (Ast.ExprLit
-                                (Ast.LitInteger (5, 1)))
+                                (Ast.LitInteger (9, 1)))
                              ));
-                           (Ast.ExprAssoc (5,
+                           (Ast.ExprAssoc (9,
                               (Ast.ExprLit
-                                 (Ast.LitAtom (5, "b"))),
+                                 (Ast.LitAtom (9, "b"))),
                               (Ast.ExprLit
-                                 (Ast.LitInteger (5, 2)))
+                                 (Ast.LitInteger (9, 2)))
                               ))
                            ]
                          )),
-                      [(Ast.ExprAssocExact (5,
+                      [(Ast.ExprAssocExact (9,
                           (Ast.ExprLit
-                             (Ast.LitAtom (5, "a"))),
+                             (Ast.LitAtom (9, "a"))),
                           (Ast.ExprLit
-                             (Ast.LitInteger (5, 42)))
+                             (Ast.LitInteger (9, 42)))
                           ));
-                        (Ast.ExprAssoc (5,
+                        (Ast.ExprAssoc (9,
                            (Ast.ExprLit
-                              (Ast.LitAtom (5, "c"))),
+                              (Ast.LitAtom (9, "c"))),
                            (Ast.ExprLit
-                              (Ast.LitInteger (5, 3)))
+                              (Ast.LitInteger (9, 3)))
                            ))
                         ]
                       ))
@@ -257,61 +266,61 @@ let template_04 () =
                ))
              ]
            ));
-        (Ast.DeclFun (7, "g", 1,
-           [(Ast.ClsFun (7,
-               [(Ast.PatMap (7,
-                   [(Ast.PatAssocExact (7,
+        (Ast.DeclFun (11, "g", 1,
+           [(Ast.ClsFun (11,
+               [(Ast.PatMap (11,
+                   [(Ast.PatAssocExact (11,
                        (Ast.PatLit
-                          (Ast.LitAtom (7, "a"))),
-                       (Ast.PatVar (7, "N"))))
+                          (Ast.LitAtom (11, "a"))),
+                       (Ast.PatVar (11, "N"))))
                      ]
                    ))
                  ],
                None,
-               (Ast.ExprBody [(Ast.ExprVar (7, "N"))])
+               (Ast.ExprBody [(Ast.ExprVar (11, "N"))])
                ))
              ]
            ));
-        (Ast.DeclFun (9, "h", 1,
-           [(Ast.ClsFun (9, [(Ast.PatVar (9, "M"))],
+        (Ast.DeclFun (13, "h", 1,
+           [(Ast.ClsFun (13, [(Ast.PatVar (13, "M"))],
                (Some (Ast.GuardSeq
                         [(Ast.Guard
-                            [(Ast.GuardTestBinOp (9, "andalso",
-                                (Ast.GuardTestBinOp (9, "=:=",
-                                   (Ast.GuardTestVar (9, "M")),
-                                   (Ast.GuardTestMapCreation (9,
-                                      [(Ast.GuardTestAssoc (9,
+                            [(Ast.GuardTestBinOp (13, "andalso",
+                                (Ast.GuardTestBinOp (13, "=:=",
+                                   (Ast.GuardTestVar (13, "M")),
+                                   (Ast.GuardTestMapCreation (13,
+                                      [(Ast.GuardTestAssoc (13,
                                           (Ast.GuardTestLit
-                                             (Ast.LitAtom (9, "a"
+                                             (Ast.LitAtom (13, "a"
                                                 ))),
                                           (Ast.GuardTestLit
-                                             (Ast.LitInteger (9,
+                                             (Ast.LitInteger (13,
                                                 42)))
                                           ))
                                         ]
                                       ))
                                    )),
-                                (Ast.GuardTestBinOp (9, "=:=",
-                                   (Ast.GuardTestMapUpdate (9,
-                                      (Ast.GuardTestVar (9, "M")),
+                                (Ast.GuardTestBinOp (13, "=:=",
+                                   (Ast.GuardTestMapUpdate (13,
+                                      (Ast.GuardTestVar (13, "M")),
                                       [(Ast.GuardTestAssocExact (
-                                          9,
+                                          13,
                                           (Ast.GuardTestLit
-                                             (Ast.LitAtom (9, "a"
+                                             (Ast.LitAtom (13, "a"
                                                 ))),
                                           (Ast.GuardTestLit
-                                             (Ast.LitInteger (9,
+                                             (Ast.LitInteger (13,
                                                 0)))
                                           ))
                                         ]
                                       )),
-                                   (Ast.GuardTestMapCreation (9,
-                                      [(Ast.GuardTestAssoc (9,
+                                   (Ast.GuardTestMapCreation (13,
+                                      [(Ast.GuardTestAssoc (13,
                                           (Ast.GuardTestLit
-                                             (Ast.LitAtom (9, "a"
+                                             (Ast.LitAtom (13, "a"
                                                 ))),
                                           (Ast.GuardTestLit
-                                             (Ast.LitInteger (9,
+                                             (Ast.LitInteger (13,
                                                 0)))
                                           ))
                                         ]
@@ -320,7 +329,7 @@ let template_04 () =
                                 ))
                               ])
                           ])),
-               (Ast.ExprBody [(Ast.ExprVar (9, "M"))])
+               (Ast.ExprBody [(Ast.ExprVar (13, "M"))])
                ))
              ]
            ));
