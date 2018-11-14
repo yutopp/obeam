@@ -28,7 +28,7 @@ and form_t =
   | AttrFile of line_t * string * line_t
   | DeclFun of line_t * string * int * clause_t list
   | SpecFun of line_t * string option * string * int * type_t list
-  | DeclRecord
+  | DeclRecord of line_t * (line_t * string * expr_t option * type_t option) list
   | DeclType
   | AttrWild
 
@@ -174,6 +174,14 @@ and form_of_sf sf =
                  ]) ->
      SpecFun (line, Some m, name, arity, specs |> List.map fun_type_of_sf)
 
+  (* attribute -record *)
+  | Sf.Tuple (4, [Sf.Atom "attribute";
+                  Sf.Integer line;
+                  Sf.Atom "record";
+                  Sf.Tuple (2, [Sf.Atom name; Sf.List record_fields])
+                 ]) ->
+    DeclRecord (line, record_fields |> List.map record_field_of_sf)
+
   (* eof *)
   | Sf.Tuple (2, [Sf.Atom "eof"; Sf.Integer line]) ->
      FormEof
@@ -188,6 +196,43 @@ and fa_list_of_sf sf =
 
   | _ ->
      raise_unknown_error "fa_list" sf
+
+and record_field_of_sf sf =
+  match sf with
+  | Sf.Tuple (3, [Sf.Atom "record_field";
+                  Sf.Integer line;
+                  Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field])
+                 ]) ->
+    (line, field, None, None)
+
+  | Sf.Tuple (4, [Sf.Atom "record_field";
+                  Sf.Integer line;
+                  Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field]);
+                  e
+                 ]) ->
+    (line, field, Some (expr_of_sf e), None)
+
+  | Sf.Tuple (3, [Sf.Atom "typed_record_field";
+                  Sf.Tuple (3, [Sf.Atom "record_field";
+                                Sf.Integer line;
+                                Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field])
+                               ]);
+                  t
+                 ]) ->
+    (line, field, None, Some (type_of_sf t))
+
+  | Sf.Tuple (3, [Sf.Atom "typed_record_field";
+                  Sf.Tuple (4, [Sf.Atom "record_field";
+                                Sf.Integer line;
+                                Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field]);
+                                e
+                               ]);
+                  t
+                 ]) ->
+    (line, field, Some (expr_of_sf e), Some (type_of_sf t))
+
+  | _ ->
+     raise_unknown_error "record_field" sf
 
 (*
  * 8.2  Atomic Literals
