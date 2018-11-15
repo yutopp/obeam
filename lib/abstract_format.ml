@@ -184,7 +184,7 @@ and form_of_sf sf =
                  ]) ->
      SpecFun (line, Some m, name, arity, specs |> List.map fun_type_of_sf)
 
-  (* attribute -record *)
+  (* record declaration *)
   | Sf.Tuple (4, [Sf.Atom "attribute";
                   Sf.Integer line;
                   Sf.Atom "record";
