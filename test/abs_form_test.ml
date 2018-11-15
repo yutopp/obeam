@@ -221,13 +221,13 @@ let template_04 () =
         (Ast.AttrMod (1, "test04"));
         (Ast.AttrExport (3, [("f", 0); ("g", 1); ("h", 1)]));
         (Ast.AttrExportType (4, [("tuple", 2); ("int", 0)]));
-        (Ast.DeclType (6, false, "tuple", [(6, "A"); (6, "B")],
+        (Ast.DeclType (6, "tuple", [(6, "A"); (6, "B")],
            (Ast.TyPredef (6, "tuple",
               [(Ast.TyVar (6, "A"));
                 (Ast.TyVar (6, "B"))]
               ))
            ));
-        (Ast.DeclType (7, true, "int", [],
+        (Ast.DeclOpaqueType (7, "int", [],
            (Ast.TyPredef (7, "integer", []))));
         (Ast.DeclFun (9, "f", 0,
            [(Ast.ClsFun (9, [], None,

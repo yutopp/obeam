@@ -30,7 +30,8 @@ and form_t =
   | DeclFun of line_t * string * int * clause_t list
   | SpecFun of line_t * string option * string * int * type_t list
   | DeclRecord of line_t * (line_t * string * expr_t option * type_t option) list
-  | DeclType of line_t * bool * string * (line_t * string) list * type_t
+  | DeclType of line_t * string * (line_t * string) list * type_t
+  | DeclOpaqueType of line_t * string * (line_t * string) list * type_t
   | AttrWild
 
   | FormEof
@@ -191,16 +192,27 @@ and form_of_sf sf =
                  ]) ->
     DeclRecord (line, record_fields |> List.map record_field_of_sf)
 
-  (* attribute -type and -opaque *)
+  (* type declaration *)
   | Sf.Tuple (4, [Sf.Atom "attribute";
                   Sf.Integer line;
-                  Sf.Atom attribute;
+                  Sf.Atom "type";
                   Sf.Tuple (3, [Sf.Atom name;
                                 t;
                                 Sf.List tvars
                                ]);
-                 ]) when attribute = "type" || attribute = "opaque" ->
-    DeclType (line, attribute = "opaque", name, tvars |> List.map tvar_of_sf, type_of_sf t)
+                 ]) ->
+    DeclType (line, name, tvars |> List.map tvar_of_sf, type_of_sf t)
+
+  (* opaque type declaration *)
+  | Sf.Tuple (4, [Sf.Atom "attribute";
+                  Sf.Integer line;
+                  Sf.Atom "opaque";
+                  Sf.Tuple (3, [Sf.Atom name;
+                                t;
+                                Sf.List tvars
+                               ]);
+                 ]) ->
+    DeclOpaqueType (line, name, tvars |> List.map tvar_of_sf, type_of_sf t)
 
   (* eof *)
   | Sf.Tuple (2, [Sf.Atom "eof"; Sf.Integer line]) ->
