@@ -349,6 +349,40 @@ let template_05 () =
          Ast.FormEof])
   )
 
+let template_06 () =
+  let module Ast = Obeam.Abstract_format in
+  let module Sf = Obeam.Simple_term_format in
+  ("test06.erl",
+   Ast.AbstractCode
+     (Ast.ModDecl
+        [(Ast.AttrFile (1, "test06.erl", 1));
+         (Ast.AttrMod (1, "test06"));
+         (Ast.AttrWild (3, "compile",
+                        (Sf.List [(Sf.Atom "export_all")])
+         ));
+         (Ast.AttrWild (5, "vsn",
+                        (Sf.Atom "1.0.0")));
+         (Ast.AttrWild (7, "on_load",
+                        (Sf.Tuple (2,
+                                   [(Sf.Atom "f"); (Sf.Integer 0)]
+                        ))
+         ));
+         (Ast.AttrWild (9, "behaviour",
+                        (Sf.Atom "gen_server")));
+         (Ast.AttrWild (11, "foo",
+                        (Sf.Binary "bar")));
+         (Ast.DeclFun (13, "f", 0,
+                       [(Ast.ClsFun (13, [], None,
+                                     (Ast.ExprBody
+                                        [(Ast.ExprLit
+                                            (Ast.LitAtom (13, "ok")))
+                                     ])
+                        ))
+                       ]
+         ));
+         Ast.FormEof])
+  )
+
 let rec suite =
   "parse_abs_form_in_beam_suite" >:::
     [
@@ -357,6 +391,7 @@ let rec suite =
       "template_03" >:: assert_equals_abs_form_f template_03;
       "template_04" >:: assert_equals_abs_form_f template_04;
       "template_05" >:: assert_equals_abs_form_f template_05;
+      "template_06" >:: assert_equals_abs_form_f template_06;
     ]
 
 let () =
