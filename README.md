@@ -1,22 +1,19 @@
-OBEAM
--
+# OBEAM
+
+[![CircleCI](https://circleci.com/gh/yutopp/obeam.svg?style=svg)](https://circleci.com/gh/yutopp/obeam)
+
 **WIP**
 obeam (御-BEAM) is a utility library for parsing BEAM format(and Erlang External Term Format, etc) which is written in OCaml.
 
-### Requirements
-```
-# `ppx_bitstring` will require `time` command which is not a builtin function
-opam install ppx_bitstring ppx_deriving camlzip
-```
+## Installation
+### Using opam pin
 
-### OPAM
-#### Pin
 ```
 opam pin add obeam .
-opam install obeam.0.0.3
 ```
 
-### Run Example
+## Run examples
+
 ```
 make test
 erlc test/test01.erl
