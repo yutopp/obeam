@@ -4,16 +4,16 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - build_beams_otp18
+      - build_beams_otp18:
           requires:
             - build
-      - build_beams_otp19
+      - build_beams_otp19:
           requires:
             - build
-      - test_for_otp18
+      - test_for_otp18:
           requires:
             - build_beams_otp18
-      - test_for_otp19
+      - test_for_otp19:
           requires:
             - build_beams_otp19
 
