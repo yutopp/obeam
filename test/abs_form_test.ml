@@ -401,6 +401,58 @@ let template_07 () =
           ));
        Ast.FormEof])
 
+let template_08 () =
+  let module Ast = Obeam.Abstract_format in
+   Ast.AbstractCode
+     (Ast.ModDecl
+      [(Ast.AttrFile (1, "test07.erl", 1));
+        (Ast.AttrMod (1, "test07"));
+        (Ast.AttrExport (3, [("f", 0); ("f", 1); ("f", 2)]));
+        (Ast.DeclFun (5, "f", 0,
+           [(Ast.ClsFun (5, [], None,
+               (Ast.ExprBody
+                  [(Ast.ExprLocalCall (6,
+                      (Ast.ExprLit
+                         (Ast.LitAtom (6, "f"))),
+                      [(Ast.ExprLit
+                          (Ast.LitInteger (6, 1)))
+                        ]
+                      ))
+                    ])
+               ))
+             ]
+           ));
+        (Ast.DeclFun (8, "f", 1,
+           [(Ast.ClsFun (8, [(Ast.PatVar (8, "N"))],
+               None,
+               (Ast.ExprBody
+                  [(Ast.ExprLocalCall (9,
+                      (Ast.ExprLit
+                         (Ast.LitAtom (9, "f"))),
+                      [(Ast.ExprVar (9, "N"));
+                        (Ast.ExprLit
+                           (Ast.LitInteger (9, 2)))
+                        ]
+                      ))
+                    ])
+               ))
+             ]
+           ));
+        (Ast.DeclFun (11, "f", 2,
+           [(Ast.ClsFun (11,
+               [(Ast.PatVar (11, "N"));
+                 (Ast.PatVar (11, "M"))],
+               None,
+               (Ast.ExprBody
+                  [(Ast.ExprBinOp (11, "+",
+                      (Ast.ExprVar (11, "N")),
+                      (Ast.ExprVar (11, "M"))))
+                    ])
+               ))
+             ]
+           ));
+        Ast.FormEof])
+
 let rec suite =
   "parse_abs_form_in_beam_suite" >:::
     [
@@ -411,6 +463,7 @@ let rec suite =
       "template_05" >:: assert_equals_abs_form_f template_05 "test05.beam";
       "template_06" >:: assert_equals_abs_form_f template_06 "test06.beam";
       "template_07" >:: assert_equals_abs_form_f template_07 "test07.beam";
+      "template_08" >:: assert_equals_abs_form_f template_08 "test08.beam";
     ]
 
 let () =
