@@ -4,7 +4,7 @@
 
 (alias
  (name runtest)
- (deps (:exe abs_form_test.exe) (glob_files *.erl))
+ (deps (:exe abs_form_test.exe) (glob_files *.beam))
  (action (run %{exe})))
 
 (env
