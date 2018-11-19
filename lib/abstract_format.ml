@@ -7,6 +7,7 @@
  *)
 
 module Sf = Simple_term_format
+module Z = Aux.Z
 
 let raise_unknown_error form sf =
   failwith (Printf.sprintf "%s: unknown / %s" form (Sf.show sf))
@@ -39,6 +40,7 @@ and form_t =
 and literal_t =
   | LitAtom of line_t * string
   | LitInteger of line_t * int
+  | LitBigInt of line_t * Z.t
   | LitString of line_t * string
 
 and pattern_t =
@@ -300,6 +302,9 @@ and lit_of_sf sf =
 
   | Sf.Tuple (3, [Sf.Atom "integer"; Sf.Integer line; Sf.Integer v]) ->
      LitInteger (line, v)
+
+  | Sf.Tuple (3, [Sf.Atom "integer"; Sf.Integer line; Sf.BigInt v]) ->
+     LitBigInt (line, v)
 
   | Sf.Tuple (3, [Sf.Atom "string"; Sf.Integer line; Sf.String v]) ->
      LitString (line, v)

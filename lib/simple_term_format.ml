@@ -10,6 +10,8 @@
   External term format is too detailed. Thus, This module provides simplified format.
  *)
 
+module Z = Aux.Z
+
 type t =
   | Integer of int
   | Atom of string
@@ -17,6 +19,7 @@ type t =
   | Map of int * (t * t) list
   | String of string
   | Binary of string
+  | BigInt of Z.t
   | List of t list
   | Float of float
 [@@deriving show]
@@ -43,6 +46,10 @@ let rec of_etf etf =
      String v
   | ETF.Binary bin ->
      Binary (Bitstring.string_of_bitstring bin)
+  | ETF.SmallBig z ->
+     BigInt z
+  | ETF.LargeBig z ->
+     BigInt z
   | ETF.List (xs, ETF.Nil) ->
      List (xs |> List.map of_etf)
   | ETF.List (xs, tail) ->
