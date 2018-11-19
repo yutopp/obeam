@@ -10,12 +10,24 @@ workflows:
       - build_beams_otp19:
           requires:
             - build
+      - build_beams_otp20:
+          requires:
+            - build
+      - build_beams_otp21:
+          requires:
+            - build
       - test_for_otp18:
           requires:
             - build_beams_otp18
       - test_for_otp19:
           requires:
             - build_beams_otp19
+      - test_for_otp20:
+          requires:
+            - build_beams_otp20
+      - test_for_otp21:
+          requires:
+            - build_beams_otp21
 
 jobs:
   build:
