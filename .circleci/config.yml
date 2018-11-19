@@ -5,14 +5,16 @@ workflows:
     jobs:
       - build
       - build_beams_otp18
-      - build_beams_otp19
-      - test_for_otp18:
           requires:
             - build
+      - build_beams_otp19
+          requires:
+            - build
+      - test_for_otp18:
+          requires:
             - build_beams_otp18
       - test_for_otp19:
           requires:
-            - build
             - build_beams_otp19
 
 jobs:
@@ -30,7 +32,7 @@ jobs:
           name: Build beam files for testing
           command: make build-beams
     docker:
-      - image: erlang:18.3.4.11-slim
+      - image: yutopp/obeam-dev-erlang:otp-18
   build_beams_otp19:
     <<: *build_beams_body
     docker:
