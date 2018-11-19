@@ -6,6 +6,8 @@
  * http://www.boost.org/LICENSE_1_0.txt)
  *)
 
+module Z = Aux.Z
+
 let uncompress_form uncompressed_size buf =
   (* for input *)
   let pos = ref 0 in (* A position in bytes *)
@@ -41,6 +43,8 @@ type t =
   | Nil
   | String of string
   | Binary of Bitstring.t [@printer bitstring_printer]
+  | SmallBig of Z.t
+  | LargeBig of Z.t
   | List of t list * t
   | NewFloat of float
   | AtomUtf8 of string
@@ -145,7 +149,27 @@ let rec parse_etf (_, buf) =
      Ok (Binary data, rest)
 
   (* 12.17 SMALL_BIG_EXT *)
+  | {| 110    : 1*8
+     ; n      : 1*8
+     ; sign   : 1*8
+     ; digits : n*8 : bitstring
+     ; rest   : -1 : bitstring
+     |} ->
+     let z = Z.of_bitstring digits in
+     let z = if sign = 0 then z else Z.neg z in
+     Ok (SmallBig z, rest)
+
   (* 12.18 LARGE_BIG_EXT *)
+  | {| 111    : 1*8
+     ; n      : 4*8
+     ; sign   : 1*8
+     ; digits : Int32.to_int n * 8 : bitstring
+     ; rest   : -1 : bitstring
+     |} ->
+     let z = Z.of_bitstring digits in
+     let z = if sign = 0 then z else Z.neg z in
+     Ok (LargeBig z, rest)
+
   (* 12.19 NEW_REFERENCE_EXT *)
   (* 12.20 FUN_EXT *)
   (* 12.21 NEW_FUN_EXT *)
