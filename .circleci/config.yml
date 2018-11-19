@@ -61,11 +61,8 @@ jobs:
       - restore_cache:
           key: opam-{{ arch }}-{{ .Revision }}
       - run:
-          name: Enable opam
-          command: eval `opam config env`
-      - run:
           name: Run tests
-          command: make test-only
+          command: eval `opam config env` && make test-only
     docker:
       - image: yutopp/obeam-dev-ocaml:latest
 
