@@ -56,10 +56,10 @@ jobs:
   test_for_otp18: &test_body
     working_directory: ~/workspace-otp18
     steps:
-      - restore_cache:
-          key: opam-{{ arch }}-{{ .Revision }}
       - attach_workspace:
           at: .
+      - restore_cache:
+          key: opam-{{ arch }}-{{ .Revision }}
       - run:
           name: Run tests
           command: make test-only
