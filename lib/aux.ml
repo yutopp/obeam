@@ -42,3 +42,25 @@ let eol (value, buffer) =
      Ok (value, buffer)
   | _ ->
      Error ("eol / not empty", buffer)
+
+module Z = struct
+  (* for ppx_deriving.show *)
+  let pp fmt z = Format.fprintf fmt "%s" (Z.to_string z)
+  let show z = Z.to_string z
+
+  (* See: http://erlang.org/doc/apps/erts/erl_ext_dist.html#small_big_ext *)
+  let of_bitstring ds =
+    let b = Z.of_int 256 in
+    let rec fold_digits acc n ds =
+      match%bitstring ds with
+      | {| d : 1*8 : unsigned
+         ; ds' : -1 : bitstring
+         |} ->
+         let acc' = Z.add acc (Z.mul (Z.of_int d) (Z.pow b n)) in
+         fold_digits acc' (n + 1) ds'
+      | {| _ |} -> acc
+    in
+    fold_digits Z.zero 0 ds
+
+  include Z
+end

@@ -21,6 +21,7 @@ depends: [
   "bitstring"     {>= "3.0.0"}
   "ppx_deriving"  {>= "4.2"}
   "camlzip"       {>= "1.07"}
+  "zarith"        {>= "1.7"}
   "dune"          {build}
   "ounit"         {build}
   "bisect_ppx"    {build}
