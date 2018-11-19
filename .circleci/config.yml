@@ -22,8 +22,8 @@ jobs:
       - run:
           name: Setup obeam
           command: opam pin add obeam .
-    docker:
-      - image: ocaml/opam2:4.07
+    docker: &build_docker_body
+      - image: ocaml/opam2:debian-9-ocaml-4.07
   build_beams_otp18: &build_beams_body
     steps:
       - run:
@@ -41,6 +41,6 @@ jobs:
           name: Run tests
           command: make test-only
     docker:
-      - image: ocaml/opam2:4.07
+      <<: *build_docker_body
   test_for_otp19:
     <<: *test_body
