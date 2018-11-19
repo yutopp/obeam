@@ -1,0 +1,46 @@
+version: 2
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - build_beams_otp18
+      - build_beams_otp19
+      - test_for_otp18:
+          requires:
+            - build
+            - build_beams_otp18
+      - test_for_otp19:
+          requires:
+            - build
+            - build_beams_otp19
+
+jobs:
+  build:
+    steps:
+      - checkout
+      - run:
+          name: Setup obeam
+          command: opam pin add obeam .
+    docker:
+      - image: ocaml/opam2:4.07
+  build_beams_otp18: &build_beams_body
+    steps:
+      - run:
+          name: Build beam files for testing
+          command: make build-beams
+    docker:
+      - image: erlang:18.3.4.11-slim
+  build_beams_otp19:
+    <<: *build_beams_body
+    docker:
+      - image: erlang:19.3.6.12-slim
+  test_for_otp18: &test_body
+    steps:
+      - run:
+          name: Run tests
+          command: make test-only
+    docker:
+      - image: ocaml/opam2:4.07
+  test_for_otp19:
+    <<: *test_body
