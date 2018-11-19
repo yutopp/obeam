@@ -55,6 +55,7 @@ and expr_t =
   | ExprBody of expr_t list
   | ExprCase of line_t * expr_t * clause_t list
   | ExprLocalCall of line_t * expr_t * expr_t list
+  | ExprRemoteCall of line_t * line_t * expr_t * expr_t * expr_t list
   | ExprMapCreation of line_t * expr_assoc_t list
   | ExprMapUpdate of line_t * expr_t * expr_assoc_t list
   | ExprBinOp of line_t * string * expr_t * expr_t
@@ -355,9 +356,17 @@ and expr_of_sf sf =
   | Sf.Tuple (4, [Sf.Atom "case"; Sf.Integer line; e; Sf.List clauses]) ->
      ExprCase (line, e |> expr_of_sf, clauses |> List.map cls_of_sf)
 
+  (* a function call (remote) *)
+  | Sf.Tuple (4, [Sf.Atom "call";
+                  Sf.Integer line_c;
+                  Sf.Tuple (4, [Sf.Atom "remote"; Sf.Integer line_r; m; f]);
+                  Sf.List args]) ->
+     ExprRemoteCall (line_c, line_r, m |> expr_of_sf, f |> expr_of_sf, args |> List.map expr_of_sf)
+
   (* a function call (local) *)
   | Sf.Tuple (4, [Sf.Atom "call"; Sf.Integer line; e; Sf.List es]) ->
      ExprLocalCall (line, e |> expr_of_sf, es |> List.map expr_of_sf)
+
 
   (* a map creation *)
   | Sf.Tuple (3, [Sf.Atom "map";

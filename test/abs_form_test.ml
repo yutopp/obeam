@@ -405,8 +405,8 @@ let template_08 () =
   let module Ast = Obeam.Abstract_format in
    Ast.AbstractCode
      (Ast.ModDecl
-      [(Ast.AttrFile (1, "test07.erl", 1));
-        (Ast.AttrMod (1, "test07"));
+      [(Ast.AttrFile (1, "test08.erl", 1));
+        (Ast.AttrMod (1, "test08"));
         (Ast.AttrExport (3, [("f", 0); ("f", 1); ("f", 2)]));
         (Ast.DeclFun (5, "f", 0,
            [(Ast.ClsFun (5, [], None,
@@ -426,7 +426,9 @@ let template_08 () =
            [(Ast.ClsFun (8, [(Ast.PatVar (8, "N"))],
                None,
                (Ast.ExprBody
-                  [(Ast.ExprLocalCall (9,
+                  [(Ast.ExprRemoteCall (9, 9,
+                      (Ast.ExprLit
+                         (Ast.LitAtom (9, "test08"))),
                       (Ast.ExprLit
                          (Ast.LitAtom (9, "f"))),
                       [(Ast.ExprVar (9, "N"));
