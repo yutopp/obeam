@@ -19,26 +19,42 @@ workflows:
 
 jobs:
   build:
+    docker:
+      - image: yutopp/obeam-dev-ocaml:latest
     steps:
       - checkout
       - run:
           name: Setup obeam
           command: opam pin add obeam .
-    docker:
-      - image: yutopp/obeam-dev-ocaml:latest
+      - persist_to_workspace:
+          root: /home/opam
+          paths:
+            - .opam
   build_beams_otp18: &build_beams_body
+    working_directory: ~/workspace-otp18
     steps:
+      - checkout
       - run:
           name: Build beam files for testing
           command: make build-beams
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
     docker:
       - image: yutopp/obeam-dev-erlang:otp-18
   build_beams_otp19:
     <<: *build_beams_body
+    working_directory: ~/workspace-otp19
     docker:
       - image: erlang:19.3.6.12-slim
   test_for_otp18: &test_body
+    working_directory: ~/workspace-otp18
     steps:
+      - attach_workspace:
+          at: .
+      - attach_workspace:
+          at: /home/opam
       - run:
           name: Run tests
           command: make test-only
@@ -46,3 +62,4 @@ jobs:
       - image: yutopp/obeam-dev-ocaml:latest
   test_for_otp19:
     <<: *test_body
+    working_directory: ~/workspace-otp19
