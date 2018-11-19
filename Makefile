@@ -21,3 +21,9 @@ install:
 clean:
 	make -C test clean
 	dune clean
+
+.PHONY: docker-publish
+docker-publish:
+	# NOTE: Execute "docker login" before "make docker-publish"
+	docker build -t yutopp/obeam-dev-ocaml:latest .circleci/images/ocaml
+	docker push yutopp/obeam-dev-ocaml:latest
