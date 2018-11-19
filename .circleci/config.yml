@@ -51,7 +51,19 @@ jobs:
     <<: *build_beams_body
     working_directory: ~/workspace-otp19
     docker:
-      - image: erlang:19.3.6.12-slim
+      - image: yutopp/obeam-dev-erlang:otp-19
+
+  build_beams_otp20:
+    <<: *build_beams_body
+    working_directory: ~/workspace-otp20
+    docker:
+      - image: yutopp/obeam-dev-erlang:otp-20
+
+  build_beams_otp21:
+    <<: *build_beams_body
+    working_directory: ~/workspace-otp21
+    docker:
+      - image: yutopp/obeam-dev-erlang:otp-21
 
   test_for_otp18: &test_body
     working_directory: ~/workspace-otp18
@@ -69,3 +81,11 @@ jobs:
   test_for_otp19:
     <<: *test_body
     working_directory: ~/workspace-otp19
+
+  test_for_otp20:
+    <<: *test_body
+    working_directory: ~/workspace-otp20
+
+  test_for_otp21:
+    <<: *test_body
+    working_directory: ~/workspace-otp21
