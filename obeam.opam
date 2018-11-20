@@ -9,7 +9,6 @@ license: "Boost License Version 1.0"
 dev-repo: "git+https://github.com/yutopp/obeam.git"
 build: [
   ["dune" "build" "-p" name "-j" jobs]
-  ["dune" "runtest" "-p" name] {with-test}
 ]
 depends: [
   "bitstring"     {>= "3.0.0"}
