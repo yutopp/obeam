@@ -22,3 +22,10 @@ make test
 erlc test/test01.erl
 _build/default/example/read_beam.exe test01.beam
 ```
+
+### Authors
+
+- [@yutopp](https://github.com/yutopp)
+- [@amutake](https://github.com/amutake)
+
+obeam has been greatly improved by [many contributors](https://github.com/yutopp/obeam/graphs/contributors)!
