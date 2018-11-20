@@ -5,6 +5,12 @@
 **WIP**
 obeam (御-BEAM) is a utility library for parsing BEAM format(and Erlang External Term Format, etc) which is written in OCaml.
 
+Supported compilers which generate BEAM files are
+
+- Erlang/OTP 19
+- Erlang/OTP 20
+- Erlang/OTP 21
+
 ## Installation
 ### Using opam pin
 
