@@ -9,18 +9,23 @@
 open! Base
 
 type 'a t = {
-    reason: 'a;
-    loc: Source_code_position.t;
-    previous: 'a t option;
-  }
+  reason: 'a kind_t;
+  backtrace: Source_code_position.t list;
+  previous: 'a t option;
+}
+and 'a kind_t =
+  | Not_supported_absfrom of string * 'a
 [@@deriving sexp_of]
 
 let create ~loc reason =
   {
     reason = reason;
-    loc = loc;
+    backtrace = [loc];
     previous = None;
   }
+
+let record_backtrace ~loc err =
+  {err with backtrace = loc :: err.backtrace}
 
 let wrap ~loc reason previous =
   let err = create ~loc reason in
