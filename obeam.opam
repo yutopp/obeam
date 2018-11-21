@@ -19,6 +19,7 @@ depends: [
   "dune"          {build}
   "ppx_here"      {build}
   "ppx_let"       {build}
+  "ppx_sexp_conv" {build}
   "bisect_ppx"    {build}
   "ounit"         {with-test}
 ]
