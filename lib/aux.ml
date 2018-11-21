@@ -6,6 +6,12 @@
  * http://www.boost.org/LICENSE_1_0.txt)
  *)
 
+open! Base
+
+(* For bitstring... *)
+exception Exit = Caml.Exit
+module Pervasives = Caml.Pervasives
+
 let alignment align_bytes total_bytes =
   (total_bytes + (align_bytes-1)) / align_bytes * align_bytes
 
@@ -23,10 +29,10 @@ let skip_padding buf padding_bits =
 
 (* size: bytes *)
 let content_size_bytes size excluded_fields =
-  let i32 = Int32.of_int in
-  let ( - ) = Int32.sub in
-  let ( * ) = Int32.mul in
-  (size - (i32 excluded_fields * i32 4)) |> Int32.to_int
+  let i32 = Int32.of_int_exn in
+  let ( - ) = Int32.( - ) in
+  let ( * ) = Int32.( * ) in
+  (size - (i32 excluded_fields * i32 4)) |> Int32.to_int_exn
 
 (* size: bytes *)
 let content_size_bits size excluded_fields =
@@ -44,9 +50,8 @@ let eol (value, buffer) =
      Error ("eol / not empty", buffer)
 
 module Z = struct
-  (* for ppx_deriving.show *)
-  let pp fmt z = Format.fprintf fmt "%s" (Z.to_string z)
-  let show z = Z.to_string z
+  let sexp_of_t z =
+    Sexp.Atom (Z.to_string z)
 
   (* See: http://erlang.org/doc/apps/erts/erl_ext_dist.html#small_big_ext *)
   let of_bitstring ds =

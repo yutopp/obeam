@@ -7,6 +7,7 @@
  *)
 
 (* EXAMPLE: BEAM reader *)
+open! Base
 open Obeam
 
 let () =
@@ -39,13 +40,20 @@ let () =
      let _ =
        match External_term_format.parse debug_info_buf with
        | Ok (expr, _) ->
-          Printf.printf "%s\n" (expr |> External_term_format.show);
-          Printf.printf "%s\n" (expr |> Abstract_format.of_etf |> Abstract_format.show);
+          let etf_view = expr |> External_term_format.sexp_of_t |> Sexp.to_string_hum in
+          Stdio.printf "%s\n" etf_view;
+          begin match expr |> Abstract_format.of_etf with
+          | Ok abs_form ->
+             let abs_form_view = abs_form |> Abstract_format.sexp_of_t |> Sexp.to_string_hum in
+             Stdio.printf "%s\n" abs_form_view
+          | Error _ ->
+             ()
+          end
        | Error (msg, rest) ->
-          Printf.printf "Failed to parse etf: %s\n" msg;
-          Bitstring.hexdump_bitstring stdout rest
+          Stdio.printf "Failed to parse etf: %s\n" msg;
+          Bitstring.hexdump_bitstring Stdio.stdout rest
      in
      ()
   | Error (msg, rest) ->
-     Printf.printf "Failed to parse chunk: %s\n" msg;
-     Bitstring.hexdump_bitstring stdout rest
+     Stdio.printf "Failed to parse chunk: %s\n" msg;
+     Bitstring.hexdump_bitstring Stdio.stdout rest

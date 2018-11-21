@@ -11,12 +11,15 @@ build: [
   ["dune" "build" "-p" name "-j" jobs]
 ]
 depends: [
+  "base"          {>= "v0.11.0"}
+  "stdio"         {>= "v0.11.0"}
   "bitstring"     {>= "3.0.0"}
-  "ppx_deriving"  {>= "4.2"}
   "camlzip"       {>= "1.07"}
   "zarith"        {>= "1.7"}
   "dune"          {build}
-  "ounit"         {build}
+  "ppx_here"      {build}
+  "ppx_let"       {build}
   "bisect_ppx"    {build}
+  "ounit"         {with-test}
 ]
 synopsis: "A utility library for parsing BEAM format"

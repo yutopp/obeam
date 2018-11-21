@@ -10,6 +10,8 @@
   External term format is too detailed. Thus, This module provides simplified format.
  *)
 
+open! Base
+
 module Z = Aux.Z
 
 type t =
@@ -22,7 +24,7 @@ type t =
   | BigInt of Z.t
   | List of t list
   | Float of float
-[@@deriving show]
+[@@deriving sexp_of]
 
 (* from External term format *)
 let rec of_etf etf =
@@ -31,15 +33,15 @@ let rec of_etf etf =
   | ETF.SmallInteger v ->
      Integer v
   | ETF.Integer v ->
-     Integer (Int32.to_int v)
+     Integer (Int32.to_int_exn v)
   | ETF.Float v ->
-     Float (Scanf.sscanf v "%f" (fun f -> f))
+     Float (Caml.Scanf.sscanf v "%f" (fun f -> f))
   | ETF.Atom name ->
      Atom name
   | ETF.SmallTuple (n, xs) ->
-     Tuple (n, xs |> List.map of_etf)
+     Tuple (n, xs |> List.map ~f:of_etf)
   | ETF.Map (a, ps) ->
-     Map (Int32.to_int a, ps |> List.map (fun (k, v) -> (of_etf k, of_etf v)))
+     Map (Int32.to_int_exn a, ps |> List.map ~f:(fun (k, v) -> (of_etf k, of_etf v)))
   | ETF.Nil ->
      List []
   | ETF.String v ->
@@ -51,7 +53,7 @@ let rec of_etf etf =
   | ETF.LargeBig z ->
      BigInt z
   | ETF.List (xs, ETF.Nil) ->
-     List (xs |> List.map of_etf)
+     List (xs |> List.map ~f:of_etf)
   | ETF.List (xs, tail) ->
      (* TODO: fix *)
      failwith "unsupported"
