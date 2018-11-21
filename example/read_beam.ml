@@ -39,7 +39,7 @@ let () =
      in
      let _ =
        match External_term_format.parse debug_info_buf with
-       | Ok (expr, _) ->
+       | Ok (expr, _rest) ->
           let etf_view = expr |> External_term_format.sexp_of_t |> Sexp.to_string_hum in
           Stdio.printf "%s\n" etf_view;
           begin match expr |> Abstract_format.of_etf with

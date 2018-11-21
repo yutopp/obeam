@@ -713,5 +713,5 @@ and type_fun_cont_of_sf sf : (type_func_cont_t, err_t) Result.t =
      Err.create ~loc:[%here] (Err.Not_supported_absfrom ("type_fun_cont", sf)) |> Result.fail
 
 (**)
-let of_etf etf =
+let of_etf etf : (t, err_t) Result.t =
   etf |> Sf.of_etf |> of_sf

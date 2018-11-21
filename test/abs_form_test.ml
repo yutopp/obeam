@@ -34,7 +34,7 @@ let assert_equals_abs_form_by_erl_file expected_ast_res beam_filename test_ctx =
      in
      let _ =
        match parsed_result with
-       | Ok (etf, _) ->
+       | Ok (etf, _rest) ->
           let actual_ast_res = Abstract_format.of_etf etf in
           assert_equal expected_ast_res actual_ast_res
                        ?printer:(Some (fun a ->

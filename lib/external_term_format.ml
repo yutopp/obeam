@@ -14,6 +14,26 @@ module Z = Aux.Z
 exception Exit = Caml.Exit
 module Pervasives = Caml.Pervasives
 
+type t =
+  | SmallInteger of int
+  | Integer of int32
+  | Float of string (* float is stored as string *)
+  | Atom of string
+  | SmallTuple of int * t list
+  | Map of int32 * (t * t) list
+  | Nil
+  | String of string
+  | Binary of Bitstring.t sexp_opaque
+  | SmallBig of Z.t
+  | LargeBig of Z.t
+  | List of t list * t
+  | NewFloat of float
+  | AtomUtf8 of string
+  | SmallAtomUtf8 of string
+[@@deriving sexp_of]
+
+type err_t = string * Bitstring.t
+
 let uncompress_form uncompressed_size buf =
   (* for input *)
   let pos = ref 0 in (* A position in bytes *)
@@ -36,26 +56,18 @@ let uncompress_form uncompressed_size buf =
   (* to bitstring *)
   Buffer.sub out_mem ~pos:0 ~len:uncompressed_size |> Bytes.to_string |> Bitstring.bitstring_of_string
 
-type t =
-  | SmallInteger of int
-  | Integer of int32
-  | Float of string (* float is stored as string *)
-  | Atom of string
-  | SmallTuple of int * t list
-  | Map of int32 * (t * t) list
-  | Nil
-  | String of string
-  | Binary of Bitstring.t sexp_opaque
-  | SmallBig of Z.t
-  | LargeBig of Z.t
-  | List of t list * t
-  | NewFloat of float
-  | AtomUtf8 of string
-  | SmallAtomUtf8 of string
-[@@deriving sexp_of]
-
 (* http://erlang.org/doc/apps/erts/erl_ext_dist.html, 2018/10/11 *)
-let rec parse_etf (_, buf) =
+let rec parse buf : (t * Bitstring.t, err_t) Result.t =
+  match%bitstring buf with
+  | {| 131  : 1*8
+     ; rest : -1 : bitstring
+     |} ->
+     parse_etf ([], rest)
+
+  | {| _ |} ->
+     Error ("unsupported version", buf)
+
+and parse_etf (_, buf) =
   let open Parser.Combinator in
   match%bitstring buf with
   (* 12.1: compressed term format *)
@@ -215,13 +227,3 @@ let rec parse_etf (_, buf) =
   (* unknown *)
   | {| head : 1*8; _ |} ->
      Error (Printf.sprintf "error (%d)" head, buf)
-
-let parse buf =
-  match%bitstring buf with
-  | {| 131  : 1*8
-     ; rest : -1 : bitstring
-     |} ->
-     parse_etf ([], rest)
-
-  | {| _ |} ->
-     Error ("unsupported version", buf)
