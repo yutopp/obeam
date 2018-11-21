@@ -91,12 +91,12 @@ and type_t =
   | TyPredef of line_t * string * type_t list
   | TyProduct of line_t * type_t list
   | TyVar of line_t * string
-
-  | TyContFun of line_t * type_t * type_t
+  | TyContFun of line_t * type_t * type_func_cont_t
   | TyFun of line_t * type_t * type_t
 
-  | TyCont of type_t list
-  | TyContRel of line_t * type_t * type_t * type_t
+and type_func_cont_t =
+  | TyCont of type_func_cont_t list
+  | TyContRel of line_t * type_func_cont_t * type_t * type_t
   | TyContIsSubType of line_t
 [@@deriving sexp_of]
 
@@ -663,7 +663,7 @@ and fun_type_of_sf sf : (type_t, err_t) Result.t =
                   Sf.List [sf_fun_ty; sf_cont]
              ]) ->
      let%bind fun_ty = sf_fun_ty |> type_of_sf |> Result.map_error ~f:(Err.wrap ~loc:[%here] "") in
-     let%bind cont = sf_cont |> cont_of_sf |> Result.map_error ~f:(Err.wrap ~loc:[%here] "") in
+     let%bind cont = sf_cont |> type_fun_cont_of_sf |> Result.map_error ~f:(Err.wrap ~loc:[%here] "") in
      TyContFun (line, fun_ty, cont) |> return
 
   (* function type *)
@@ -678,12 +678,12 @@ and fun_type_of_sf sf : (type_t, err_t) Result.t =
   | _ ->
      Err.create ~loc:[%here] "fun_type" |> Result.fail
 
-and cont_of_sf sf : (type_t, err_t) Result.t =
+and type_fun_cont_of_sf sf : (type_func_cont_t, err_t) Result.t =
   let open Result.Let_syntax in
   match sf with
   | Sf.List sf_constraints ->
      let%bind constraints =
-       sf_constraints |> List.map ~f:cont_of_sf |> Result.all
+       sf_constraints |> List.map ~f:type_fun_cont_of_sf |> Result.all
        |> Result.map_error ~f:(Err.wrap ~loc:[%here] "")
      in
      TyCont constraints |> return
@@ -693,7 +693,7 @@ and cont_of_sf sf : (type_t, err_t) Result.t =
                   Sf.Atom "constraint";
                   Sf.List [sf_c; Sf.List [sf_v; sf_t]]
              ]) ->
-     let%bind c = sf_c |> cont_of_sf |> Result.map_error ~f:(Err.wrap ~loc:[%here] "") in
+     let%bind c = sf_c |> type_fun_cont_of_sf |> Result.map_error ~f:(Err.wrap ~loc:[%here] "") in
      let%bind v = sf_v |> type_of_sf |> Result.map_error ~f:(Err.wrap ~loc:[%here] "") in
      let%bind t = sf_t |> type_of_sf |> Result.map_error ~f:(Err.wrap ~loc:[%here] "") in
      TyContRel (line, c, v, t) |> return
