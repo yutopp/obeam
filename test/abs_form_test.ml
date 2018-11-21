@@ -13,21 +13,21 @@ open OUnit2
 let assert_equals_abs_form_by_erl_file expected_ast_res beam_filename test_ctx =
   let open Obeam in
   let beam_buf = Bitstring.bitstring_of_file beam_filename in
-  match Chunk.parse_layout beam_buf with
+  match Beam.parse_layout beam_buf with
   | Ok (layout, _) ->
      let {
-       Chunk.cl_abst = opt_abst;
-       Chunk.cl_dbgi = opt_dbgi;
+       Beam.cl_abst = opt_abst;
+       Beam.cl_dbgi = opt_dbgi;
      } = layout in
      let parsed_result =
        match opt_abst with
        | Some abst ->
-          External_term_format.parse abst.Chunk.abst_buf
+          External_term_format.parse abst.Beam.abst_buf
        | None ->
           begin
             match opt_dbgi with
             | Some dbgi ->
-               External_term_format.parse dbgi.Chunk.dbgi_buf
+               External_term_format.parse dbgi.Beam.dbgi_buf
             | None ->
                failwith "abst and dbgi chunk is not found"
           end
