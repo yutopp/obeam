@@ -56,18 +56,7 @@ let uncompress_form uncompressed_size buf =
   (* to bitstring *)
   Buffer.sub out_mem ~pos:0 ~len:uncompressed_size |> Bytes.to_string |> Bitstring.bitstring_of_string
 
-(* http://erlang.org/doc/apps/erts/erl_ext_dist.html, 2018/10/11 *)
-let rec parse buf : (t * Bitstring.t, err_t) Result.t =
-  match%bitstring buf with
-  | {| 131  : 1*8
-     ; rest : -1 : bitstring
-     |} ->
-     parse_etf ([], rest)
-
-  | {| _ |} ->
-     Error ("unsupported version", buf)
-
-and parse_etf (_, buf) =
+let rec parse_etf (_, buf) =
   let open Parser.Combinator in
   match%bitstring buf with
   (* 12.1: compressed term format *)
@@ -227,3 +216,14 @@ and parse_etf (_, buf) =
   (* unknown *)
   | {| head : 1*8; _ |} ->
      Error (Printf.sprintf "error (%d)" head, buf)
+
+(* http://erlang.org/doc/apps/erts/erl_ext_dist.html, 2018/10/11 *)
+let parse buf : (t * Bitstring.t, err_t) Result.t =
+  match%bitstring buf with
+  | {| 131  : 1*8
+     ; rest : -1 : bitstring
+     |} ->
+     parse_etf ([], rest)
+
+  | {| _ |} ->
+     Error ("unsupported version", buf)
