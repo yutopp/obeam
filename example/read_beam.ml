@@ -7,6 +7,7 @@
  *)
 
 (* EXAMPLE: BEAM reader *)
+open! Base
 open Obeam
 
 let () =
@@ -17,35 +18,42 @@ let () =
   in
 
   let beam_buf = Bitstring.bitstring_of_file beam_filename in
-  match Chunk.parse_layout beam_buf with
+  match Beam.parse_layout beam_buf with
   | Ok (layout, _) ->
      let {
-       Chunk.cl_abst = opt_abst;
-       Chunk.cl_dbgi = opt_dbgi;
+       Beam.cl_abst = opt_abst;
+       Beam.cl_dbgi = opt_dbgi;
      } = layout in
      let debug_info_buf =
        match opt_abst with
        | Some abst ->
-          abst.Chunk.abst_buf
+          abst.Beam.abst_buf
        | None ->
           begin
             match opt_dbgi with
             | Some dbgi ->
-               dbgi.Chunk.dbgi_buf
+               dbgi.Beam.dbgi_buf
             | None ->
                failwith "abst and dbgi chunk is not found"
           end
      in
      let _ =
        match External_term_format.parse debug_info_buf with
-       | Ok (expr, _) ->
-          Printf.printf "%s\n" (expr |> External_term_format.show);
-          Printf.printf "%s\n" (expr |> Abstract_format.of_etf |> Abstract_format.show);
+       | Ok (expr, _rest) ->
+          let etf_view = expr |> External_term_format.sexp_of_t |> Sexp.to_string_hum in
+          Stdio.printf "%s\n" etf_view;
+          begin match expr |> Abstract_format.of_etf with
+          | Ok abs_form ->
+             let abs_form_view = abs_form |> Abstract_format.sexp_of_t |> Sexp.to_string_hum in
+             Stdio.printf "%s\n" abs_form_view
+          | Error _ ->
+             ()
+          end
        | Error (msg, rest) ->
-          Printf.printf "Failed to parse etf: %s\n" msg;
-          Bitstring.hexdump_bitstring stdout rest
+          Stdio.printf "Failed to parse etf: %s\n" msg;
+          Bitstring.hexdump_bitstring Stdio.stdout rest
      in
      ()
   | Error (msg, rest) ->
-     Printf.printf "Failed to parse chunk: %s\n" msg;
-     Bitstring.hexdump_bitstring stdout rest
+     Stdio.printf "Failed to parse chunk: %s\n" msg;
+     Bitstring.hexdump_bitstring Stdio.stdout rest

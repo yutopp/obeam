@@ -31,7 +31,7 @@ jobs:
       - checkout
       - run:
           name: Setup obeam
-          command: opam pin add obeam .
+          command: opam pin add obeam . --with-test
       - save_cache:
           key: opam-{{ arch }}-{{ .Revision }}
           paths:

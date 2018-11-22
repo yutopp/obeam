@@ -1,9 +1,10 @@
 (library
   (name obeam)
   (public_name obeam)
-  (libraries bitstring ppx_deriving camlzip zarith)
-  (preprocess (pps ppx_deriving.show bitstring.ppx))
-  (synopsis "Utility library for parsing BEAM and Erlang Term format"))
+  (libraries base bitstring camlzip zarith)
+  (preprocess
+   (pps ppx_let ppx_sexp_conv ppx_here bitstring.ppx))
+  (synopsis "A utility library for parsing BEAM and Erlang Term format"))
 
 (env
  (dev

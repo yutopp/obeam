@@ -6,38 +6,41 @@
  * http://www.boost.org/LICENSE_1_0.txt)
  *)
 
+open! Base
 open OUnit2
 
 (* cheker utils *)
-let assert_equals_abs_form_by_erl_file expect_ast beam_filename test_ctx =
+let assert_equals_abs_form_by_erl_file expected_ast_res beam_filename test_ctx =
   let open Obeam in
   let beam_buf = Bitstring.bitstring_of_file beam_filename in
-  match Chunk.parse_layout beam_buf with
+  match Beam.parse_layout beam_buf with
   | Ok (layout, _) ->
      let {
-       Chunk.cl_abst = opt_abst;
-       Chunk.cl_dbgi = opt_dbgi;
+       Beam.cl_abst = opt_abst;
+       Beam.cl_dbgi = opt_dbgi;
      } = layout in
-     let parse_result =
+     let parsed_result =
        match opt_abst with
        | Some abst ->
-          External_term_format.parse abst.Chunk.abst_buf
+          External_term_format.parse abst.Beam.abst_buf
        | None ->
           begin
             match opt_dbgi with
             | Some dbgi ->
-               External_term_format.parse dbgi.Chunk.dbgi_buf
+               External_term_format.parse dbgi.Beam.dbgi_buf
             | None ->
                failwith "abst and dbgi chunk is not found"
           end
      in
      let _ =
-       match parse_result with
-       | Ok (etf, _) ->
-          (*let () = etf |> External_term.show |> Printf.printf "%s\n" in*)
-          let actual_ast = etf |> Abstract_format.of_etf in
-          assert_equal ?printer:(Some Abstract_format.show)
-                       expect_ast actual_ast
+       match parsed_result with
+       | Ok (etf, _rest) ->
+          let actual_ast_res = Abstract_format.of_etf etf in
+          assert_equal expected_ast_res actual_ast_res
+                       ?printer:(Some (fun a ->
+                                     a |> Result.sexp_of_t Abstract_format.sexp_of_t Abstract_format.sexp_of_err_t
+                                     |> Sexp.to_string_hum
+                                ))
        | Error (msg, _rest) ->
           failwith (Printf.sprintf "Failed: %s" msg)
      in
@@ -46,8 +49,8 @@ let assert_equals_abs_form_by_erl_file expect_ast beam_filename test_ctx =
      failwith (Printf.sprintf "Failed : %s\n" msg)
 
 let assert_equals_abs_form_f f beam_filename test_ctx =
-  let expect_ast = f () in
-  assert_equals_abs_form_by_erl_file expect_ast beam_filename test_ctx
+  let expected_ast_res = f () in
+  assert_equals_abs_form_by_erl_file expected_ast_res beam_filename test_ctx
 
 (* test cases *)
 let template_01 () =
@@ -85,6 +88,7 @@ let template_01 () =
                       ]
                      ));
         Ast.FormEof])
+  |> Result.return
 
 let template_02 () =
   let module Ast = Obeam.Abstract_format in
@@ -145,6 +149,7 @@ let template_02 () =
                       ]
                      ));
         Ast.FormEof])
+  |> Result.return
 
 let template_03 () =
   let module Ast = Obeam.Abstract_format in
@@ -204,6 +209,7 @@ let template_03 () =
                       ]
         ));
         Ast.FormEof])
+  |> Result.return
 
 let template_04 () =
   let module Ast = Obeam.Abstract_format in
@@ -326,6 +332,7 @@ let template_04 () =
             ]
           ));
        Ast.FormEof])
+  |> Result.return
 
 let template_05 () =
   let module Ast = Obeam.Abstract_format in
@@ -337,6 +344,7 @@ let template_05 () =
                              (5, "c", None, Some (Ast.TyPredef (5, "string", [])));
                              (6, "d", Some (Ast.ExprLit (Ast.LitInteger (6, 57))), Some (Ast.TyPredef (6, "integer", [])))]));
         Ast.FormEof])
+  |> Result.return
 
 let template_06 () =
   let module Ast = Obeam.Abstract_format in
@@ -369,6 +377,7 @@ let template_06 () =
                       ]
         ));
         Ast.FormEof])
+  |> Result.return
 
 let template_07 () =
   let module Ast = Obeam.Abstract_format in
@@ -400,6 +409,7 @@ let template_07 () =
             ]
           ));
        Ast.FormEof])
+  |> Result.return
 
 let template_08 () =
   let module Ast = Obeam.Abstract_format in
@@ -454,6 +464,7 @@ let template_08 () =
              ]
            ));
         Ast.FormEof])
+   |> Result.return
 
 let rec suite =
   "parse_abs_form_in_beam_suite" >:::

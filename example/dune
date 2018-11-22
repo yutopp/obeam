@@ -1,6 +1,6 @@
 (executable
  (name read_beam)
- (libraries obeam))
+ (libraries obeam base stdio))
 
 (alias
  (name    runtest)

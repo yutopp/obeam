@@ -6,32 +6,13 @@
  * http://www.boost.org/LICENSE_1_0.txt)
  *)
 
+open! Base
+
 module Z = Aux.Z
 
-let uncompress_form uncompressed_size buf =
-  (* for input *)
-  let pos = ref 0 in (* A position in bytes *)
-  let fill in_buf =
-    let in_size = Bytes.length in_buf in
-    let origin_rest_size = (Bitstring.bitstring_length buf / 8) - !pos in
-    let copy_size = min in_size origin_rest_size in
-    let subbitstr = Bitstring.subbitstring buf (!pos*8) (copy_size*8) in
-    Bytes.blit_string (subbitstr |> Bitstring.string_of_bitstring) 0 in_buf 0 copy_size;
-    pos := !pos + copy_size;
-    copy_size
-  in
-  (* for output *)
-  let out_mem = Buffer.create uncompressed_size in
-  let export out_buf len =
-    Buffer.add_bytes out_mem (Bytes.sub out_buf 0 len)
-  in
-  (* uncompress *)
-  let () = Zlib.uncompress fill export in
-  (* to bitstring *)
-  Buffer.sub out_mem 0 uncompressed_size |> Bitstring.bitstring_of_string
-
-let bitstring_printer fmt buf =
-  Format.fprintf fmt "%s" (Bitstring.string_of_bitstring buf)
+(* For bitstring... *)
+exception Exit = Caml.Exit
+module Pervasives = Caml.Pervasives
 
 type t =
   | SmallInteger of int
@@ -42,16 +23,39 @@ type t =
   | Map of int32 * (t * t) list
   | Nil
   | String of string
-  | Binary of Bitstring.t [@printer bitstring_printer]
+  | Binary of Bitstring.t sexp_opaque
   | SmallBig of Z.t
   | LargeBig of Z.t
   | List of t list * t
   | NewFloat of float
   | AtomUtf8 of string
   | SmallAtomUtf8 of string
-[@@deriving show]
+[@@deriving sexp_of]
 
-(* http://erlang.org/doc/apps/erts/erl_ext_dist.html, 2018/10/11 *)
+type err_t = string * Bitstring.t
+
+let uncompress_form uncompressed_size buf =
+  (* for input *)
+  let pos = ref 0 in (* A position in bytes *)
+  let fill in_buf =
+    let in_size = Bytes.length in_buf in
+    let origin_rest_size = (Bitstring.bitstring_length buf / 8) - !pos in
+    let copy_size = min in_size origin_rest_size in
+    let subbitstr = Bitstring.subbitstring buf (!pos*8) (copy_size*8) in
+    Bytes.blit ~src:(subbitstr |> Bitstring.string_of_bitstring |> Bytes.of_string) ~src_pos:0 ~dst:in_buf ~dst_pos:0 ~len:copy_size;
+    pos := !pos + copy_size;
+    copy_size
+  in
+  (* for output *)
+  let out_mem = Buffer.create uncompressed_size in
+  let export out_buf len =
+    Buffer.add_bytes out_mem (Bytes.sub out_buf ~pos:0 ~len:len)
+  in
+  (* uncompress *)
+  let () = Zlib.uncompress fill export in
+  (* to bitstring *)
+  Buffer.sub out_mem ~pos:0 ~len:uncompressed_size |> Bytes.to_string |> Bitstring.bitstring_of_string
+
 let rec parse_etf (_, buf) =
   let open Parser.Combinator in
   match%bitstring buf with
@@ -60,7 +64,7 @@ let rec parse_etf (_, buf) =
      ; size : 4*8 : bigendian
      ; buf  : -1 : bitstring
      |} ->
-     let data = uncompress_form (Int32.to_int size) buf in
+     let data = uncompress_form (Int32.to_int_exn size) buf in
      parse_etf ([], data)
 
   (* 12.2 and 12.3 are not implemented *)
@@ -110,7 +114,7 @@ let rec parse_etf (_, buf) =
        forget parse_etf >>= fun v ->
        return (k, v)
      in
-     list parse_pair (Int32.to_int arity) pairs_buf
+     list parse_pair (Int32.to_int_exn arity) pairs_buf
      |> map (fun pairs -> Map (arity, pairs))
 
   (* 12.13 NIL_EXT *)
@@ -134,7 +138,7 @@ let rec parse_etf (_, buf) =
      |} ->
      let parser =
        (* elements *)
-       list parse_etf (Int32.to_int len)
+       list parse_etf (Int32.to_int_exn len)
        (* tail *)
        >> act parse_etf (fun n p -> (p, n))
      in
@@ -143,7 +147,7 @@ let rec parse_etf (_, buf) =
   (* 12.16 BINARY_EXT *)
   | {| 109   : 1*8
      ; len   : 4*8
-     ; data  : Int32.to_int len * 8 : bitstring
+     ; data  : Int32.to_int_exn len * 8 : bitstring
      ; rest  : -1 : bitstring
      |} ->
      Ok (Binary data, rest)
@@ -163,7 +167,7 @@ let rec parse_etf (_, buf) =
   | {| 111    : 1*8
      ; n      : 4*8
      ; sign   : 1*8
-     ; digits : Int32.to_int n * 8 : bitstring
+     ; digits : Int32.to_int_exn n * 8 : bitstring
      ; rest   : -1 : bitstring
      |} ->
      let z = Z.of_bitstring digits in
@@ -213,11 +217,13 @@ let rec parse_etf (_, buf) =
   | {| head : 1*8; _ |} ->
      Error (Printf.sprintf "error (%d)" head, buf)
 
-let parse buf =
+(* http://erlang.org/doc/apps/erts/erl_ext_dist.html, 2018/10/11 *)
+let parse buf : (t * Bitstring.t, err_t) Result.t =
   match%bitstring buf with
   | {| 131  : 1*8
      ; rest : -1 : bitstring
      |} ->
      parse_etf ([], rest)
+
   | {| _ |} ->
      Error ("unsupported version", buf)
