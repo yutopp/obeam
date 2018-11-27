@@ -125,7 +125,7 @@ let rec of_sf sf : (t, err_t) Result.t =
      AbstractCode forms |> return
 
   | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absfrom ("root", sf)) |> Result.fail
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("root", sf)) |> Result.fail
 
 (*
  * 8.1  Module Declarations and Forms
@@ -268,7 +268,7 @@ and form_of_sf sf : (form_t, err_t) Result.t =
      FormEof |> return
 
   | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absfrom ("form", sf)) |> Result.fail
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("form", sf)) |> Result.fail
 
 and name_and_arity_of_sf sf : ((string * int), err_t) Result.t =
   match sf with
@@ -276,7 +276,7 @@ and name_and_arity_of_sf sf : ((string * int), err_t) Result.t =
      Ok (name, arity)
 
   | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absfrom ("name_and_arity", sf)) |> Result.fail
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("name_and_arity", sf)) |> Result.fail
 
 and record_field_of_sf sf : ((int * string * expr_t option * type_t option), err_t) Result.t =
   let open Result.Let_syntax in
@@ -318,7 +318,7 @@ and record_field_of_sf sf : ((int * string * expr_t option * type_t option), err
      (line, field, Some e, Some t) |> return
 
   | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absfrom ("record_field", sf)) |> Result.fail
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("record_field", sf)) |> Result.fail
 
 and tvar_of_sf sf : ((line_t * string), err_t) Result.t =
   match sf with
@@ -329,7 +329,7 @@ and tvar_of_sf sf : ((line_t * string), err_t) Result.t =
      Ok (line, tvar)
 
   | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absfrom ("tvar", sf)) |> Result.fail
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("tvar", sf)) |> Result.fail
 
 (*
  * 8.2  Atomic Literals
@@ -356,7 +356,7 @@ and lit_of_sf sf : (literal_t, err_t) Result.t =
      LitString (line, v) |> return
 
   | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absfrom ("lit", sf)) |> Result.fail
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("lit", sf)) |> Result.fail
 
 (*
  * 8.3  Patterns
@@ -392,7 +392,7 @@ and pat_assoc_of_sf sf : (pattern_assoc_t, err_t) Result.t =
      PatAssocExact (line, k, v) |> return
 
   | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absfrom ("pat_assoc", sf)) |> Result.fail
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("pat_assoc", sf)) |> Result.fail
 
 (*
  * 8.4  Expressions
@@ -477,7 +477,7 @@ and expr_assoc_of_sf sf : (expr_assoc_t, err_t) Result.t =
      ExprAssocExact (line, k, v) |> return
 
   | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absfrom ("expr_assoc", sf)) |> Result.fail
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("expr_assoc", sf)) |> Result.fail
 
 (*
  * 8.5  Clauses
@@ -536,7 +536,7 @@ and cls_of_sf ?(in_function=false) sf : (clause_t, err_t) Result.t =
      ClsFun (line, patterns, Some guards, body) |> return
 
   | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absfrom ("cls", sf)) |> Result.fail
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("cls", sf)) |> Result.fail
 
 (*
  * 8.6  Guards
@@ -550,7 +550,7 @@ and guard_sequence_of_sf sf : (guard_sequence_t, err_t) Result.t =
      GuardSeq forms |> return
 
   | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absfrom ("guard_sequence", sf)) |> Result.fail
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("guard_sequence", sf)) |> Result.fail
 
 and guard_of_sf sf : (guard_t, err_t) Result.t =
   let open Result.Let_syntax in
@@ -561,7 +561,7 @@ and guard_of_sf sf : (guard_t, err_t) Result.t =
      Guard forms |> return
 
   | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absfrom ("guard", sf)) |> Result.fail
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("guard", sf)) |> Result.fail
 
 and guard_test_of_sf sf : (guard_test_t, err_t) Result.t =
   let open Result.Let_syntax in
@@ -619,7 +619,7 @@ and guard_test_assoc_of_sf sf : (guard_test_assoc_t, err_t) Result.t =
      GuardTestAssocExact (line, k, v) |> return
 
   | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absfrom ("guard_test_assoc", sf)) |> Result.fail
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("guard_test_assoc", sf)) |> Result.fail
 
 (*
  * 8.7  Types
@@ -660,7 +660,7 @@ and type_of_sf sf : (type_t, err_t) Result.t =
      TyVar (line, id) |> return
 
   | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absfrom ("type", sf)) |> Result.fail
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("type", sf)) |> Result.fail
 
 and fun_type_of_sf sf : (type_t, err_t) Result.t =
   let open Result.Let_syntax in
@@ -685,7 +685,7 @@ and fun_type_of_sf sf : (type_t, err_t) Result.t =
      TyFun (line, params, ret) |> return
 
   | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absfrom ("fun_type", sf)) |> Result.fail
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("fun_type", sf)) |> Result.fail
 
 and type_fun_cont_of_sf sf : (type_func_cont_t, err_t) Result.t =
   let open Result.Let_syntax in
@@ -710,7 +710,7 @@ and type_fun_cont_of_sf sf : (type_func_cont_t, err_t) Result.t =
      TyContIsSubType line |> return
 
   | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absfrom ("type_fun_cont", sf)) |> Result.fail
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("type_fun_cont", sf)) |> Result.fail
 
 (**)
 let of_etf etf : (t, err_t) Result.t =
