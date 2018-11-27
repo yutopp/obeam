@@ -14,7 +14,7 @@ type 'a t = {
   previous: 'a t option;
 }
 and 'a kind_t =
-  | Not_supported_absfrom of string * 'a
+  | Not_supported_absform of string * 'a
 [@@deriving sexp_of]
 
 let create ~loc reason =
