@@ -1,11 +1,8 @@
-(executables
- (names abs_form_test)
- (libraries obeam oUnit))
-
-(alias
- (name runtest)
- (deps (:exe abs_form_test.exe) (glob_files *.beam))
- (action (run %{exe})))
+(library
+ (name abs_form_test)
+ (libraries obeam expect_test_helpers_kernel)
+ (inline_tests (deps (glob_files *.beam)))
+ (preprocess (pps ppx_sexp_conv ppx_expect)))
 
 (env
- (dev (flags (:standard -w +42-9-27-39))))
+ (dev (flags (:standard -w -9-27-39))))

@@ -6,9 +6,13 @@ build:
 build-beams:
 	make -C test compile
 
+.PHONY: promote
+promote:
+	dune promote
+
 .PHONY: test-only
 test-only:
-	dune runtest
+	dune runtest test
 
 .PHONY: test
 test: build-beams test-only

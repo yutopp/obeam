@@ -7,10 +7,9 @@
  *)
 
 open! Base
-open OUnit2
 
-(* cheker utils *)
-let assert_equals_abs_form_by_erl_file expected_ast_res beam_filename test_ctx =
+(* checker utils *)
+let load_ast_from_beam beam_filename =
   let open Obeam in
   let beam_buf = Bitstring.bitstring_of_file beam_filename in
   match Beam.parse_layout beam_buf with
@@ -32,562 +31,452 @@ let assert_equals_abs_form_by_erl_file expected_ast_res beam_filename test_ctx =
                failwith "abst and dbgi chunk is not found"
           end
      in
-     let _ =
-       match parsed_result with
-       | Ok (etf, _rest) ->
-          let actual_ast_res = Abstract_format.of_etf etf in
-          assert_equal expected_ast_res actual_ast_res
-                       ?printer:(Some (fun a ->
-                                     a |> Result.sexp_of_t Abstract_format.sexp_of_t Abstract_format.sexp_of_err_t
-                                     |> Sexp.to_string_hum
-                                ))
-       | Error (msg, _rest) ->
-          failwith (Printf.sprintf "Failed: %s" msg)
-     in
-     ()
+       (match parsed_result with
+        | Ok (etf, _rest) ->
+           Abstract_format.of_etf etf
+        | Error (msg, _rest) ->
+           failwith (Printf.sprintf "Failed: %s" msg))
   | Error (msg, _rest) ->
      failwith (Printf.sprintf "Failed : %s\n" msg)
 
-let assert_equals_abs_form_f f beam_filename test_ctx =
-  let expected_ast_res = f () in
-  assert_equals_abs_form_by_erl_file expected_ast_res beam_filename test_ctx
+let print_ast beam_filename =
+  let open Obeam in
+  load_ast_from_beam beam_filename
+  |> [%sexp_of: (Abstract_format.t, Abstract_format.err_t) Result.t]
+  |> Expect_test_helpers_kernel.print_s
 
 (* test cases *)
-let template_01 () =
-  let module Ast = Obeam.Abstract_format in
-  Ast.AbstractCode
-    (Ast.ModDecl
-       [(Ast.AttrFile (1, "test01.erl", 1)); (Ast.AttrMod (1, "test01"));
-        (Ast.AttrExport (3, [("g", 0); ("h", 1)]));
-        (Ast.DeclFun (5, "f", 0,
-                      [(Ast.ClsFun (5, [], None,
-                                    (Ast.ExprBody
-                                       [(Ast.ExprLit (Ast.LitInteger (6, 0)))])))
-                      ]
-                     ));
-        (Ast.DeclFun (8, "g", 0,
-                      [(Ast.ClsFun (8, [], None,
-                                    (Ast.ExprBody
-                                       [(Ast.ExprLit (Ast.LitInteger (9, 10)))])))
-                      ]
-                     ));
-        (Ast.SpecFun (11, None, "h", 1,
-                      [(Ast.TyFun
-                          (11,
-                           (Ast.TyProduct (11, [(Ast.TyPredef (11, "integer", []))])),
-                           (Ast.TyPredef (11, "string", []))))
-                      ]
-                     ));
-        (Ast.DeclFun (12, "h", 1,
-                      [(Ast.ClsFun (12, [(Ast.PatUniversal 12)], None,
-                                    (Ast.ExprBody
-                                       [(Ast.ExprLit
-                                           (Ast.LitString (13, "abcdefg")))
-                                       ])
-                                   ))
-                      ]
-                     ));
-        Ast.FormEof])
-  |> Result.return
+let%expect_test "test01.beam" =
+    print_ast "test01.beam";
+    [%expect {|
+      (Ok (
+        AbstractCode (
+          ModDecl (
+            (AttrFile 1 test01.erl 1)
+            (AttrMod 1 test01)
+            (AttrExport 3 (
+              (g 0)
+              (h 1)))
+            (DeclFun
+             5
+             f
+             0
+             ((
+               ClsFun 5
+               ()
+               ()
+               (ExprBody ((ExprLit (LitInteger 6 0)))))))
+            (DeclFun
+             8
+             g
+             0
+             ((
+               ClsFun 8
+               ()
+               ()
+               (ExprBody ((ExprLit (LitInteger 9 10)))))))
+            (SpecFun 11
+              ()
+              h
+              1
+              ((
+                TyFun 11
+                (TyProduct 11 ((TyPredef 11 integer ())))
+                (TyPredef 11 string ()))))
+            (DeclFun
+             12
+             h
+             1
+             ((
+               ClsFun 12
+               ((PatUniversal 12))
+               ()
+               (ExprBody ((ExprLit (LitString 13 abcdefg)))))))
+            FormEof)))) |}]
 
-let template_02 () =
-  let module Ast = Obeam.Abstract_format in
-  Ast.AbstractCode
-    (Ast.ModDecl
-       [(Ast.AttrFile (1, "test02.erl", 1)); (Ast.AttrMod (1, "test02"));
-        (Ast.SpecFun (3, None, "i", 1,
-                      [(Ast.TyContFun
-                          (3,
-                           (Ast.TyPredef (3, "fun",
-                                          [(Ast.TyProduct (3, [(Ast.TyVar (3, "A"))]));
-                                           (Ast.TyPredef (3, "integer", []))]
-                                         )),
-                           (Ast.TyCont
-                              [(Ast.TyContRel
-                                  (3, (Ast.TyContIsSubType 3),
-                                   (Ast.TyVar (3, "A")),
-                                   (Ast.TyPredef (3, "integer", []))
-                                  ))
-                              ])
-                          ))
-                      ]
-                     ));
-        (Ast.DeclFun (4, "i", 1,
-                      [(Ast.ClsFun (4, [(Ast.PatVar (4, "N"))], None,
-                                    (Ast.ExprBody [(Ast.ExprVar (4, "N"))])))
-                      ]
-                     ));
-        (Ast.SpecFun (6, None, "j", 1,
-                      [(Ast.TyContFun
-                          (6,
-                           (Ast.TyPredef (6, "fun",
-                                          [(Ast.TyProduct (6, [(Ast.TyVar (6, "A"))]));
-                                           (Ast.TyVar (6, "B"))]
-                                         )),
-                           (Ast.TyCont
-                              [(Ast.TyContRel
-                                  (6, (Ast.TyContIsSubType 6),
-                                   (Ast.TyVar (6, "A")),
-                                   (Ast.TyPredef (6, "integer", []))
-                                  ));
-                               (Ast.TyContRel
-                                  (7, (Ast.TyContIsSubType 7),
-                                   (Ast.TyVar (7, "B")),
-                                   (Ast.TyPredef (7, "integer", []))))
-                              ])
-                          ))
-                      ]
-                     ));
-        (Ast.DeclFun (8, "j", 1,
-                      [(Ast.ClsFun
-                          (8, [(Ast.PatVar (8, "N"))], None,
-                           (Ast.ExprBody
-                              [(Ast.ExprBinOp (9, "*", (Ast.ExprVar (9, "N")),
-                                               (Ast.ExprVar (9, "N"))))
-                              ])
-                          ))
-                      ]
-                     ));
-        Ast.FormEof])
-  |> Result.return
+let%expect_test "test02.beam" =
+    print_ast "test02.beam";
+    [%expect {|
+      (Ok (
+        AbstractCode (
+          ModDecl (
+            (AttrFile 1 test02.erl 1)
+            (AttrMod 1 test02)
+            (SpecFun 3
+              ()
+              i
+              1
+              ((
+                TyContFun 3
+                (TyPredef 3 fun (
+                  (TyProduct 3 ((TyVar 3 A))) (TyPredef 3 integer ())))
+                (TyCont ((
+                  TyContRel 3
+                  (TyContIsSubType 3)
+                  (TyVar 3 A)
+                  (TyPredef 3 integer ())))))))
+            (DeclFun
+             4
+             i
+             1
+             ((ClsFun 4 ((PatVar 4 N)) () (ExprBody ((ExprVar 4 N))))))
+            (SpecFun 6
+              ()
+              j
+              1
+              ((
+                TyContFun 6
+                (TyPredef 6 fun ((TyProduct 6 ((TyVar 6 A))) (TyVar 6 B)))
+                (TyCont (
+                  (TyContRel 6
+                    (TyContIsSubType 6)
+                    (TyVar 6 A)
+                    (TyPredef 6 integer ()))
+                  (TyContRel 7
+                    (TyContIsSubType 7)
+                    (TyVar 7 B)
+                    (TyPredef 7 integer ())))))))
+            (DeclFun
+             8
+             j
+             1
+             ((
+               ClsFun 8
+               ((PatVar 8 N))
+               ()
+               (ExprBody ((
+                 ExprBinOp 9 *
+                 (ExprVar 9 N)
+                 (ExprVar 9 N)))))))
+            FormEof)))) |}]
 
-let template_03 () =
-  let module Ast = Obeam.Abstract_format in
-  Ast.AbstractCode
-    (Ast.ModDecl
-       [(Ast.AttrFile (1, "test03.erl", 1)); (Ast.AttrMod (1, "test03"));
-        (Ast.DeclFun (3, "f", 1,
-                      [(Ast.ClsFun
-                          (3, [(Ast.PatVar (3, "N"))],
-                           (Some (Ast.GuardSeq
-                                    [(Ast.Guard
-                                        [(Ast.GuardTestCall
-                                            (3,
-                                             (Ast.LitAtom (3, "is_integer")),
-                                             [(Ast.GuardTestVar (3, "N"))]))
-                                        ])
-                                    ])),
-                           (Ast.ExprBody [(Ast.ExprLit (Ast.LitInteger (4, 0)))])));
-                       (Ast.ClsFun
-                          (5, [(Ast.PatUniversal 5)],
-                           None,
-                           (Ast.ExprBody [(Ast.ExprLit (Ast.LitInteger (6, 2)))])))
-                      ]
-                     ));
-        (Ast.DeclFun (8, "g", 1,
-                      [(Ast.ClsFun
-                          (8, [(Ast.PatVar (8, "R"))],
-                           None,
-                           (Ast.ExprBody
-                              [(Ast.ExprCase
-                                  (9,
-                                   (Ast.ExprVar (9, "R")),
-                                   [(Ast.ClsCase
-                                       (10,
-                                        (Ast.PatLit
-                                           (Ast.LitAtom (10, "ok"))),
-                                        None,
-                                        (Ast.ExprBody
-                                           [(Ast.ExprLit
-                                               (Ast.LitInteger (10, 1)))
-                                        ])
-                                    ));
-                                    (Ast.ClsCase
-                                       (11,
-                                        (Ast.PatLit
-                                           (Ast.LitAtom (11, "error"))),
-                                        None,
-                                        (Ast.ExprBody
-                                           [(Ast.ExprLit
-                                               (Ast.LitInteger (11, 2)))
-                                        ])
-                                    ))
-                                   ]
-                               ))
-                           ])
-                       ))
-                      ]
-        ));
-        Ast.FormEof])
-  |> Result.return
+let%expect_test "test03.beam" =
+    print_ast "test03.beam";
+    [%expect {|
+      (Ok (
+        AbstractCode (
+          ModDecl (
+            (AttrFile 1 test03.erl 1)
+            (AttrMod 1 test03)
+            (DeclFun
+             3
+             f
+             1
+             ((ClsFun 3
+                ((PatVar 3 N))
+                ((
+                  GuardSeq ((
+                    Guard ((
+                      GuardTestCall 3 (LitAtom 3 is_integer) ((GuardTestVar 3 N))))))))
+                (ExprBody ((ExprLit (LitInteger 4 0)))))
+              (ClsFun 5
+                ((PatUniversal 5))
+                ()
+                (ExprBody ((ExprLit (LitInteger 6 2)))))))
+            (DeclFun
+             8
+             g
+             1
+             ((
+               ClsFun 8
+               ((PatVar 8 R))
+               ()
+               (ExprBody ((
+                 ExprCase 9
+                 (ExprVar 9 R)
+                 ((ClsCase 10
+                    (PatLit (LitAtom 10 ok))
+                    ()
+                    (ExprBody ((ExprLit (LitInteger 10 1)))))
+                  (ClsCase 11
+                    (PatLit (LitAtom 11 error))
+                    ()
+                    (ExprBody ((ExprLit (LitInteger 11 2))))))))))))
+            FormEof)))) |}]
 
-let template_04 () =
-  let module Ast = Obeam.Abstract_format in
-  Ast.AbstractCode
-  (Ast.ModDecl
-     [(Ast.AttrFile (1, "test04.erl", 1));
-       (Ast.AttrMod (1, "test04"));
-       (Ast.AttrExport (3, [("f", 0); ("g", 1); ("h", 1)]));
-       (Ast.AttrExportType (4, [("tuple", 2); ("int", 0)]));
-       (Ast.DeclType (6, "tuple", [(6, "A"); (6, "B")],
-          (Ast.TyPredef (6, "tuple",
-             [(Ast.TyVar (6, "A"));
-               (Ast.TyVar (6, "B"))]
-             ))
-          ));
-       (Ast.DeclOpaqueType (7, "int", [],
-          (Ast.TyPredef (7, "integer", []))));
-       (Ast.DeclFun (9, "f", 0,
-          [(Ast.ClsFun (9, [], None,
-              (Ast.ExprBody
-                 [(Ast.ExprMapUpdate (9,
-                     (Ast.ExprMapCreation (9,
-                        [(Ast.ExprAssoc (9,
-                            (Ast.ExprLit
-                               (Ast.LitAtom (9, "a"))),
-                            (Ast.ExprLit
-                               (Ast.LitInteger (9, 1)))
-                            ));
-                          (Ast.ExprAssoc (9,
-                             (Ast.ExprLit
-                                (Ast.LitAtom (9, "b"))),
-                             (Ast.ExprLit
-                                (Ast.LitInteger (9, 2)))
-                             ))
-                          ]
-                        )),
-                     [(Ast.ExprAssocExact (9,
-                         (Ast.ExprLit
-                            (Ast.LitAtom (9, "a"))),
-                         (Ast.ExprLit
-                            (Ast.LitInteger (9, 42)))
-                         ));
-                       (Ast.ExprAssoc (9,
-                          (Ast.ExprLit
-                             (Ast.LitAtom (9, "c"))),
-                          (Ast.ExprLit
-                             (Ast.LitInteger (9, 3)))
-                          ))
-                       ]
-                     ))
-                   ])
-              ))
-            ]
-          ));
-       (Ast.DeclFun (11, "g", 1,
-          [(Ast.ClsFun (11,
-              [(Ast.PatMap (11,
-                  [(Ast.PatAssocExact (11,
-                      (Ast.PatLit
-                         (Ast.LitAtom (11, "a"))),
-                      (Ast.PatVar (11, "N"))))
-                    ]
-                  ))
-                ],
-              None,
-              (Ast.ExprBody [(Ast.ExprVar (11, "N"))])
-              ))
-            ]
-          ));
-       (Ast.DeclFun (13, "h", 1,
-          [(Ast.ClsFun (13, [(Ast.PatVar (13, "M"))],
-              (Some (Ast.GuardSeq
-                       [(Ast.Guard
-                           [(Ast.GuardTestBinOp (13, "andalso",
-                               (Ast.GuardTestBinOp (13, "=:=",
-                                  (Ast.GuardTestVar (13, "M")),
-                                  (Ast.GuardTestMapCreation (13,
-                                     [(Ast.GuardTestAssoc (13,
-                                         (Ast.GuardTestLit
-                                            (Ast.LitAtom (13, "a"
-                                               ))),
-                                         (Ast.GuardTestLit
-                                            (Ast.LitInteger (13,
-                                               42)))
-                                         ))
-                                       ]
-                                     ))
-                                  )),
-                               (Ast.GuardTestBinOp (13, "=:=",
-                                  (Ast.GuardTestMapUpdate (13,
-                                     (Ast.GuardTestVar (13, "M")),
-                                     [(Ast.GuardTestAssocExact (
-                                         13,
-                                         (Ast.GuardTestLit
-                                            (Ast.LitAtom (13, "a"
-                                               ))),
-                                         (Ast.GuardTestLit
-                                            (Ast.LitInteger (13,
-                                               0)))
-                                         ))
-                                       ]
-                                     )),
-                                  (Ast.GuardTestMapCreation (13,
-                                     [(Ast.GuardTestAssoc (13,
-                                         (Ast.GuardTestLit
-                                            (Ast.LitAtom (13, "a"
-                                               ))),
-                                         (Ast.GuardTestLit
-                                            (Ast.LitInteger (13,
-                                               0)))
-                                         ))
-                                       ]
-                                     ))
-                                  ))
-                               ))
-                             ])
-                         ])),
-              (Ast.ExprBody [(Ast.ExprVar (13, "M"))])
-              ))
-            ]
-          ));
-       Ast.FormEof])
-  |> Result.return
+let%expect_test "test04.beam" =
+    print_ast "test04.beam";
+    [%expect {|
+      (Ok (
+        AbstractCode (
+          ModDecl (
+            (AttrFile 1 test04.erl 1)
+            (AttrMod 1 test04)
+            (AttrExport 3 (
+              (f 0)
+              (g 1)
+              (h 1)))
+            (AttrExportType 4 (
+              (tuple 2)
+              (int   0)))
+            (DeclType 6 tuple
+              ((6 A)
+               (6 B))
+              (TyPredef 6 tuple (
+                (TyVar 6 A)
+                (TyVar 6 B))))
+            (DeclOpaqueType 7 int () (TyPredef 7 integer ()))
+            (DeclFun
+             9
+             f
+             0
+             ((
+               ClsFun 9
+               ()
+               ()
+               (ExprBody ((
+                 ExprMapUpdate 9
+                 (ExprMapCreation 9 (
+                   (ExprAssoc 9
+                     (ExprLit (LitAtom    9 a))
+                     (ExprLit (LitInteger 9 1)))
+                   (ExprAssoc 9
+                     (ExprLit (LitAtom    9 b))
+                     (ExprLit (LitInteger 9 2)))))
+                 ((ExprAssocExact 9
+                    (ExprLit (LitAtom    9 a))
+                    (ExprLit (LitInteger 9 42)))
+                  (ExprAssoc 9
+                    (ExprLit (LitAtom    9 c))
+                    (ExprLit (LitInteger 9 3))))))))))
+            (DeclFun
+             11
+             g
+             1
+             ((
+               ClsFun 11
+               ((
+                 PatMap 11 ((PatAssocExact 11 (PatLit (LitAtom 11 a)) (PatVar 11 N)))))
+               ()
+               (ExprBody ((ExprVar 11 N))))))
+            (DeclFun
+             13
+             h
+             1
+             ((
+               ClsFun 13
+               ((PatVar 13 M))
+               ((
+                 GuardSeq ((
+                   Guard ((
+                     GuardTestBinOp 13 andalso
+                     (GuardTestBinOp 13 =:=
+                       (GuardTestVar 13 M)
+                       (GuardTestMapCreation 13 ((
+                         GuardTestAssoc 13
+                         (GuardTestLit (LitAtom    13 a))
+                         (GuardTestLit (LitInteger 13 42))))))
+                     (GuardTestBinOp 13 =:=
+                       (GuardTestMapUpdate 13
+                         (GuardTestVar 13 M)
+                         ((
+                           GuardTestAssocExact 13
+                           (GuardTestLit (LitAtom    13 a))
+                           (GuardTestLit (LitInteger 13 0)))))
+                       (GuardTestMapCreation 13 ((
+                         GuardTestAssoc 13
+                         (GuardTestLit (LitAtom    13 a))
+                         (GuardTestLit (LitInteger 13 0))))))))))))
+               (ExprBody ((ExprVar 13 M))))))
+            FormEof)))) |}]
 
-let template_05 () =
-  let module Ast = Obeam.Abstract_format in
-  Ast.AbstractCode
-    (Ast.ModDecl
-       [(Ast.AttrFile (1, "test05.erl", 1)); (Ast.AttrMod (1, "test05"));
-        (Ast.DeclRecord (3, [(3, "a", None, None);
-                             (4, "b", Some (Ast.ExprLit (Ast.LitInteger (4, 42))), None);
-                             (5, "c", None, Some (Ast.TyPredef (5, "string", [])));
-                             (6, "d", Some (Ast.ExprLit (Ast.LitInteger (6, 57))), Some (Ast.TyPredef (6, "integer", [])))]));
-        Ast.FormEof])
-  |> Result.return
+let%expect_test "test05.beam" =
+    print_ast "test05.beam";
+    [%expect {|
+      (Ok (
+        AbstractCode (
+          ModDecl (
+            (AttrFile 1 test05.erl 1)
+            (AttrMod 1 test05)
+            (DeclRecord 3 (
+              (3 a
+                ()
+                ())
+              (4 b ((ExprLit (LitInteger 4 42))) ())
+              (5 c () ((TyPredef 5 string ())))
+              (6 d ((ExprLit (LitInteger 6 57))) ((TyPredef 6 integer ())))))
+            FormEof)))) |}]
 
-let template_06 () =
-  let module Ast = Obeam.Abstract_format in
-  let module Sf = Obeam.Simple_term_format in
-  Ast.AbstractCode
-    (Ast.ModDecl
-       [(Ast.AttrFile (1, "test06.erl", 1));
-        (Ast.AttrMod (1, "test06"));
-        (Ast.AttrWild (3, "compile",
-                       (Sf.List [(Sf.Atom "export_all")])
-        ));
-        (Ast.AttrWild (5, "vsn",
-                       (Sf.Atom "1.0.0")));
-        (Ast.AttrWild (7, "on_load",
-                       (Sf.Tuple (2,
-                                  [(Sf.Atom "f"); (Sf.Integer 0)]
-                       ))
-        ));
-        (Ast.AttrWild (9, "behaviour",
-                       (Sf.Atom "gen_server")));
-        (Ast.AttrWild (11, "foo",
-                       (Sf.Binary "bar")));
-        (Ast.DeclFun (13, "f", 0,
-                      [(Ast.ClsFun (13, [], None,
-                                    (Ast.ExprBody
-                                       [(Ast.ExprLit
-                                           (Ast.LitAtom (13, "ok")))
-                                    ])
-                       ))
-                      ]
-        ));
-        Ast.FormEof])
-  |> Result.return
+let%expect_test "test06.beam" =
+    print_ast "test06.beam";
+    [%expect {|
+      (Ok (
+        AbstractCode (
+          ModDecl (
+            (AttrFile 1 test06.erl 1)
+            (AttrMod 1 test06)
+            (AttrWild 3 compile (List ((Atom export_all))))
+            (AttrWild 5 vsn (Atom 1.0.0))
+            (AttrWild 7 on_load (
+              Tuple 2 (
+                (Atom    f)
+                (Integer 0))))
+            (AttrWild 9  behaviour (Atom   gen_server))
+            (AttrWild 11 foo       (Binary bar))
+            (DeclFun
+             13
+             f
+             0
+             ((
+               ClsFun 13
+               ()
+               ()
+               (ExprBody ((ExprLit (LitAtom 13 ok)))))))
+            FormEof)))) |}]
 
-let template_07 () =
-  let module Ast = Obeam.Abstract_format in
-  Ast.AbstractCode
-    (Ast.ModDecl
-     [(Ast.AttrFile (1, "test07.erl", 1));
-       (Ast.AttrMod (1, "test07"));
-       (Ast.AttrExport (3, [("s", 0); ("l", 0)]));
-       (Ast.DeclFun (5, "s", 0,
-          [(Ast.ClsFun (5, [], None,
-              (Ast.ExprBody
-                 [(Ast.ExprLit
-                     (Ast.LitBigInt (6,
-                        Z.of_string "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
-                        )))
-                   ])
-              ))
-            ]
-          ));
-       (Ast.DeclFun (8, "l", 0,
-          [(Ast.ClsFun (8, [], None,
-              (Ast.ExprBody
-                 [(Ast.ExprLit
-                     (Ast.LitBigInt (9,
-                        Z.of_string "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
-                        )))
-                   ])
-              ))
-            ]
-          ));
-       Ast.FormEof])
-  |> Result.return
+let%expect_test "test07.beam" =
+    print_ast "test07.beam";
+    [%expect {|
+      (Ok (
+        AbstractCode (
+          ModDecl (
+            (AttrFile 1 test07.erl 1)
+            (AttrMod 1 test07)
+            (AttrExport 3 (
+              (s 0)
+              (l 0)))
+            (DeclFun
+             5
+             s
+             0
+             ((
+               ClsFun 5
+               ()
+               ()
+               (ExprBody ((
+                 ExprLit (
+                   LitBigInt
+                   6
+                   123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890)))))))
+            (DeclFun
+             8
+             l
+             0
+             ((
+               ClsFun 8
+               ()
+               ()
+               (ExprBody ((
+                 ExprLit (
+                   LitBigInt
+                   9
+                   123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890)))))))
+            FormEof)))) |}]
 
-let template_08 () =
-  let module Ast = Obeam.Abstract_format in
-   Ast.AbstractCode
-     (Ast.ModDecl
-      [(Ast.AttrFile (1, "test08.erl", 1));
-        (Ast.AttrMod (1, "test08"));
-        (Ast.AttrExport (3, [("f", 0); ("f", 1); ("f", 2)]));
-        (Ast.DeclFun (5, "f", 0,
-           [(Ast.ClsFun (5, [], None,
-               (Ast.ExprBody
-                  [(Ast.ExprMatch (6,
-                      (Ast.PatVar (6, "F")),
-                      (Ast.ExprLit (Ast.LitAtom (6, "f")))));
-                   (Ast.ExprLocalCall (8,
-                      (Ast.ExprLit
-                         (Ast.LitAtom (8, "f"))),
-                      [(Ast.ExprLit
-                          (Ast.LitInteger (8, 1)))
-                        ]
-                      ));
-                   (Ast.ExprLocalCall (9,
-                      (Ast.ExprVar (9, "F")),
-                      [(Ast.ExprLit
-                          (Ast.LitInteger (9, 1)))
-                        ]
-                      ));
-                   (Ast.ExprLocalCall (10,
-                      (Ast.ExprCase (10,
-                         (Ast.ExprLit (Ast.LitAtom (10, "true"))),
-                         [(Ast.ClsCase (10,
-                             (Ast.PatUniversal 10),
-                             None,
-                             (Ast.ExprBody [(Ast.ExprVar (10, "F"))
-                           ])))]
-                         )),
-                      [(Ast.ExprLit
-                          (Ast.LitInteger (10, 1)))
-                        ]
-                      ));
-                    ])
-               ))
-             ]
-           ));
-        (Ast.DeclFun (12, "f", 1,
-           [(Ast.ClsFun (12, [(Ast.PatVar (12, "N"))],
-               None,
-               (Ast.ExprBody
-                  [(Ast.ExprMatch (13,
-                      (Ast.PatVar (13, "Test08")),
-                      (Ast.ExprLit (Ast.LitAtom (13, "test08")))));
-                   (Ast.ExprMatch (14,
-                      (Ast.PatVar (14, "F")),
-                      (Ast.ExprLit (Ast.LitAtom (14, "f")))));
-                   (Ast.ExprRemoteCall (16, 16,
-                      (Ast.ExprLit
-                         (Ast.LitAtom (16, "test08"))),
-                      (Ast.ExprLit
-                         (Ast.LitAtom (16, "f"))),
-                      [(Ast.ExprVar (16, "N"));
-                        (Ast.ExprLit
-                           (Ast.LitInteger (16, 2)))
-                        ]
-                      ));
-                   (Ast.ExprRemoteCall (17, 17,
-                      (Ast.ExprVar (17, "Test08")),
-                      (Ast.ExprVar (17, "F")),
-                      [(Ast.ExprVar (17, "N"));
-                        (Ast.ExprLit
-                           (Ast.LitInteger (17, 2)))
-                        ]
-                      ));
-                   (Ast.ExprRemoteCall (18, 18,
-                      (Ast.ExprCase (18,
-                         (Ast.ExprLit (Ast.LitAtom (18, "true"))),
-                         [(Ast.ClsCase (18,
-                             (Ast.PatUniversal 18),
-                             None,
-                             (Ast.ExprBody [(Ast.ExprVar (18, "Test08"))
-                           ])))]
-                         )),
-                      (Ast.ExprCase (18,
-                         (Ast.ExprLit (Ast.LitAtom (18, "true"))),
-                         [(Ast.ClsCase (18,
-                             (Ast.PatUniversal 18),
-                             None,
-                             (Ast.ExprBody [(Ast.ExprVar (18, "F"))
-                           ])))]
-                         )),
-                      [(Ast.ExprVar (18, "N"));
-                        (Ast.ExprLit
-                           (Ast.LitInteger (18, 2)))
-                        ]
-                      ));
-                    ])
-               ))
-             ]
-           ));
-        (Ast.DeclFun (20, "f", 2,
-           [(Ast.ClsFun (20,
-               [(Ast.PatVar (20, "N"));
-                 (Ast.PatVar (20, "M"))],
-               None,
-               (Ast.ExprBody
-                  [(Ast.ExprBinOp (20, "+",
-                      (Ast.ExprVar (20, "N")),
-                      (Ast.ExprVar (20, "M"))))
-                    ])
-               ))
-             ]
-           ));
-        (Ast.DeclFun (22, "g", 0,
-           [(Ast.ClsFun (22, [],
-               None,
-               (Ast.ExprBody
-                  [(Ast.ExprMatch (23,
-                      (Ast.PatVar (23, "Test08")),
-                      (Ast.ExprLit (Ast.LitAtom (23, "test08")))));
-                   (Ast.ExprMatch (24,
-                      (Ast.PatVar (24, "F")),
-                      (Ast.ExprLit (Ast.LitAtom (24, "f")))));
-                   (Ast.ExprMatch (25,
-                      (Ast.PatVar (25, "Zero")),
-                      (Ast.ExprLit (Ast.LitInteger (25, 0)))));
-                   (Ast.ExprLocalFunRef (27, "f", 0));
-                   (Ast.ExprRemoteFunRef (29,
-                      (Ast.AtomVarAtom (29, "test08")),
-                      (Ast.AtomVarAtom (29, "f")),
-                      (Ast.IntegerVarInteger (29, 0))));
-                   (Ast.ExprRemoteFunRef (30,
-                      (Ast.AtomVarVar (30, "Test08")),
-                      (Ast.AtomVarVar (30, "F")),
-                      (Ast.IntegerVarVar (30, "Zero"))));
-                   (Ast.ExprFun (32, None,
-                      [(Ast.ClsFun (32,
-                          [(Ast.PatLit (Ast.LitInteger (32, 42)))],
-                          None,
-                          (Ast.ExprBody
-                             [(Ast.ExprLit (Ast.LitInteger (32, 42)))])));
-                       (Ast.ClsFun (33,
-                          [(Ast.PatUniversal 33)],
-                          None,
-                          (Ast.ExprBody
-                             [(Ast.ExprLit (Ast.LitInteger (33, 57)))])));
-                        ]
-                      ));
-                   (Ast.ExprFun (34, Some ("F"),
-                      [(Ast.ClsFun (34,
-                          [(Ast.PatLit (Ast.LitInteger (34, 42)))],
-                          None,
-                          (Ast.ExprBody
-                             [(Ast.ExprLit (Ast.LitInteger (34, 42)))])));
-                       (Ast.ClsFun (35,
-                          [(Ast.PatUniversal 35)],
-                          None,
-                          (Ast.ExprBody
-                             [(Ast.ExprLit (Ast.LitInteger (35, 57)))])));
-                        ]
-                      ));
-                    ])
-               ))
-             ]
-           ));
-        Ast.FormEof])
-   |> Result.return
-
-let rec suite =
-  "parse_abs_form_in_beam_suite" >:::
-    [
-      "template_01" >:: assert_equals_abs_form_f template_01 "test01.beam";
-      "template_02" >:: assert_equals_abs_form_f template_02 "test02.beam";
-      "template_03" >:: assert_equals_abs_form_f template_03 "test03.beam";
-      "template_04" >:: assert_equals_abs_form_f template_04 "test04.beam";
-      "template_05" >:: assert_equals_abs_form_f template_05 "test05.beam";
-      "template_06" >:: assert_equals_abs_form_f template_06 "test06.beam";
-      "template_07" >:: assert_equals_abs_form_f template_07 "test07.beam";
-      "template_08" >:: assert_equals_abs_form_f template_08 "test08.beam";
-    ]
-
-let () =
-  run_test_tt_main suite
+let%expect_test "test08.beam" =
+    print_ast "test08.beam";
+    [%expect {|
+      (Ok (
+        AbstractCode (
+          ModDecl (
+            (AttrFile 1 test08.erl 1)
+            (AttrMod 1 test08)
+            (AttrExport 3 (
+              (f 0)
+              (f 1)
+              (f 2)))
+            (DeclFun
+             5
+             f
+             0
+             ((
+               ClsFun 5
+               ()
+               ()
+               (ExprBody (
+                 (ExprMatch 6 (PatVar 6 F) (ExprLit (LitAtom 6 f)))
+                 (ExprLocalCall 8
+                   (ExprLit (LitAtom 8 f))
+                   ((ExprLit (LitInteger 8 1))))
+                 (ExprLocalCall 9 (ExprVar 9 F) ((ExprLit (LitInteger 9 1))))
+                 (ExprLocalCall 10
+                   (ExprCase 10
+                     (ExprLit (LitAtom 10 true))
+                     ((ClsCase 10 (PatUniversal 10) () (ExprBody ((ExprVar 10 F))))))
+                   ((ExprLit (LitInteger 10 1)))))))))
+            (DeclFun
+             12
+             f
+             1
+             ((
+               ClsFun 12
+               ((PatVar 12 N))
+               ()
+               (ExprBody (
+                 (ExprMatch 13 (PatVar 13 Test08) (ExprLit (LitAtom 13 test08)))
+                 (ExprMatch 14 (PatVar 14 F) (ExprLit (LitAtom 14 f)))
+                 (ExprRemoteCall 16 16
+                   (ExprLit (LitAtom 16 test08))
+                   (ExprLit (LitAtom 16 f))
+                   ((ExprVar 16 N) (ExprLit (LitInteger 16 2))))
+                 (ExprRemoteCall 17 17
+                   (ExprVar 17 Test08)
+                   (ExprVar 17 F)
+                   ((ExprVar 17 N) (ExprLit (LitInteger 17 2))))
+                 (ExprRemoteCall 18 18
+                   (ExprCase 18
+                     (ExprLit (LitAtom 18 true))
+                     ((
+                       ClsCase 18
+                       (PatUniversal 18)
+                       ()
+                       (ExprBody ((ExprVar 18 Test08))))))
+                   (ExprCase 18
+                     (ExprLit (LitAtom 18 true))
+                     ((ClsCase 18 (PatUniversal 18) () (ExprBody ((ExprVar 18 F))))))
+                   ((ExprVar 18 N) (ExprLit (LitInteger 18 2)))))))))
+            (DeclFun
+             20
+             f
+             2
+             ((
+               ClsFun 20
+               ((PatVar 20 N)
+                (PatVar 20 M))
+               ()
+               (ExprBody ((
+                 ExprBinOp 20 +
+                 (ExprVar 20 N)
+                 (ExprVar 20 M)))))))
+            (DeclFun
+             22
+             g
+             0
+             ((
+               ClsFun 22
+               ()
+               ()
+               (ExprBody (
+                 (ExprMatch 23 (PatVar 23 Test08) (ExprLit (LitAtom 23 test08)))
+                 (ExprMatch 24 (PatVar 24 F) (ExprLit (LitAtom 24 f)))
+                 (ExprMatch 25 (PatVar 25 Zero) (ExprLit (LitInteger 25 0)))
+                 (ExprLocalFunRef 27 f 0)
+                 (ExprRemoteFunRef 29
+                   (AtomVarAtom       29 test08)
+                   (AtomVarAtom       29 f)
+                   (IntegerVarInteger 29 0))
+                 (ExprRemoteFunRef 30
+                   (AtomVarVar    30 Test08)
+                   (AtomVarVar    30 F)
+                   (IntegerVarVar 30 Zero))
+                 (ExprFun 32
+                   ()
+                   ((ClsFun 32
+                      ((PatLit (LitInteger 32 42)))
+                      ()
+                      (ExprBody ((ExprLit (LitInteger 32 42)))))
+                    (ClsFun 33
+                      ((PatUniversal 33))
+                      ()
+                      (ExprBody ((ExprLit (LitInteger 33 57)))))))
+                 (ExprFun 34
+                   (F)
+                   ((ClsFun 34
+                      ((PatLit (LitInteger 34 42)))
+                      ()
+                      (ExprBody ((ExprLit (LitInteger 34 42)))))
+                    (ClsFun 35
+                      ((PatUniversal 35))
+                      ()
+                      (ExprBody ((ExprLit (LitInteger 35 57))))))))))))
+            FormEof)))) |}]
