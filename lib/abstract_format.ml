@@ -53,16 +53,26 @@ and pattern_assoc_t =
 and expr_t =
   | ExprBody of expr_t list
   | ExprCase of line_t * expr_t * clause_t list
+  | ExprLocalFunRef of line_t * string * int
+  | ExprRemoteFunRef of line_t * atom_or_var_t * atom_or_var_t * integer_or_var_t
+  | ExprFun of line_t * string option * clause_t list
   | ExprLocalCall of line_t * expr_t * expr_t list
   | ExprRemoteCall of line_t * line_t * expr_t * expr_t * expr_t list
   | ExprMapCreation of line_t * expr_assoc_t list
   | ExprMapUpdate of line_t * expr_t * expr_assoc_t list
+  | ExprMatch of line_t * pattern_t * expr_t
   | ExprBinOp of line_t * string * expr_t * expr_t
   | ExprVar of line_t * string
   | ExprLit of literal_t
 and expr_assoc_t =
   | ExprAssoc of line_t * expr_t * expr_t
   | ExprAssocExact of line_t * expr_t * expr_t
+and atom_or_var_t =
+  | Atom of line_t * string
+  | AtomVar of line_t * string
+and integer_or_var_t =
+  | Integer of line_t * int
+  | IntegerVar of line_t * string
 
 and clause_t =
   | ClsCase of line_t * pattern_t * guard_sequence_t option * expr_t
@@ -410,6 +420,42 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
      let%bind clauses = sf_clauses |> List.map ~f:cls_of_sf |> Result.all |> track ~loc:[%here] in
      ExprCase (line, e, clauses) |> return
 
+  (* a local function reference *)
+  | Sf.Tuple (3, [Sf.Atom "fun";
+                  Sf.Integer line;
+                  Sf.Tuple (3, [Sf.Atom "function";
+                                Sf.Atom name;
+                                Sf.Integer arity])]) ->
+    ExprLocalFunRef (line, name, arity) |> return
+
+  (* a remote function reference *)
+  | Sf.Tuple (3, [Sf.Atom "fun";
+                  Sf.Integer line;
+                  Sf.Tuple (4, [Sf.Atom "function";
+                                sf_module_name;
+                                sf_function_name;
+                                sf_arity])]) ->
+    let%bind module_name = sf_module_name |> atom_or_var_of_sf |> track ~loc:[%here] in
+    let%bind function_name = sf_function_name |> atom_or_var_of_sf |> track ~loc:[%here] in
+    let%bind arity = sf_arity |> integer_or_var_of_sf |> track ~loc:[%here] in
+    ExprRemoteFunRef (line, module_name, function_name, arity) |> return
+
+  (* a function expression *)
+  | Sf.Tuple (3, [Sf.Atom "fun";
+                  Sf.Integer line;
+                  Sf.Tuple (2, [Sf.Atom "clauses";
+                                Sf.List sf_clauses])]) ->
+    let%bind clauses = sf_clauses |> List.map ~f:(cls_of_sf ~in_function:true) |> Result.all |> track ~loc:[%here] in
+    ExprFun (line, None, clauses) |> return
+
+  (* a named function expression *)
+  | Sf.Tuple (4, [Sf.Atom "named_fun";
+                  Sf.Integer line;
+                  Sf.Atom name;
+                  Sf.List sf_clauses]) ->
+    let%bind clauses = sf_clauses |> List.map ~f:(cls_of_sf ~in_function:true) |> Result.all |> track ~loc:[%here] in
+    ExprFun (line, Some name, clauses) |> return
+
   (* a function call (remote) *)
   | Sf.Tuple (4, [Sf.Atom "call";
                   Sf.Integer line_c;
@@ -442,6 +488,15 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
      let%bind assocs = sf_assocs |> List.map ~f:expr_assoc_of_sf |> Result.all |> track ~loc:[%here] in
      ExprMapUpdate (line, m, assocs) |> return
 
+  (* match operator expression *)
+  | Sf.Tuple (4, [Sf.Atom "match";
+                  Sf.Integer line;
+                  sf_pattern;
+                  sf_body]) ->
+     let%bind pattern = sf_pattern |> pat_of_sf |> track ~loc:[%here] in
+     let%bind body = sf_body |> expr_of_sf |> track ~loc:[%here] in
+     ExprMatch (line, pattern, body) |> return
+
   (* an operator expression binary *)
   | Sf.Tuple (5, [Sf.Atom "op";
                   Sf.Integer line;
@@ -460,6 +515,38 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
   | sf_v ->
      let%bind v = sf_v |> lit_of_sf |> track ~loc:[%here] in
      ExprLit v |> return
+
+and atom_or_var_of_sf sf : (atom_or_var_t, err_t) Result.t =
+  let open Result.Let_syntax in
+  match sf with
+  (* atom *)
+  | (Sf.Tuple (3, [(Sf.Atom "atom");
+                   (Sf.Integer line);
+                   (Sf.Atom atom)])) ->
+    Atom (line, atom) |> return
+  (* variable *)
+  | (Sf.Tuple (3, [(Sf.Atom "var");
+                   (Sf.Integer line);
+                   (Sf.Atom var)])) ->
+    AtomVar (line, var) |> return
+  | _ ->
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("atom_or_var", sf)) |> Result.fail
+
+and integer_or_var_of_sf sf =
+  let open Result.Let_syntax in
+  match sf with
+  (* integer *)
+  | (Sf.Tuple (3, [(Sf.Atom "integer");
+                   (Sf.Integer line);
+                   (Sf.Integer arity)])) ->
+    Integer (line, arity) |> return
+  (* variable *)
+  | (Sf.Tuple (3, [(Sf.Atom "var");
+                   (Sf.Integer line);
+                   (Sf.Atom var)])) ->
+    IntegerVar (line, var) |> return
+  | _ ->
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("integer_or_var", sf)) |> Result.fail
 
 and expr_assoc_of_sf sf : (expr_assoc_t, err_t) Result.t =
   let open Result.Let_syntax in
