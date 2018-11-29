@@ -103,6 +103,7 @@ and type_t =
   | TyContFun of line_t * type_t * type_func_cont_t
   | TyFun of line_t * type_t * type_t
   | TyUser of line_t * string * type_t list
+  | TyLit of literal_t
 and type_assoc_t =
   | TyAssoc of line_t * type_t * type_t
   | TyAssocExact of line_t * type_t * type_t
@@ -779,8 +780,10 @@ and type_of_sf sf : (type_t, err_t) Result.t =
      in
      TyUser (line, n, args) |> return
 
-  | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absform ("type", sf)) |> Result.fail
+  (* atomic literal *)
+  | sf_v ->
+     let%bind v = sf_v |> lit_of_sf |> track ~loc:[%here] in
+     TyLit v |> return
 
 and fun_type_of_sf sf : (type_t, err_t) Result.t =
   let open Result.Let_syntax in
