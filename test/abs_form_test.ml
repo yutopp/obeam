@@ -374,7 +374,8 @@ let%expect_test "test08.beam" =
             (AttrExport 3 (
               (f 0)
               (f 1)
-              (f 2)))
+              (f 2)
+              (h 0)))
             (DeclFun
              5
              f
@@ -479,6 +480,15 @@ let%expect_test "test08.beam" =
                       ((PatUniversal 35))
                       ()
                       (ExprBody ((ExprLit (LitInteger 35 57))))))))))))
+            (DeclFun
+             38
+             h
+             0
+             ((
+               ClsFun 38
+               ()
+               ()
+               (ExprBody ((ExprLocalFunRef 38 g 0))))))
             FormEof)))) |}]
 
 let%expect_test "test09.beam" =
