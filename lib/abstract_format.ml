@@ -97,10 +97,15 @@ and type_t =
   | TyAnn of line_t * type_t * type_t
   | TyPredef of line_t * string * type_t list
   | TyProduct of line_t * type_t list
+  | TyAnyMap of line_t
+  | TyMap of line_t * type_assoc_t list
   | TyVar of line_t * string
   | TyContFun of line_t * type_t * type_func_cont_t
   | TyFun of line_t * type_t * type_t
   | TyUser of line_t * string * type_t list
+and type_assoc_t =
+  | TyAssoc of line_t * type_t * type_t
+  | TyAssocExact of line_t * type_t * type_t
 
 and type_func_cont_t =
   | TyCont of type_func_cont_t list
@@ -733,6 +738,23 @@ and type_of_sf sf : (type_t, err_t) Result.t =
      in
      TyProduct (line, args) |> return
 
+  (* map type (any) *)
+  | Sf.Tuple (4, [Sf.Atom "type";
+                  Sf.Integer line;
+                  Sf.Atom "map";
+                  Sf.Atom "any"]) ->
+     TyAnyMap line |> return
+
+  (* map type *)
+  | Sf.Tuple (4, [Sf.Atom "type";
+                  Sf.Integer line;
+                  Sf.Atom "map";
+                  Sf.List sf_assocs]) ->
+     let%bind assocs =
+       sf_assocs |> List.map ~f:type_assoc_of_sf |> Result.all |> track ~loc:[%here]
+     in
+     TyMap (line, assocs) |> return
+
   (* predefined (or built-in) type *)
   | Sf.Tuple (4, [Sf.Atom "type";
                   Sf.Integer line;
@@ -809,6 +831,30 @@ and type_fun_cont_of_sf sf : (type_func_cont_t, err_t) Result.t =
 
   | _ ->
      Err.create ~loc:[%here] (Err.Not_supported_absform ("type_fun_cont", sf)) |> Result.fail
+
+and type_assoc_of_sf sf : (type_assoc_t, err_t) Result.t =
+  let open Result.Let_syntax in
+  match sf with
+  (* an association *)
+  | Sf.Tuple (4, [Sf.Atom "type";
+                  Sf.Integer line;
+                  Sf.Atom "map_field_assoc";
+                  Sf.List [sf_k; sf_v]]) ->
+     let%bind k = sf_k |> type_of_sf |> track ~loc:[%here] in
+     let%bind v = sf_v |> type_of_sf |> track ~loc:[%here] in
+     TyAssoc (line, k, v) |> return
+
+  (* an exact association *)
+  | Sf.Tuple (4, [Sf.Atom "type";
+                  Sf.Integer line;
+                  Sf.Atom "map_field_exact";
+                  Sf.List [sf_k; sf_v]]) ->
+     let%bind k = sf_k |> type_of_sf |> track ~loc:[%here] in
+     let%bind v = sf_v |> type_of_sf |> track ~loc:[%here] in
+     TyAssocExact (line, k, v) |> return
+
+  | _ ->
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("type_assoc", sf)) |> Result.fail
 
 (**)
 let of_etf etf : (t, err_t) Result.t =
