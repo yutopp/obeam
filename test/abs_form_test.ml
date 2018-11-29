@@ -480,3 +480,16 @@ let%expect_test "test08.beam" =
                       ()
                       (ExprBody ((ExprLit (LitInteger 35 57))))))))))))
             FormEof)))) |}]
+
+let%expect_test "test09.beam" =
+    print_ast "test09.beam";
+    [%expect {|
+      (Ok (
+        AbstractCode (
+          ModDecl (
+            (AttrFile 1 test09.erl 1)
+            (AttrMod 1 test09)
+            (AttrExportType 3 ((b 0)))
+            (DeclType 5 a () (TyPredef 5 term ()))
+            (DeclType 6 b () (TyUser   6 a    ()))
+            FormEof)))) |}]

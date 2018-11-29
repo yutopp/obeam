@@ -100,6 +100,7 @@ and type_t =
   | TyVar of line_t * string
   | TyContFun of line_t * type_t * type_func_cont_t
   | TyFun of line_t * type_t * type_t
+  | TyUser of line_t * string * type_t list
 
 and type_func_cont_t =
   | TyCont of type_func_cont_t list
@@ -745,6 +746,16 @@ and type_of_sf sf : (type_t, err_t) Result.t =
   (* type variable *)
   | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom id]) ->
      TyVar (line, id) |> return
+
+  (* user defined type *)
+  | Sf.Tuple (4, [Sf.Atom "user_type";
+                  Sf.Integer line;
+                  Sf.Atom n;
+                  Sf.List sf_args]) ->
+     let%bind args =
+       sf_args |> List.map ~f:type_of_sf |> Result.all |> track ~loc:[%here]
+     in
+     TyUser (line, n, args) |> return
 
   | _ ->
      Err.create ~loc:[%here] (Err.Not_supported_absform ("type", sf)) |> Result.fail
