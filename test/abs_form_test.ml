@@ -536,13 +536,13 @@ let template_08 () =
                       (Ast.ExprLit (Ast.LitInteger (25, 0)))));
                    (Ast.ExprLocalFunRef (27, "f", 0));
                    (Ast.ExprRemoteFunRef (29,
-                      (Ast.Atom (29, "test08")),
-                      (Ast.Atom (29, "f")),
-                      (Ast.Integer (29, 0))));
+                      (Ast.AtomVarAtom (29, "test08")),
+                      (Ast.AtomVarAtom (29, "f")),
+                      (Ast.IntegerVarInteger (29, 0))));
                    (Ast.ExprRemoteFunRef (30,
-                      (Ast.AtomVar (30, "Test08")),
-                      (Ast.AtomVar (30, "F")),
-                      (Ast.IntegerVar (30, "Zero"))));
+                      (Ast.AtomVarVar (30, "Test08")),
+                      (Ast.AtomVarVar (30, "F")),
+                      (Ast.IntegerVarVar (30, "Zero"))));
                    (Ast.ExprFun (32, None,
                       [(Ast.ClsFun (32,
                           [(Ast.PatLit (Ast.LitInteger (32, 42)))],

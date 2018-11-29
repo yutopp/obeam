@@ -68,11 +68,11 @@ and expr_assoc_t =
   | ExprAssoc of line_t * expr_t * expr_t
   | ExprAssocExact of line_t * expr_t * expr_t
 and atom_or_var_t =
-  | Atom of line_t * string
-  | AtomVar of line_t * string
+  | AtomVarAtom of line_t * string
+  | AtomVarVar of line_t * string
 and integer_or_var_t =
-  | Integer of line_t * int
-  | IntegerVar of line_t * string
+  | IntegerVarInteger of line_t * int
+  | IntegerVarVar of line_t * string
 
 and clause_t =
   | ClsCase of line_t * pattern_t * guard_sequence_t option * expr_t
@@ -523,12 +523,12 @@ and atom_or_var_of_sf sf : (atom_or_var_t, err_t) Result.t =
   | (Sf.Tuple (3, [(Sf.Atom "atom");
                    (Sf.Integer line);
                    (Sf.Atom atom)])) ->
-    Atom (line, atom) |> return
+    AtomVarAtom (line, atom) |> return
   (* variable *)
   | (Sf.Tuple (3, [(Sf.Atom "var");
                    (Sf.Integer line);
                    (Sf.Atom var)])) ->
-    AtomVar (line, var) |> return
+    AtomVarVar (line, var) |> return
   | _ ->
      Err.create ~loc:[%here] (Err.Not_supported_absform ("atom_or_var", sf)) |> Result.fail
 
@@ -539,12 +539,12 @@ and integer_or_var_of_sf sf =
   | (Sf.Tuple (3, [(Sf.Atom "integer");
                    (Sf.Integer line);
                    (Sf.Integer arity)])) ->
-    Integer (line, arity) |> return
+    IntegerVarInteger (line, arity) |> return
   (* variable *)
   | (Sf.Tuple (3, [(Sf.Atom "var");
                    (Sf.Integer line);
                    (Sf.Atom var)])) ->
-    IntegerVar (line, var) |> return
+    IntegerVarVar (line, var) |> return
   | _ ->
      Err.create ~loc:[%here] (Err.Not_supported_absform ("integer_or_var", sf)) |> Result.fail
 
