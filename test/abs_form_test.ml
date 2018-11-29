@@ -421,44 +421,154 @@ let template_08 () =
         (Ast.DeclFun (5, "f", 0,
            [(Ast.ClsFun (5, [], None,
                (Ast.ExprBody
-                  [(Ast.ExprLocalCall (6,
+                  [(Ast.ExprMatch (6,
+                      (Ast.PatVar (6, "F")),
+                      (Ast.ExprLit (Ast.LitAtom (6, "f")))));
+                   (Ast.ExprLocalCall (8,
                       (Ast.ExprLit
-                         (Ast.LitAtom (6, "f"))),
+                         (Ast.LitAtom (8, "f"))),
                       [(Ast.ExprLit
-                          (Ast.LitInteger (6, 1)))
+                          (Ast.LitInteger (8, 1)))
                         ]
-                      ))
+                      ));
+                   (Ast.ExprLocalCall (9,
+                      (Ast.ExprVar (9, "F")),
+                      [(Ast.ExprLit
+                          (Ast.LitInteger (9, 1)))
+                        ]
+                      ));
+                   (Ast.ExprLocalCall (10,
+                      (Ast.ExprCase (10,
+                         (Ast.ExprLit (Ast.LitAtom (10, "true"))),
+                         [(Ast.ClsCase (10,
+                             (Ast.PatUniversal 10),
+                             None,
+                             (Ast.ExprBody [(Ast.ExprVar (10, "F"))
+                           ])))]
+                         )),
+                      [(Ast.ExprLit
+                          (Ast.LitInteger (10, 1)))
+                        ]
+                      ));
                     ])
                ))
              ]
            ));
-        (Ast.DeclFun (8, "f", 1,
-           [(Ast.ClsFun (8, [(Ast.PatVar (8, "N"))],
+        (Ast.DeclFun (12, "f", 1,
+           [(Ast.ClsFun (12, [(Ast.PatVar (12, "N"))],
                None,
                (Ast.ExprBody
-                  [(Ast.ExprRemoteCall (9, 9,
+                  [(Ast.ExprMatch (13,
+                      (Ast.PatVar (13, "Test08")),
+                      (Ast.ExprLit (Ast.LitAtom (13, "test08")))));
+                   (Ast.ExprMatch (14,
+                      (Ast.PatVar (14, "F")),
+                      (Ast.ExprLit (Ast.LitAtom (14, "f")))));
+                   (Ast.ExprRemoteCall (16, 16,
                       (Ast.ExprLit
-                         (Ast.LitAtom (9, "test08"))),
+                         (Ast.LitAtom (16, "test08"))),
                       (Ast.ExprLit
-                         (Ast.LitAtom (9, "f"))),
-                      [(Ast.ExprVar (9, "N"));
+                         (Ast.LitAtom (16, "f"))),
+                      [(Ast.ExprVar (16, "N"));
                         (Ast.ExprLit
-                           (Ast.LitInteger (9, 2)))
+                           (Ast.LitInteger (16, 2)))
                         ]
-                      ))
+                      ));
+                   (Ast.ExprRemoteCall (17, 17,
+                      (Ast.ExprVar (17, "Test08")),
+                      (Ast.ExprVar (17, "F")),
+                      [(Ast.ExprVar (17, "N"));
+                        (Ast.ExprLit
+                           (Ast.LitInteger (17, 2)))
+                        ]
+                      ));
+                   (Ast.ExprRemoteCall (18, 18,
+                      (Ast.ExprCase (18,
+                         (Ast.ExprLit (Ast.LitAtom (18, "true"))),
+                         [(Ast.ClsCase (18,
+                             (Ast.PatUniversal 18),
+                             None,
+                             (Ast.ExprBody [(Ast.ExprVar (18, "Test08"))
+                           ])))]
+                         )),
+                      (Ast.ExprCase (18,
+                         (Ast.ExprLit (Ast.LitAtom (18, "true"))),
+                         [(Ast.ClsCase (18,
+                             (Ast.PatUniversal 18),
+                             None,
+                             (Ast.ExprBody [(Ast.ExprVar (18, "F"))
+                           ])))]
+                         )),
+                      [(Ast.ExprVar (18, "N"));
+                        (Ast.ExprLit
+                           (Ast.LitInteger (18, 2)))
+                        ]
+                      ));
                     ])
                ))
              ]
            ));
-        (Ast.DeclFun (11, "f", 2,
-           [(Ast.ClsFun (11,
-               [(Ast.PatVar (11, "N"));
-                 (Ast.PatVar (11, "M"))],
+        (Ast.DeclFun (20, "f", 2,
+           [(Ast.ClsFun (20,
+               [(Ast.PatVar (20, "N"));
+                 (Ast.PatVar (20, "M"))],
                None,
                (Ast.ExprBody
-                  [(Ast.ExprBinOp (11, "+",
-                      (Ast.ExprVar (11, "N")),
-                      (Ast.ExprVar (11, "M"))))
+                  [(Ast.ExprBinOp (20, "+",
+                      (Ast.ExprVar (20, "N")),
+                      (Ast.ExprVar (20, "M"))))
+                    ])
+               ))
+             ]
+           ));
+        (Ast.DeclFun (22, "g", 0,
+           [(Ast.ClsFun (22, [],
+               None,
+               (Ast.ExprBody
+                  [(Ast.ExprMatch (23,
+                      (Ast.PatVar (23, "Test08")),
+                      (Ast.ExprLit (Ast.LitAtom (23, "test08")))));
+                   (Ast.ExprMatch (24,
+                      (Ast.PatVar (24, "F")),
+                      (Ast.ExprLit (Ast.LitAtom (24, "f")))));
+                   (Ast.ExprMatch (25,
+                      (Ast.PatVar (25, "Zero")),
+                      (Ast.ExprLit (Ast.LitInteger (25, 0)))));
+                   (Ast.ExprLocalFunRef (27, "f", 0));
+                   (Ast.ExprRemoteFunRef (29,
+                      (Ast.AtomVarAtom (29, "test08")),
+                      (Ast.AtomVarAtom (29, "f")),
+                      (Ast.IntegerVarInteger (29, 0))));
+                   (Ast.ExprRemoteFunRef (30,
+                      (Ast.AtomVarVar (30, "Test08")),
+                      (Ast.AtomVarVar (30, "F")),
+                      (Ast.IntegerVarVar (30, "Zero"))));
+                   (Ast.ExprFun (32, None,
+                      [(Ast.ClsFun (32,
+                          [(Ast.PatLit (Ast.LitInteger (32, 42)))],
+                          None,
+                          (Ast.ExprBody
+                             [(Ast.ExprLit (Ast.LitInteger (32, 42)))])));
+                       (Ast.ClsFun (33,
+                          [(Ast.PatUniversal 33)],
+                          None,
+                          (Ast.ExprBody
+                             [(Ast.ExprLit (Ast.LitInteger (33, 57)))])));
+                        ]
+                      ));
+                   (Ast.ExprFun (34, Some ("F"),
+                      [(Ast.ClsFun (34,
+                          [(Ast.PatLit (Ast.LitInteger (34, 42)))],
+                          None,
+                          (Ast.ExprBody
+                             [(Ast.ExprLit (Ast.LitInteger (34, 42)))])));
+                       (Ast.ClsFun (35,
+                          [(Ast.PatUniversal 35)],
+                          None,
+                          (Ast.ExprBody
+                             [(Ast.ExprLit (Ast.LitInteger (35, 57)))])));
+                        ]
+                      ));
                     ])
                ))
              ]
