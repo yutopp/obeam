@@ -493,3 +493,22 @@ let%expect_test "test09.beam" =
             (DeclType 5 a () (TyPredef 5 term ()))
             (DeclType 6 b () (TyUser   6 a    ()))
             FormEof)))) |}]
+
+let%expect_test "test10.beam" =
+    print_ast "test10.beam";
+    [%expect {|
+      (Ok (
+        AbstractCode (
+          ModDecl (
+            (AttrFile 1 test10.erl 1)
+            (AttrMod 1 test10)
+            (AttrExportType 3 (
+              (any_map 0)
+              (ab_map  0)))
+            (DeclType 5 any_map () (TyAnyMap 5))
+            (DeclType 6 ab_map
+              ()
+              (TyMap 6 (
+                (TyAssocExact 6 (TyLit (LitAtom 6 a)) (TyPredef 6 integer ()))
+                (TyAssoc 6 (TyLit (LitAtom 6 b)) (TyPredef 6 atom ())))))
+            FormEof)))) |}]
