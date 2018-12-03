@@ -216,92 +216,68 @@ let%expect_test "test04.beam" =
                 (TyVar 6 A)
                 (TyVar 6 B))))
             (DeclOpaqueType 7 int () (TyPredef 7 integer ()))
-            (SpecFun 9
-              ()
-              f
-              0
-              ((
-                TyFun 9
-                (TyProduct 9 ())
-                (TyMap 9 (
-                  (TyAssocExact 9 (TyLit (LitAtom 9 a)) (TyPredef 9 integer ()))
-                  (TyAssoc 9 (TyLit (LitAtom 9 b)) (TyPredef 9 integer ())))))))
             (DeclFun
-             10
+             9
              f
              0
              ((
-               ClsFun 10
+               ClsFun 9
                ()
                ()
                (ExprBody ((
-                 ExprMapUpdate 10
-                 (ExprMapCreation 10 (
-                   (ExprAssoc 10
-                     (ExprLit (LitAtom    10 a))
-                     (ExprLit (LitInteger 10 1)))
-                   (ExprAssoc 10
-                     (ExprLit (LitAtom    10 b))
-                     (ExprLit (LitInteger 10 2)))))
-                 ((ExprAssocExact 10
-                    (ExprLit (LitAtom    10 a))
-                    (ExprLit (LitInteger 10 42)))
-                  (ExprAssoc 10
-                    (ExprLit (LitAtom    10 c))
-                    (ExprLit (LitInteger 10 3))))))))))
-            (SpecFun 12
-              ()
-              g
-              1
-              ((
-                TyFun 12
-                (TyProduct 12 ((
-                  TyMap 12 ((TyAssocExact 12 (TyLit (LitAtom 12 a)) (TyVar 12 A))))))
-                (TyVar 12 A))))
+                 ExprMapUpdate 9
+                 (ExprMapCreation 9 (
+                   (ExprAssoc 9
+                     (ExprLit (LitAtom    9 a))
+                     (ExprLit (LitInteger 9 1)))
+                   (ExprAssoc 9
+                     (ExprLit (LitAtom    9 b))
+                     (ExprLit (LitInteger 9 2)))))
+                 ((ExprAssocExact 9
+                    (ExprLit (LitAtom    9 a))
+                    (ExprLit (LitInteger 9 42)))
+                  (ExprAssoc 9
+                    (ExprLit (LitAtom    9 c))
+                    (ExprLit (LitInteger 9 3))))))))))
             (DeclFun
-             13
+             11
              g
              1
              ((
-               ClsFun 13
+               ClsFun 11
                ((
-                 PatMap 13 ((PatAssocExact 13 (PatLit (LitAtom 13 a)) (PatVar 13 N)))))
+                 PatMap 11 ((PatAssocExact 11 (PatLit (LitAtom 11 a)) (PatVar 11 N)))))
                ()
-               (ExprBody ((ExprVar 13 N))))))
-            (SpecFun 15
-              ()
-              h
-              1
-              ((TyFun 15 (TyProduct 15 ((TyAnyMap 15))) (TyAnyMap 15))))
+               (ExprBody ((ExprVar 11 N))))))
             (DeclFun
-             16
+             13
              h
              1
              ((
-               ClsFun 16
-               ((PatVar 16 M))
+               ClsFun 13
+               ((PatVar 13 M))
                ((
                  GuardSeq ((
                    Guard ((
-                     GuardTestBinOp 16 andalso
-                     (GuardTestBinOp 16 =:=
-                       (GuardTestVar 16 M)
-                       (GuardTestMapCreation 16 ((
-                         GuardTestAssoc 16
-                         (GuardTestLit (LitAtom    16 a))
-                         (GuardTestLit (LitInteger 16 42))))))
-                     (GuardTestBinOp 16 =:=
-                       (GuardTestMapUpdate 16
-                         (GuardTestVar 16 M)
+                     GuardTestBinOp 13 andalso
+                     (GuardTestBinOp 13 =:=
+                       (GuardTestVar 13 M)
+                       (GuardTestMapCreation 13 ((
+                         GuardTestAssoc 13
+                         (GuardTestLit (LitAtom    13 a))
+                         (GuardTestLit (LitInteger 13 42))))))
+                     (GuardTestBinOp 13 =:=
+                       (GuardTestMapUpdate 13
+                         (GuardTestVar 13 M)
                          ((
-                           GuardTestAssocExact 16
-                           (GuardTestLit (LitAtom    16 a))
-                           (GuardTestLit (LitInteger 16 0)))))
-                       (GuardTestMapCreation 16 ((
-                         GuardTestAssoc 16
-                         (GuardTestLit (LitAtom    16 a))
-                         (GuardTestLit (LitInteger 16 0))))))))))))
-               (ExprBody ((ExprVar 16 M))))))
+                           GuardTestAssocExact 13
+                           (GuardTestLit (LitAtom    13 a))
+                           (GuardTestLit (LitInteger 13 0)))))
+                       (GuardTestMapCreation 13 ((
+                         GuardTestAssoc 13
+                         (GuardTestLit (LitAtom    13 a))
+                         (GuardTestLit (LitInteger 13 0))))))))))))
+               (ExprBody ((ExprVar 13 M))))))
             FormEof)))) |}]
 
 let%expect_test "test05.beam" =
@@ -516,4 +492,23 @@ let%expect_test "test09.beam" =
             (AttrExportType 3 ((b 0)))
             (DeclType 5 a () (TyPredef 5 term ()))
             (DeclType 6 b () (TyUser   6 a    ()))
+            FormEof)))) |}]
+
+let%expect_test "test10.beam" =
+    print_ast "test10.beam";
+    [%expect {|
+      (Ok (
+        AbstractCode (
+          ModDecl (
+            (AttrFile 1 test10.erl 1)
+            (AttrMod 1 test10)
+            (AttrExportType 3 (
+              (any_map 0)
+              (ab_map  0)))
+            (DeclType 5 any_map () (TyAnyMap 5))
+            (DeclType 6 ab_map
+              ()
+              (TyMap 6 (
+                (TyAssocExact 6 (TyLit (LitAtom 6 a)) (TyPredef 6 integer ()))
+                (TyAssoc 6 (TyLit (LitAtom 6 b)) (TyPredef 6 atom ())))))
             FormEof)))) |}]
