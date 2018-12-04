@@ -44,6 +44,7 @@ and literal_t =
 
 and pattern_t =
   | PatMap of line_t * pattern_assoc_t list
+  | PatTuple of line_t * pattern_t list
   | PatUniversal of line_t
   | PatVar of line_t * string
   | PatLit of literal_t
@@ -62,6 +63,7 @@ and expr_t =
   | ExprMapUpdate of line_t * expr_t * expr_assoc_t list
   | ExprMatch of line_t * pattern_t * expr_t
   | ExprBinOp of line_t * string * expr_t * expr_t
+  | ExprTuple of line_t * expr_t list
   | ExprVar of line_t * string
   | ExprLit of literal_t
 and expr_assoc_t =
@@ -87,6 +89,7 @@ and guard_test_t =
   | GuardTestMapCreation of line_t * guard_test_assoc_t list
   | GuardTestMapUpdate of line_t * guard_test_t * guard_test_assoc_t list
   | GuardTestBinOp of line_t * string * guard_test_t * guard_test_t
+  | GuardTestTuple of line_t * guard_test_t list
   | GuardTestVar of line_t * string
   | GuardTestLit of literal_t
 and guard_test_assoc_t =
@@ -102,6 +105,8 @@ and type_t =
   | TyVar of line_t * string
   | TyContFun of line_t * type_t * type_func_cont_t
   | TyFun of line_t * type_t * type_t
+  | TyAnyTuple of line_t
+  | TyTuple of line_t * type_t list
   | TyUser of line_t * string * type_t list
   | TyLit of literal_t
 and type_assoc_t =
@@ -386,6 +391,11 @@ and pat_of_sf sf : (pattern_t, err_t) Result.t =
      let%bind assocs = sf_assocs |> List.map ~f:pat_assoc_of_sf |> Result.all |> track ~loc:[%here] in
      PatMap (line, assocs) |> return
 
+  (* a tuple pattern *)
+  | Sf.Tuple (3, [Sf.Atom "tuple"; Sf.Integer line; Sf.List sf_pats]) ->
+     let%bind pats = sf_pats |> List.map ~f:pat_of_sf |> Result.all |> track ~loc:[%here] in
+     PatTuple (line, pats) |> return
+
   (* a variable pattern *)
   | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom "_"]) ->
      PatUniversal line |> return
@@ -513,6 +523,13 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
      let%bind p1 = sf_p1 |> expr_of_sf |> track ~loc:[%here] in
      let%bind p2 = sf_p2 |> expr_of_sf |> track ~loc:[%here] in
      ExprBinOp (line, op, p1, p2) |> return
+
+  (* a tuple skeleton *)
+  | Sf.Tuple (3, [Sf.Atom "tuple";
+                  Sf.Integer line;
+                  Sf.List sf_es]) ->
+     let%bind es = sf_es |> List.map ~f:expr_of_sf |> Result.all |> track ~loc:[%here] in
+     ExprTuple (line, es) |> return
 
   (* a variable *)
   | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom id]) ->
@@ -688,6 +705,11 @@ and guard_test_of_sf sf : (guard_test_t, err_t) Result.t =
      let%bind gt2 = sf_gt2 |> guard_test_of_sf |> track ~loc:[%here] in
      GuardTestBinOp (line, op, gt1, gt2) |> return
 
+  (* a tuple skeleton *)
+  | Sf.Tuple (3, [Sf.Atom "tuple"; Sf.Integer line; Sf.List sf_gts]) ->
+     let%bind gts = sf_gts |> List.map ~f:guard_test_of_sf |> Result.all |> track ~loc:[%here] in
+     GuardTestTuple (line, gts) |> return
+
   (* variable pattern *)
   | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom id]) ->
      GuardTestVar (line, id) |> return
@@ -755,6 +777,15 @@ and type_of_sf sf : (type_t, err_t) Result.t =
        sf_assocs |> List.map ~f:type_assoc_of_sf |> Result.all |> track ~loc:[%here]
      in
      TyMap (line, assocs) |> return
+
+  (* tuple type (any) *)
+  | Sf.Tuple (4, [Sf.Atom "type"; Sf.Integer line; Sf.Atom "tuple"; Sf.Atom "any"]) ->
+     TyAnyTuple line |> return
+
+  (* tuple type *)
+  | Sf.Tuple (4, [Sf.Atom "type"; Sf.Integer line; Sf.Atom "tuple"; Sf.List sf_tys]) ->
+     let%bind tys = sf_tys |> List.map ~f:type_of_sf |> Result.all |> track ~loc:[%here] in
+     TyTuple (line, tys) |> return
 
   (* predefined (or built-in) type *)
   | Sf.Tuple (4, [Sf.Atom "type";
