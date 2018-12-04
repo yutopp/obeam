@@ -106,6 +106,7 @@ and type_t =
   | TyContFun of line_t * type_t * type_func_cont_t
   | TyFun of line_t * type_t * type_t
   | TyAnyTuple of line_t
+  | TyTuple of line_t * type_t list
   | TyUser of line_t * string * type_t list
   | TyLit of literal_t
 and type_assoc_t =
@@ -780,6 +781,11 @@ and type_of_sf sf : (type_t, err_t) Result.t =
   (* tuple type (any) *)
   | Sf.Tuple (4, [Sf.Atom "type"; Sf.Integer line; Sf.Atom "tuple"; Sf.Atom "any"]) ->
      TyAnyTuple line |> return
+
+  (* tuple type *)
+  | Sf.Tuple (4, [Sf.Atom "type"; Sf.Integer line; Sf.Atom "tuple"; Sf.List sf_tys]) ->
+     let%bind tys = sf_tys |> List.map ~f:type_of_sf |> Result.all |> track ~loc:[%here] in
+     TyTuple (line, tys) |> return
 
   (* predefined (or built-in) type *)
   | Sf.Tuple (4, [Sf.Atom "type";

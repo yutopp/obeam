@@ -212,7 +212,7 @@ let%expect_test "test04.beam" =
             (DeclType 6 tuple
               ((6 A)
                (6 B))
-              (TyPredef 6 tuple (
+              (TyTuple 6 (
                 (TyVar 6 A)
                 (TyVar 6 B))))
             (DeclOpaqueType 7 int () (TyPredef 7 integer ()))
@@ -554,46 +554,53 @@ let%expect_test "test12.beam" =
               (f 0)
               (g 1)
               (h 1)))
-            (AttrExportType 5 ((t 0)))
+            (AttrExportType 5 (
+              (t 0)
+              (s 0)))
             (DeclType 8 t () (TyAnyTuple 8))
+            (DeclType 11 s
+              ()
+              (TyTuple 11 (
+                (TyPredef 11 atom    ())
+                (TyPredef 11 integer ()))))
             (DeclFun
-             11
+             14
              f
              0
              ((
-               ClsFun 11
+               ClsFun 14
                ()
                ()
                (ExprBody ((
-                 ExprTuple 11 (
-                   (ExprLit (LitAtom    11 ok))
-                   (ExprLit (LitInteger 11 42)))))))))
+                 ExprTuple 14 (
+                   (ExprLit (LitAtom    14 ok))
+                   (ExprLit (LitInteger 14 42)))))))))
             (DeclFun
-             14
+             17
              g
              1
              ((
-               ClsFun 14
+               ClsFun 17
                ((
-                 PatTuple 14 (
-                   (PatLit (LitAtom    14 ok))
-                   (PatLit (LitInteger 14 42)))))
+                 PatTuple 17 (
+                   (PatLit (LitAtom    17 ok))
+                   (PatLit (LitInteger 17 42)))))
                ()
-               (ExprBody ((ExprLit (LitAtom 14 ok)))))))
+               (ExprBody ((ExprLit (LitAtom 17 ok)))))))
             (DeclFun
-             17
+             20
              h
              1
              ((
-               ClsFun 17
-               ((PatVar 17 T))
+               ClsFun 20
+               ((PatVar 20 T))
                ((
                  GuardSeq ((
                    Guard ((
-                     GuardTestBinOp 17 =:=
-                     (GuardTestVar 17 T)
-                     (GuardTestTuple 17 (
-                       (GuardTestLit (LitAtom    17 ok))
-                       (GuardTestLit (LitInteger 17 42))))))))))
-               (ExprBody ((ExprLit (LitAtom 17 ok)))))))
+                     GuardTestBinOp 20 =:=
+                     (GuardTestVar 20 T)
+                     (GuardTestTuple 20 (
+                       (GuardTestLit (LitAtom    20 ok))
+                       (GuardTestLit (LitInteger 20 42))))))))))
+               (ExprBody ((ExprLit (LitAtom 20 ok)))))))
             FormEof)))) |}]
