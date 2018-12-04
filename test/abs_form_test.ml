@@ -604,3 +604,52 @@ let%expect_test "test12.beam" =
                        (GuardTestLit (LitInteger 20 42))))))))))
                (ExprBody ((ExprLit (LitAtom 20 ok)))))))
             FormEof)))) |}]
+
+let%expect_test "{est13.beam" =
+    print_ast "test13.beam";
+    [%expect {|
+      (Ok (
+        AbstractCode (
+          ModDecl (
+            (AttrFile 1 test13.erl 1)
+            (AttrMod 1 test13)
+            (AttrExport 2 ((f 0)))
+            (DeclFun
+             4
+             f
+             0
+             ((
+               ClsFun 4
+               ()
+               ()
+               (ExprBody (
+                 (ExprMatch 5
+                   (PatVar 5 List)
+                   (ExprCons 5
+                     (ExprLit (LitInteger 5 3))
+                     (ExprCons 5
+                       (ExprLit (LitInteger 5 1))
+                       (ExprCons 5
+                         (ExprLit (LitInteger 5 4))
+                         (ExprCons 5
+                           (ExprLit (LitInteger 5 1))
+                           (ExprCons 5 (ExprLit (LitInteger 5 5)) (ExprNil 5)))))))
+                 (ExprMatch 6
+                   (PatVar 6 List)
+                   (ExprCons 6
+                     (ExprLit (LitInteger 6 3))
+                     (ExprCons 6
+                       (ExprLit (LitInteger 6 1))
+                       (ExprCons 6
+                         (ExprLit (LitInteger 6 4))
+                         (ExprCons 6
+                           (ExprLit (LitInteger 6 1))
+                           (ExprCons 6 (ExprLit (LitInteger 6 5)) (ExprNil 6)))))))
+                 (ExprListComprehension 7
+                   (ExprBinOp 7 * (ExprVar 7 X) (ExprLit (LitInteger 7 2)))
+                   ((QualifierGenerator 7
+                      (PatVar  7 X)
+                      (ExprVar 7 List))
+                    (QualifierFilter (
+                      ExprBinOp 7 >= (ExprVar 7 X) (ExprLit (LitInteger 7 3)))))))))))
+            FormEof)))) |}]
