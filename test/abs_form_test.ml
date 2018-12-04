@@ -550,7 +550,9 @@ let%expect_test "test12.beam" =
           ModDecl (
             (AttrFile 1 test12.erl 1)
             (AttrMod 1 test12)
-            (AttrExport 3 ((f 0)))
+            (AttrExport 3 (
+              (f 0)
+              (g 1)))
             (DeclFun
              6
              f
@@ -563,4 +565,16 @@ let%expect_test "test12.beam" =
                  ExprTuple 6 (
                    (ExprLit (LitAtom    6 ok))
                    (ExprLit (LitInteger 6 42)))))))))
+            (DeclFun
+             9
+             g
+             1
+             ((
+               ClsFun 9
+               ((
+                 PatTuple 9 (
+                   (PatLit (LitAtom    9 ok))
+                   (PatLit (LitInteger 9 42)))))
+               ()
+               (ExprBody ((ExprLit (LitAtom 9 ok)))))))
             FormEof)))) |}]

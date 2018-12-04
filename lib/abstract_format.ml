@@ -44,6 +44,7 @@ and literal_t =
 
 and pattern_t =
   | PatMap of line_t * pattern_assoc_t list
+  | PatTuple of line_t * pattern_t list
   | PatUniversal of line_t
   | PatVar of line_t * string
   | PatLit of literal_t
@@ -386,6 +387,11 @@ and pat_of_sf sf : (pattern_t, err_t) Result.t =
   | Sf.Tuple (3, [Sf.Atom "map"; Sf.Integer line; Sf.List sf_assocs]) ->
      let%bind assocs = sf_assocs |> List.map ~f:pat_assoc_of_sf |> Result.all |> track ~loc:[%here] in
      PatMap (line, assocs) |> return
+
+  (* a tuple pattern *)
+  | Sf.Tuple (3, [Sf.Atom "tuple"; Sf.Integer line; Sf.List sf_pats]) ->
+     let%bind pats = sf_pats |> List.map ~f:pat_of_sf |> Result.all |> track ~loc:[%here] in
+     PatTuple (line, pats) |> return
 
   (* a variable pattern *)
   | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom "_"]) ->
