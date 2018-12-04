@@ -1,6 +1,6 @@
 -module(test08).
 
--export([f/0, f/1, f/2, h/0]).
+-export([f/0, f/1, f/2]).
 
 f() ->
     F = f,
@@ -33,6 +33,3 @@ g() ->
         (_) -> 57 end,
     fun F(42) -> 42;
         F(_) -> 57 end.
-
-%% test case for FunT chunk (function table)
-h() -> fun g/0.
