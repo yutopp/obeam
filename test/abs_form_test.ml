@@ -512,3 +512,32 @@ let%expect_test "test10.beam" =
                 (TyAssocExact 6 (TyLit (LitAtom 6 a)) (TyPredef 6 integer ()))
                 (TyAssoc 6 (TyLit (LitAtom 6 b)) (TyPredef 6 atom ())))))
             FormEof)))) |}]
+
+let%expect_test "test11.beam" =
+    print_ast "test11.beam";
+    [%expect {|
+      (Ok (
+        AbstractCode (
+          ModDecl (
+            (AttrFile 1 test11.erl 1)
+            (AttrMod 1 test11)
+            (AttrExport 3 ((g 0)))
+            (DeclFun
+             5
+             f
+             0
+             ((
+               ClsFun 5
+               ()
+               ()
+               (ExprBody ((ExprLit (LitAtom 5 ok)))))))
+            (DeclFun
+             8
+             g
+             0
+             ((
+               ClsFun 8
+               ()
+               ()
+               (ExprBody ((ExprLocalFunRef 8 f 0))))))
+            FormEof)))) |}]
