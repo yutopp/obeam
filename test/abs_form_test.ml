@@ -541,3 +541,26 @@ let%expect_test "test11.beam" =
                ()
                (ExprBody ((ExprLocalFunRef 8 f 0))))))
             FormEof)))) |}]
+
+let%expect_test "test12.beam" =
+    print_ast "test12.beam";
+    [%expect {|
+      (Ok (
+        AbstractCode (
+          ModDecl (
+            (AttrFile 1 test12.erl 1)
+            (AttrMod 1 test12)
+            (AttrExport 3 ((f 0)))
+            (DeclFun
+             6
+             f
+             0
+             ((
+               ClsFun 6
+               ()
+               ()
+               (ExprBody ((
+                 ExprTuple 6 (
+                   (ExprLit (LitAtom    6 ok))
+                   (ExprLit (LitInteger 6 42)))))))))
+            FormEof)))) |}]

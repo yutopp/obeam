@@ -62,6 +62,7 @@ and expr_t =
   | ExprMapUpdate of line_t * expr_t * expr_assoc_t list
   | ExprMatch of line_t * pattern_t * expr_t
   | ExprBinOp of line_t * string * expr_t * expr_t
+  | ExprTuple of line_t * expr_t list
   | ExprVar of line_t * string
   | ExprLit of literal_t
 and expr_assoc_t =
@@ -513,6 +514,13 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
      let%bind p1 = sf_p1 |> expr_of_sf |> track ~loc:[%here] in
      let%bind p2 = sf_p2 |> expr_of_sf |> track ~loc:[%here] in
      ExprBinOp (line, op, p1, p2) |> return
+
+  (* a tuple skeleton *)
+  | Sf.Tuple (3, [Sf.Atom "tuple";
+                  Sf.Integer line;
+                  Sf.List sf_es]) ->
+     let%bind es = sf_es |> List.map ~f:expr_of_sf |> Result.all |> track ~loc:[%here] in
+     ExprTuple (line, es) |> return
 
   (* a variable *)
   | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom id]) ->
