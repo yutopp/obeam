@@ -89,6 +89,7 @@ and guard_test_t =
   | GuardTestMapCreation of line_t * guard_test_assoc_t list
   | GuardTestMapUpdate of line_t * guard_test_t * guard_test_assoc_t list
   | GuardTestBinOp of line_t * string * guard_test_t * guard_test_t
+  | GuardTestTuple of line_t * guard_test_t list
   | GuardTestVar of line_t * string
   | GuardTestLit of literal_t
 and guard_test_assoc_t =
@@ -701,6 +702,11 @@ and guard_test_of_sf sf : (guard_test_t, err_t) Result.t =
      let%bind gt1 = sf_gt1 |> guard_test_of_sf |> track ~loc:[%here] in
      let%bind gt2 = sf_gt2 |> guard_test_of_sf |> track ~loc:[%here] in
      GuardTestBinOp (line, op, gt1, gt2) |> return
+
+  (* a tuple skeleton *)
+  | Sf.Tuple (3, [Sf.Atom "tuple"; Sf.Integer line; Sf.List sf_gts]) ->
+     let%bind gts = sf_gts |> List.map ~f:guard_test_of_sf |> Result.all |> track ~loc:[%here] in
+     GuardTestTuple (line, gts) |> return
 
   (* variable pattern *)
   | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom id]) ->

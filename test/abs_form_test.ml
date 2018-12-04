@@ -552,7 +552,8 @@ let%expect_test "test12.beam" =
             (AttrMod 1 test12)
             (AttrExport 3 (
               (f 0)
-              (g 1)))
+              (g 1)
+              (h 1)))
             (DeclFun
              6
              f
@@ -577,4 +578,20 @@ let%expect_test "test12.beam" =
                    (PatLit (LitInteger 9 42)))))
                ()
                (ExprBody ((ExprLit (LitAtom 9 ok)))))))
+            (DeclFun
+             12
+             h
+             1
+             ((
+               ClsFun 12
+               ((PatVar 12 T))
+               ((
+                 GuardSeq ((
+                   Guard ((
+                     GuardTestBinOp 12 =:=
+                     (GuardTestVar 12 T)
+                     (GuardTestTuple 12 (
+                       (GuardTestLit (LitAtom    12 ok))
+                       (GuardTestLit (LitInteger 12 42))))))))))
+               (ExprBody ((ExprLit (LitAtom 12 ok)))))))
             FormEof)))) |}]
