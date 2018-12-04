@@ -554,44 +554,46 @@ let%expect_test "test12.beam" =
               (f 0)
               (g 1)
               (h 1)))
+            (AttrExportType 5 ((t 0)))
+            (DeclType 8 t () (TyAnyTuple 8))
             (DeclFun
-             6
+             11
              f
              0
              ((
-               ClsFun 6
+               ClsFun 11
                ()
                ()
                (ExprBody ((
-                 ExprTuple 6 (
-                   (ExprLit (LitAtom    6 ok))
-                   (ExprLit (LitInteger 6 42)))))))))
+                 ExprTuple 11 (
+                   (ExprLit (LitAtom    11 ok))
+                   (ExprLit (LitInteger 11 42)))))))))
             (DeclFun
-             9
+             14
              g
              1
              ((
-               ClsFun 9
+               ClsFun 14
                ((
-                 PatTuple 9 (
-                   (PatLit (LitAtom    9 ok))
-                   (PatLit (LitInteger 9 42)))))
+                 PatTuple 14 (
+                   (PatLit (LitAtom    14 ok))
+                   (PatLit (LitInteger 14 42)))))
                ()
-               (ExprBody ((ExprLit (LitAtom 9 ok)))))))
+               (ExprBody ((ExprLit (LitAtom 14 ok)))))))
             (DeclFun
-             12
+             17
              h
              1
              ((
-               ClsFun 12
-               ((PatVar 12 T))
+               ClsFun 17
+               ((PatVar 17 T))
                ((
                  GuardSeq ((
                    Guard ((
-                     GuardTestBinOp 12 =:=
-                     (GuardTestVar 12 T)
-                     (GuardTestTuple 12 (
-                       (GuardTestLit (LitAtom    12 ok))
-                       (GuardTestLit (LitInteger 12 42))))))))))
-               (ExprBody ((ExprLit (LitAtom 12 ok)))))))
+                     GuardTestBinOp 17 =:=
+                     (GuardTestVar 17 T)
+                     (GuardTestTuple 17 (
+                       (GuardTestLit (LitAtom    17 ok))
+                       (GuardTestLit (LitInteger 17 42))))))))))
+               (ExprBody ((ExprLit (LitAtom 17 ok)))))))
             FormEof)))) |}]

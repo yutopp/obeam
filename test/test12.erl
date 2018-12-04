@@ -2,6 +2,11 @@
 
 -export([f/0, g/1, h/1]).
 
+-export_type([t/0]).
+
+%% test case for any tuple type
+-type t() :: tuple().
+
 %% test case for tuple expr
 f() -> {ok, 42}.
 
