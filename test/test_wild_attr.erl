@@ -1,4 +1,4 @@
--module(test06).
+-module(test_wild_attr).
 
 -compile([export_all]).
 

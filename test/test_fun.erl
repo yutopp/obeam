@@ -1,4 +1,4 @@
--module(test01).
+-module(test_fun).
 
 -export([g/0, h/1]).
 

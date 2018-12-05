@@ -1,4 +1,4 @@
--module(test07).
+-module(test_bigint).
 
 -export([s/0, l/0]).
 

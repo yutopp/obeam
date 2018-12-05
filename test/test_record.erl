@@ -1,4 +1,4 @@
--module(test05).
+-module(test_record).
 
 -record(r, {a,
             b = 42,

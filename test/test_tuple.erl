@@ -1,4 +1,4 @@
--module(test12).
+-module(test_tuple).
 
 -export([f/0, g/1, h/1]).
 

@@ -1,4 +1,4 @@
--module(test09).
+-module(test_user_type).
 
 -export_type([b/0]).
 

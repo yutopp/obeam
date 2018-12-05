@@ -1,4 +1,4 @@
--module(test13).
+-module(test_list).
 -export([f/0, g/1]).
 
 %% test case for list expressions
