@@ -43,6 +43,8 @@ and literal_t =
   | LitString of line_t * string
 
 and pattern_t =
+  | PatCons of line_t * pattern_t * pattern_t
+  | PatNil of line_t
   | PatMap of line_t * pattern_assoc_t list
   | PatTuple of line_t * pattern_t list
   | PatUniversal of line_t
@@ -54,6 +56,9 @@ and pattern_assoc_t =
 and expr_t =
   | ExprBody of expr_t list
   | ExprCase of line_t * expr_t * clause_t list
+  | ExprCons of line_t * expr_t * expr_t
+  | ExprNil of line_t
+  | ExprListComprehension of line_t * expr_t * qualifier_t list
   | ExprLocalFunRef of line_t * string * int
   | ExprRemoteFunRef of line_t * atom_or_var_t * atom_or_var_t * integer_or_var_t
   | ExprFun of line_t * string option * clause_t list
@@ -69,6 +74,9 @@ and expr_t =
 and expr_assoc_t =
   | ExprAssoc of line_t * expr_t * expr_t
   | ExprAssocExact of line_t * expr_t * expr_t
+and qualifier_t =
+  | QualifierGenerator of line_t * pattern_t * expr_t
+  | QualifierFilter of expr_t
 and atom_or_var_t =
   | AtomVarAtom of line_t * string
   | AtomVarVar of line_t * string
@@ -386,6 +394,16 @@ and lit_of_sf sf : (literal_t, err_t) Result.t =
 and pat_of_sf sf : (pattern_t, err_t) Result.t =
   let open Result.Let_syntax in
   match sf with
+  (* a cons pattern *)
+  | Sf.Tuple (4, [Sf.Atom "cons"; Sf.Integer line; sf_head; sf_tail]) ->
+     let%bind head = sf_head |> pat_of_sf |> track ~loc:[%here] in
+     let%bind tail = sf_tail |> pat_of_sf |> track ~loc:[%here] in
+     PatCons (line, head, tail) |> return
+
+  (* a nil pattern *)
+  | Sf.Tuple (2, [Sf.Atom "nil"; Sf.Integer line]) ->
+     PatNil line |> return
+
   (* a map pattern *)
   | Sf.Tuple (3, [Sf.Atom "map"; Sf.Integer line; Sf.List sf_assocs]) ->
      let%bind assocs = sf_assocs |> List.map ~f:pat_assoc_of_sf |> Result.all |> track ~loc:[%here] in
@@ -436,6 +454,25 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
      let%bind e = sf_e |> expr_of_sf |> track ~loc:[%here] in
      let%bind clauses = sf_clauses |> List.map ~f:cls_of_sf |> Result.all |> track ~loc:[%here] in
      ExprCase (line, e, clauses) |> return
+
+  (* a cons expression *)
+  | Sf.Tuple (4, [Sf.Atom "cons"; Sf.Integer line; sf_head; sf_tail]) ->
+     let%bind head = sf_head |> expr_of_sf |> track ~loc:[%here] in
+     let%bind tail = sf_tail |> expr_of_sf |> track ~loc:[%here] in
+     ExprCons (line, head, tail) |> return
+
+  (* a nil expression *)
+  | Sf.Tuple (2, [Sf.Atom "nil"; Sf.Integer line]) ->
+     ExprNil line |> return
+
+  (* a list comprehension *)
+  | Sf.Tuple (4, [Sf.Atom "lc";
+                  Sf.Integer line;
+                  sf_e;
+                  Sf.List sf_qualifiers]) ->
+     let%bind e = sf_e |> expr_of_sf |> track ~loc:[%here] in
+     let%bind qualifiers = sf_qualifiers |> List.map ~f:qualifier_of_sf |> Result.all |> track ~loc:[%here] in
+     ExprListComprehension (line, e, qualifiers) |> return
 
   (* a local function reference *)
   | Sf.Tuple (3, [Sf.Atom "fun";
@@ -540,6 +577,37 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
      let%bind v = sf_v |> lit_of_sf |> track ~loc:[%here] in
      ExprLit v |> return
 
+and expr_assoc_of_sf sf : (expr_assoc_t, err_t) Result.t =
+  let open Result.Let_syntax in
+  match sf with
+  (* an association *)
+  | Sf.Tuple (4, [Sf.Atom "map_field_assoc"; Sf.Integer line; sf_k; sf_v]) ->
+     let%bind k = sf_k |> expr_of_sf |> track ~loc:[%here] in
+     let%bind v = sf_v |> expr_of_sf |> track ~loc:[%here] in
+     ExprAssoc (line, k, v) |> return
+
+  (* an exact association *)
+  | Sf.Tuple (4, [Sf.Atom "map_field_exact"; Sf.Integer line; sf_k; sf_v]) ->
+     let%bind k = sf_k |> expr_of_sf |> track ~loc:[%here] in
+     let%bind v = sf_v |> expr_of_sf |> track ~loc:[%here] in
+     ExprAssocExact (line, k, v) |> return
+
+  | _ ->
+     Err.create ~loc:[%here] (Err.Not_supported_absform ("expr_assoc", sf)) |> Result.fail
+
+and qualifier_of_sf sf : (qualifier_t, err_t) Result.t =
+    let open Result.Let_syntax in
+    match sf with
+    (* generator qualifier *)
+    | Sf.Tuple (4, [Sf.Atom "generate"; Sf.Integer line; sf_pattern; sf_expr]) ->
+       let%bind pattern = sf_pattern |> pat_of_sf |> track ~loc:[%here] in
+       let%bind expr = sf_expr |> expr_of_sf |> track ~loc:[%here] in
+       QualifierGenerator (line, pattern, expr) |> return
+    (* filter qualifier *)
+    | sf_filter ->
+       let%bind filter = sf_filter |> expr_of_sf |> track ~loc:[%here] in
+       QualifierFilter filter |> return
+
 and atom_or_var_of_sf sf : (atom_or_var_t, err_t) Result.t =
   let open Result.Let_syntax in
   match sf with
@@ -571,24 +639,6 @@ and integer_or_var_of_sf sf =
     IntegerVarVar (line, var) |> return
   | _ ->
      Err.create ~loc:[%here] (Err.Not_supported_absform ("integer_or_var", sf)) |> Result.fail
-
-and expr_assoc_of_sf sf : (expr_assoc_t, err_t) Result.t =
-  let open Result.Let_syntax in
-  match sf with
-  (* an association *)
-  | Sf.Tuple (4, [Sf.Atom "map_field_assoc"; Sf.Integer line; sf_k; sf_v]) ->
-     let%bind k = sf_k |> expr_of_sf |> track ~loc:[%here] in
-     let%bind v = sf_v |> expr_of_sf |> track ~loc:[%here] in
-     ExprAssoc (line, k, v) |> return
-
-  (* an exact association *)
-  | Sf.Tuple (4, [Sf.Atom "map_field_exact"; Sf.Integer line; sf_k; sf_v]) ->
-     let%bind k = sf_k |> expr_of_sf |> track ~loc:[%here] in
-     let%bind v = sf_v |> expr_of_sf |> track ~loc:[%here] in
-     ExprAssocExact (line, k, v) |> return
-
-  | _ ->
-     Err.create ~loc:[%here] (Err.Not_supported_absform ("expr_assoc", sf)) |> Result.fail
 
 (*
  * 8.5  Clauses
