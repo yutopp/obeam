@@ -2,5 +2,6 @@
 
 -export_type([b/0]).
 
+%% test case for user_type
 -type a() :: term().
--type b() :: a(). % to test user_type
+-type b() :: a().

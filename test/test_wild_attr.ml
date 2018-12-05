@@ -8,21 +8,21 @@ let%expect_test "test_wild_attr.beam" =
         ModDecl (
           (AttrFile 1 test_wild_attr.erl 1)
           (AttrMod 1 test_wild_attr)
-          (AttrWild 3 compile (List ((Atom export_all))))
-          (AttrWild 5 vsn (Atom 1.0.0))
-          (AttrWild 7 on_load (
+          (AttrWild 4 compile (List ((Atom export_all))))
+          (AttrWild 6 vsn (Atom 1.0.0))
+          (AttrWild 8 on_load (
             Tuple 2 (
               (Atom    f)
               (Integer 0))))
-          (AttrWild 9  behaviour (Atom   gen_server))
-          (AttrWild 11 foo       (Binary bar))
+          (AttrWild 10 behaviour (Atom   gen_server))
+          (AttrWild 12 foo       (Binary bar))
           (DeclFun
-           13
+           14
            f
            0
            ((
-             ClsFun 13
+             ClsFun 14
              ()
              ()
-             (ExprBody ((ExprLit (LitAtom 13 ok)))))))
+             (ExprBody ((ExprLit (LitAtom 14 ok)))))))
           FormEof)))) |}]

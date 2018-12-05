@@ -10,22 +10,22 @@ let%expect_test "test_case.beam" =
           (AttrMod 1 test_case)
           (AttrExport 3 ((f 1)))
           (DeclFun
-           5
+           6
            f
            1
            ((
-             ClsFun 5
-             ((PatVar 5 R))
+             ClsFun 6
+             ((PatVar 6 R))
              ()
              (ExprBody ((
-               ExprCase 6
-               (ExprVar 6 R)
-               ((ClsCase 7
-                  (PatLit (LitAtom 7 ok))
+               ExprCase 7
+               (ExprVar 7 R)
+               ((ClsCase 8
+                  (PatLit (LitAtom 8 ok))
                   ()
-                  (ExprBody ((ExprLit (LitInteger 7 1)))))
-                (ClsCase 8
-                  (PatLit (LitAtom 8 error))
+                  (ExprBody ((ExprLit (LitInteger 8 1)))))
+                (ClsCase 9
+                  (PatLit (LitAtom 9 error))
                   ()
-                  (ExprBody ((ExprLit (LitInteger 8 2))))))))))))
+                  (ExprBody ((ExprLit (LitInteger 9 2))))))))))))
           FormEof)))) |}]

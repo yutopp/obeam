@@ -11,50 +11,50 @@ let%expect_test "test_spec.beam" =
           (AttrExport 3 (
             (f 1)
             (g 1)))
-          (SpecFun 5
+          (SpecFun 6
             ()
             f
             1
             ((
-              TyContFun 5
-              (TyPredef 5 fun (
-                (TyProduct 5 ((TyVar 5 A))) (TyPredef 5 integer ())))
+              TyContFun 6
+              (TyPredef 6 fun (
+                (TyProduct 6 ((TyVar 6 A))) (TyPredef 6 integer ())))
               (TyCont ((
-                TyContRel 5
-                (TyContIsSubType 5)
-                (TyVar 5 A)
-                (TyPredef 5 integer ())))))))
+                TyContRel 6
+                (TyContIsSubType 6)
+                (TyVar 6 A)
+                (TyPredef 6 integer ())))))))
           (DeclFun
-           6
+           7
            f
            1
-           ((ClsFun 6 ((PatVar 6 N)) () (ExprBody ((ExprVar 6 N))))))
-          (SpecFun 8
+           ((ClsFun 7 ((PatVar 7 N)) () (ExprBody ((ExprVar 7 N))))))
+          (SpecFun 10
             ()
             g
             1
             ((
-              TyContFun 8
-              (TyPredef 8 fun ((TyProduct 8 ((TyVar 8 A))) (TyVar 8 B)))
+              TyContFun 10
+              (TyPredef 10 fun ((TyProduct 10 ((TyVar 10 A))) (TyVar 10 B)))
               (TyCont (
-                (TyContRel 8
-                  (TyContIsSubType 8)
-                  (TyVar 8 A)
-                  (TyPredef 8 integer ()))
-                (TyContRel 9
-                  (TyContIsSubType 9)
-                  (TyVar 9 B)
-                  (TyPredef 9 integer ())))))))
+                (TyContRel 10
+                  (TyContIsSubType 10)
+                  (TyVar 10 A)
+                  (TyPredef 10 integer ()))
+                (TyContRel 11
+                  (TyContIsSubType 11)
+                  (TyVar 11 B)
+                  (TyPredef 11 integer ())))))))
           (DeclFun
-           10
+           12
            g
            1
            ((
-             ClsFun 10
-             ((PatVar 10 N))
+             ClsFun 12
+             ((PatVar 12 N))
              ()
              (ExprBody ((
-               ExprBinOp 11 *
-               (ExprVar 11 N)
-               (ExprVar 11 N)))))))
+               ExprBinOp 13 *
+               (ExprVar 13 N)
+               (ExprVar 13 N)))))))
           FormEof)))) |}]

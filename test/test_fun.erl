@@ -2,6 +2,7 @@
 
 -export([g/0, h/1]).
 
+%% test cases for basic functions
 f() ->
     0.
 

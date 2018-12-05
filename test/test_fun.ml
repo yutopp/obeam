@@ -12,38 +12,38 @@ let%expect_test "test_fun.beam" =
             (g 0)
             (h 1)))
           (DeclFun
-           5
+           6
            f
            0
            ((
-             ClsFun 5
+             ClsFun 6
              ()
              ()
-             (ExprBody ((ExprLit (LitInteger 6 0)))))))
+             (ExprBody ((ExprLit (LitInteger 7 0)))))))
           (DeclFun
-           8
+           9
            g
            0
            ((
-             ClsFun 8
+             ClsFun 9
              ()
              ()
-             (ExprBody ((ExprLit (LitInteger 9 10)))))))
-          (SpecFun 11
+             (ExprBody ((ExprLit (LitInteger 10 10)))))))
+          (SpecFun 12
             ()
             h
             1
             ((
-              TyFun 11
-              (TyProduct 11 ((TyPredef 11 integer ())))
-              (TyPredef 11 string ()))))
+              TyFun 12
+              (TyProduct 12 ((TyPredef 12 integer ())))
+              (TyPredef 12 string ()))))
           (DeclFun
-           12
+           13
            h
            1
            ((
-             ClsFun 12
-             ((PatUniversal 12))
+             ClsFun 13
+             ((PatUniversal 13))
              ()
-             (ExprBody ((ExprLit (LitString 13 abcdefg)))))))
+             (ExprBody ((ExprLit (LitString 14 abcdefg)))))))
           FormEof)))) |}]

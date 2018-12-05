@@ -8,11 +8,11 @@ let%expect_test "test_record.beam" =
         ModDecl (
           (AttrFile 1 test_record.erl 1)
           (AttrMod 1 test_record)
-          (DeclRecord 3 (
-            (3 a
+          (DeclRecord 4 (
+            (4 a
               ()
               ())
-            (4 b ((ExprLit (LitInteger 4 42))) ())
-            (5 c () ((TyPredef 5 string ())))
-            (6 d ((ExprLit (LitInteger 6 57))) ((TyPredef 6 integer ())))))
+            (5 b ((ExprLit (LitInteger 5 42))) ())
+            (6 c () ((TyPredef 6 string ())))
+            (7 d ((ExprLit (LitInteger 7 57))) ((TyPredef 7 integer ())))))
           FormEof)))) |}]

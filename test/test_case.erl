@@ -2,6 +2,7 @@
 
 -export([f/1]).
 
+%% test case for basic case expr
 f(R) ->
     case R of
         ok -> 1;

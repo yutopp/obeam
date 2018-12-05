@@ -11,11 +11,11 @@ let%expect_test "test_type_attr.beam" =
           (AttrExportType 3 (
             (tuple 2)
             (int   0)))
-          (DeclType 5 tuple
-            ((5 A)
-             (5 B))
-            (TyTuple 5 (
-              (TyVar 5 A)
-              (TyVar 5 B))))
-          (DeclOpaqueType 6 int () (TyPredef 6 integer ()))
+          (DeclType 6 tuple
+            ((6 A)
+             (6 B))
+            (TyTuple 6 (
+              (TyVar 6 A)
+              (TyVar 6 B))))
+          (DeclOpaqueType 9 int () (TyPredef 9 integer ()))
           FormEof)))) |}]

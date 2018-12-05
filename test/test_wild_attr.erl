@@ -1,5 +1,6 @@
 -module(test_wild_attr).
 
+%% test cases for wild attribute
 -compile([export_all]).
 
 -vsn('1.0.0').
