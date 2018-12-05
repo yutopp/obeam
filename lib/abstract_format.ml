@@ -43,6 +43,8 @@ and literal_t =
   | LitString of line_t * string
 
 and pattern_t =
+  | PatCons of line_t * pattern_t * pattern_t
+  | PatNil of line_t
   | PatMap of line_t * pattern_assoc_t list
   | PatTuple of line_t * pattern_t list
   | PatUniversal of line_t
@@ -392,6 +394,16 @@ and lit_of_sf sf : (literal_t, err_t) Result.t =
 and pat_of_sf sf : (pattern_t, err_t) Result.t =
   let open Result.Let_syntax in
   match sf with
+  (* a cons pattern *)
+  | Sf.Tuple (4, [Sf.Atom "cons"; Sf.Integer line; sf_head; sf_tail]) ->
+     let%bind head = sf_head |> pat_of_sf |> track ~loc:[%here] in
+     let%bind tail = sf_tail |> pat_of_sf |> track ~loc:[%here] in
+     PatCons (line, head, tail) |> return
+
+  (* a nil pattern *)
+  | Sf.Tuple (2, [Sf.Atom "nil"; Sf.Integer line]) ->
+     PatNil line |> return
+
   (* a map pattern *)
   | Sf.Tuple (3, [Sf.Atom "map"; Sf.Integer line; Sf.List sf_assocs]) ->
      let%bind assocs = sf_assocs |> List.map ~f:pat_assoc_of_sf |> Result.all |> track ~loc:[%here] in
