@@ -1,4 +1,4 @@
--module(test11).
+-module(test_funt).
 
 -export([g/0]).
 
