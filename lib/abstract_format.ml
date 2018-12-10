@@ -108,6 +108,7 @@ and type_t =
   | TyAnn of line_t * type_t * type_t
   | TyPredef of line_t * string * type_t list
   | TyProduct of line_t * type_t list
+  | TyOp of line_t * type_t * string * type_t
   | TyAnyMap of line_t
   | TyMap of line_t * type_assoc_t list
   | TyVar of line_t * string
@@ -828,6 +829,15 @@ and type_of_sf sf : (type_t, err_t) Result.t =
        sf_assocs |> List.map ~f:type_assoc_of_sf |> Result.all |> track ~loc:[%here]
      in
      TyMap (line, assocs) |> return
+
+  (* operator type *)
+  | Sf.Tuple (5, [Sf.Atom "op";
+                  Sf.Integer line;
+                  Sf.Atom op;
+                  sf_t1; sf_t2]) ->
+     let%bind t1 = sf_t1 |> type_of_sf |> track ~loc:[%here] in
+     let%bind t2 = sf_t1 |> type_of_sf |> track ~loc:[%here] in
+     TyOp (line, t1, op, t2) |> return
 
   (* tuple type (any) *)
   | Sf.Tuple (4, [Sf.Atom "type"; Sf.Integer line; Sf.Atom "tuple"; Sf.Atom "any"]) ->
