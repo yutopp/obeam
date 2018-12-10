@@ -14,9 +14,9 @@ let%expect_test "test_operator_type.beam" =
             (v 0)))
           (DeclType 6 t
             ()
-            (TyBinOp 6 (TyLit (LitInteger 6 1)) + (TyLit (LitInteger 6 1))))
+            (TyBinOp 6 (TyLit (LitInteger 6 1)) + (TyLit (LitInteger 6 2))))
           (DeclType 7 u
             ()
-            (TyBinOp 7 (TyLit (LitInteger 7 3)) * (TyLit (LitInteger 7 3))))
+            (TyBinOp 7 (TyLit (LitInteger 7 3)) * (TyLit (LitInteger 7 4))))
           (DeclType 8 v () (TyUnaryOp 8 - (TyLit (LitInteger 8 4))))
           FormEof)))) |}]

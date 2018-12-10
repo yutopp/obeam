@@ -837,7 +837,7 @@ and type_of_sf sf : (type_t, err_t) Result.t =
                   Sf.Atom op;
                   sf_t1; sf_t2]) ->
      let%bind t1 = sf_t1 |> type_of_sf |> track ~loc:[%here] in
-     let%bind t2 = sf_t1 |> type_of_sf |> track ~loc:[%here] in
+     let%bind t2 = sf_t2 |> type_of_sf |> track ~loc:[%here] in
      TyBinOp (line, t1, op, t2) |> return
 
   (* operator type for a unary operator *)
