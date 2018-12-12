@@ -2,6 +2,6 @@
 
 -export_type([t/0, u/0]).
 
-%% test case for a bitstring type
+%% test case for the empty list type
 -type t() :: [].
 -type u() :: nil().
