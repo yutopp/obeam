@@ -114,6 +114,8 @@ and type_t =
   | TyAnyMap of line_t
   | TyMap of line_t * type_assoc_t list
   | TyVar of line_t * string
+  | TyFunAny of line_t
+  | TyFunAnyArity of line_t * type_t * type_t
   | TyContFun of line_t * type_t * type_func_cont_t
   | TyFun of line_t * type_t * type_t
   | TyAnyTuple of line_t
@@ -121,6 +123,7 @@ and type_t =
   | TyUnion of line_t * type_t list
   | TyUser of line_t * string * type_t list
   | TyLit of literal_t
+  | TyAny of line_t (* NOT a predefined 'any' type. Only for use to mark the position. *)
 and type_assoc_t =
   | TyAssoc of line_t * type_t * type_t
   | TyAssocExact of line_t * type_t * type_t
@@ -814,6 +817,26 @@ and type_of_sf sf : (type_t, err_t) Result.t =
      let%bind n = sf_n |> type_of_sf |> track ~loc:[%here] in
      TyBitstring (line, m, n) |> return
 
+  (* fun type (any) *)
+  | Sf.Tuple (4, [Sf.Atom "type";
+                  Sf.Integer line;
+                  Sf.Atom "fun";
+                  Sf.List []]) ->
+     TyFunAny (line) |> return
+
+  (* fun type (any arity) *)
+  | Sf.Tuple (4, [Sf.Atom "type";
+                  Sf.Integer line;
+                  Sf.Atom "fun";
+                  Sf.List [Sf.Tuple (3, [
+                                       Sf.Atom "type";
+                                       Sf.Integer line_any;
+                                       Sf.Atom "any";
+                                    ]);
+                           sf_t0]]) ->
+     let%bind t0 = sf_t0 |> type_of_sf |> track ~loc:[%here] in
+     TyFunAnyArity (line, TyAny line_any, t0) |> return
+
   (* product type *)
   | Sf.Tuple (4, [Sf.Atom "type";
                   Sf.Integer line;
@@ -872,15 +895,19 @@ and type_of_sf sf : (type_t, err_t) Result.t =
      let%bind tys = sf_tys |> List.map ~f:type_of_sf |> Result.all |> track ~loc:[%here] in
      TyUnion (line, tys) |> return
 
-  (* predefined (or built-in) type *)
+  (* predefined (or built-in) type OR fun type *)
   | Sf.Tuple (4, [Sf.Atom "type";
                   Sf.Integer line;
                   Sf.Atom n;
                   Sf.List sf_args]) ->
-     let%bind args =
-       sf_args |> List.map ~f:type_of_sf |> Result.all |> track ~loc:[%here]
-     in
-     TyPredef (line, n, args) |> return
+     begin match fun_type_of_sf sf with
+     | Ok fn -> Ok fn
+     | _ ->
+        let%bind args =
+          sf_args |> List.map ~f:type_of_sf |> Result.all |> track ~loc:[%here]
+        in
+        TyPredef (line, n, args) |> return
+     end
 
   (* type variable *)
   | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom id]) ->
