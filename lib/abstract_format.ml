@@ -106,6 +106,7 @@ and guard_test_assoc_t =
 
 and type_t =
   | TyAnn of line_t * type_t * type_t
+  | TyBitstring of line_t * type_t * type_t
   | TyPredef of line_t * string * type_t list
   | TyProduct of line_t * type_t list
   | TyBinOp of line_t * type_t * string * type_t
@@ -803,6 +804,15 @@ and type_of_sf sf : (type_t, err_t) Result.t =
      let%bind a = sf_a |> type_of_sf |> track ~loc:[%here] in
      let%bind t = sf_t |> type_of_sf |> track ~loc:[%here] in
      TyAnn (line, a, t) |> return
+
+  (* bitstring type *)
+  | Sf.Tuple (4, [Sf.Atom "type";
+                  Sf.Integer line;
+                  Sf.Atom "binary";
+                  Sf.List [sf_m; sf_n]]) ->
+     let%bind m = sf_m |> type_of_sf |> track ~loc:[%here] in
+     let%bind n = sf_n |> type_of_sf |> track ~loc:[%here] in
+     TyBitstring (line, m, n) |> return
 
   (* product type *)
   | Sf.Tuple (4, [Sf.Atom "type";
