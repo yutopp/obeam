@@ -115,7 +115,7 @@ and type_t =
   | TyMap of line_t * type_assoc_t list
   | TyVar of line_t * string
   | TyFunAny of line_t
-  | TyFunAnyArity of line_t * type_t * type_t
+  | TyFunAnyArity of line_t * line_t * type_t
   | TyContFun of line_t * type_t * type_func_cont_t
   | TyFun of line_t * type_t * type_t
   | TyAnyTuple of line_t
@@ -123,7 +123,6 @@ and type_t =
   | TyUnion of line_t * type_t list
   | TyUser of line_t * string * type_t list
   | TyLit of literal_t
-  | TyAny of line_t (* NOT a predefined 'any' type. Only for use to mark the position. *)
 and type_assoc_t =
   | TyAssoc of line_t * type_t * type_t
   | TyAssocExact of line_t * type_t * type_t
@@ -835,7 +834,7 @@ and type_of_sf sf : (type_t, err_t) Result.t =
                                     ]);
                            sf_t0]]) ->
      let%bind t0 = sf_t0 |> type_of_sf |> track ~loc:[%here] in
-     TyFunAnyArity (line, TyAny line_any, t0) |> return
+     TyFunAnyArity (line, line_any, t0) |> return
 
   (* product type *)
   | Sf.Tuple (4, [Sf.Atom "type";

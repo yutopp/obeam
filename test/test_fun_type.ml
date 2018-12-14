@@ -14,7 +14,7 @@ let%expect_test "test_fun_type.beam" =
             (v 0)
             (w 0)))
           (DeclType 6 t () (TyFunAny 6))
-          (DeclType 7 u () (TyFunAnyArity 7 (TyAny 7) (TyPredef 7 integer ())))
+          (DeclType 7 u () (TyFunAnyArity 7 7 (TyPredef 7 integer ())))
           (DeclType 8 v () (TyFun 8 (TyProduct 8 ()) (TyPredef 8 integer ())))
           (DeclType 9 w
             ()
