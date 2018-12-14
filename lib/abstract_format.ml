@@ -111,6 +111,7 @@ and type_t =
   | TyProduct of line_t * type_t list
   | TyBinOp of line_t * type_t * string * type_t
   | TyUnaryOp of line_t * string * type_t
+  | TyRange of line_t * type_t * type_t
   | TyAnyMap of line_t
   | TyMap of line_t * type_assoc_t list
   | TyVar of line_t * string
@@ -857,6 +858,15 @@ and type_of_sf sf : (type_t, err_t) Result.t =
                   sf_t0]) ->
      let%bind t0 = sf_t0 |> type_of_sf |> track ~loc:[%here] in
      TyUnaryOp (line, op, t0) |> return
+
+  (* range type *)
+  | Sf.Tuple (4, [Sf.Atom "type";
+                  Sf.Integer line;
+                  Sf.Atom "range";
+                  Sf.List [sf_l; sf_h]]) ->
+     let%bind l = sf_l |> type_of_sf |> track ~loc:[%here] in
+     let%bind h = sf_h |> type_of_sf |> track ~loc:[%here] in
+     TyRange (line, l, h) |> return
 
   (* tuple type (any) *)
   | Sf.Tuple (4, [Sf.Atom "type"; Sf.Integer line; Sf.Atom "tuple"; Sf.Atom "any"]) ->
