@@ -12,3 +12,7 @@ g() ->
 -spec h(integer()) -> string().
 h(_) ->
     "abcdefg".
+
+-spec i(integer(), float()) -> string().
+i(_, _) ->
+    "abracadabra".

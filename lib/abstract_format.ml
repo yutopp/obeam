@@ -108,7 +108,6 @@ and type_t =
   | TyAnn of line_t * type_t * type_t
   | TyBitstring of line_t * type_t * type_t
   | TyPredef of line_t * string * type_t list
-  | TyProduct of line_t * type_t list
   | TyBinOp of line_t * type_t * string * type_t
   | TyUnaryOp of line_t * string * type_t
   | TyRange of line_t * type_t * type_t
@@ -118,7 +117,7 @@ and type_t =
   | TyFunAny of line_t
   | TyFunAnyArity of line_t * line_t * type_t
   | TyContFun of line_t * type_t * type_func_cont_t
-  | TyFun of line_t * type_t * type_t
+  | TyFun of line_t * type_t list * type_t
   | TyAnyTuple of line_t
   | TyTuple of line_t * type_t list
   | TyUnion of line_t * type_t list
@@ -837,16 +836,6 @@ and type_of_sf sf : (type_t, err_t) Result.t =
      let%bind t0 = sf_t0 |> type_of_sf |> track ~loc:[%here] in
      TyFunAnyArity (line, line_any, t0) |> return
 
-  (* product type *)
-  | Sf.Tuple (4, [Sf.Atom "type";
-                  Sf.Integer line;
-                  Sf.Atom "product";
-                  Sf.List sf_args]) ->
-     let%bind args =
-       sf_args |> List.map ~f:type_of_sf |> Result.all |> track ~loc:[%here]
-     in
-     TyProduct (line, args) |> return
-
   (* map type (any) *)
   | Sf.Tuple (4, [Sf.Atom "type";
                   Sf.Integer line;
@@ -954,8 +943,12 @@ and fun_type_of_sf sf : (type_t, err_t) Result.t =
   | Sf.Tuple (4, [Sf.Atom "type";
                   Sf.Integer line;
                   Sf.Atom "fun";
-                  Sf.List [sf_params; sf_ret]]) ->
-     let%bind params = sf_params |> type_of_sf |> track ~loc:[%here] in
+                  Sf.List [Sf.Tuple (4, [Sf.Atom "type";
+                                         Sf.Integer _;
+                                         Sf.Atom "product";
+                                         Sf.List sf_params]);
+                           sf_ret]]) ->
+     let%bind params = sf_params |> List.map ~f:type_of_sf |> Result.all |> track ~loc:[%here] in
      let%bind ret = sf_ret |> type_of_sf |> track ~loc:[%here] in
      TyFun (line, params, ret) |> return
 
