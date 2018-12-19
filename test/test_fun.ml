@@ -33,7 +33,7 @@ let%expect_test "test_fun.beam" =
             ()
             h
             1
-            ((TyFun 12 ((TyPredef 12 integer ())) (TyPredef 12 string ()))))
+            ((TyFun 12 12 ((TyPredef 12 integer ())) (TyPredef 12 string ()))))
           (DeclFun
            13
            h
@@ -48,7 +48,7 @@ let%expect_test "test_fun.beam" =
             i
             2
             ((
-              TyFun 16
+              TyFun 16 16
               ((TyPredef 16 integer ())
                (TyPredef 16 float   ()))
               (TyPredef 16 string ()))))

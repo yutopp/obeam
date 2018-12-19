@@ -117,7 +117,7 @@ and type_t =
   | TyFunAny of line_t
   | TyFunAnyArity of line_t * line_t * type_t
   | TyContFun of line_t * type_t * type_func_cont_t
-  | TyFun of line_t * type_t list * type_t
+  | TyFun of line_t * line_t * type_t list * type_t
   | TyAnyTuple of line_t
   | TyTuple of line_t * type_t list
   | TyUnion of line_t * type_t list
@@ -944,13 +944,13 @@ and fun_type_of_sf sf : (type_t, err_t) Result.t =
                   Sf.Integer line;
                   Sf.Atom "fun";
                   Sf.List [Sf.Tuple (4, [Sf.Atom "type";
-                                         Sf.Integer _;
+                                         Sf.Integer params_line;
                                          Sf.Atom "product";
                                          Sf.List sf_params]);
                            sf_ret]]) ->
      let%bind params = sf_params |> List.map ~f:type_of_sf |> Result.all |> track ~loc:[%here] in
      let%bind ret = sf_ret |> type_of_sf |> track ~loc:[%here] in
-     TyFun (line, params, ret) |> return
+     TyFun (line, params_line, params, ret) |> return
 
   | _ ->
      Err.create ~loc:[%here] (Err.Not_supported_absform ("fun_type", sf)) |> Result.fail
