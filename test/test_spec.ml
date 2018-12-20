@@ -17,7 +17,7 @@ let%expect_test "test_spec.beam" =
             1
             ((
               TyContFun 6
-              (TyFun 6 (TyProduct 6 ((TyVar 6 A))) (TyPredef 6 integer ()))
+              (TyFun 6 6 ((TyVar 6 A)) (TyPredef 6 integer ()))
               (TyCont ((
                 TyContRel 6
                 (TyContIsSubType 6)
@@ -34,7 +34,7 @@ let%expect_test "test_spec.beam" =
             1
             ((
               TyContFun 10
-              (TyFun 10 (TyProduct 10 ((TyVar 10 A))) (TyVar 10 B))
+              (TyFun 10 10 ((TyVar 10 A)) (TyVar 10 B))
               (TyCont (
                 (TyContRel 10
                   (TyContIsSubType 10)
