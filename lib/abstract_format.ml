@@ -24,7 +24,7 @@ and form_t =
 
   | AttrExport of line_t * (string * int) list
   | AttrExportType of line_t * (string * int) list
-  | AttrImport of line_t * (string * int) list
+  | AttrImport of line_t * string * (string * int) list
   | AttrMod of line_t * string
   | AttrFile of line_t * string * line_t
   | DeclFun of line_t * string * int * clause_t list
@@ -200,12 +200,13 @@ and form_of_sf sf : (form_t, err_t) Result.t =
   | Sf.Tuple (4, [Sf.Atom "attribute";
                   Sf.Integer line;
                   Sf.Atom "import";
-                  Sf.List sf_name_and_arity_list
+                  Sf.Tuple (2, [Sf.Atom module_name;
+                                Sf.List sf_name_and_arity_list])
              ]) ->
      let%bind name_and_arity_list =
        sf_name_and_arity_list |> List.map ~f:name_and_arity_of_sf |> Result.all |> track ~loc:[%here]
      in
-     AttrImport (line, name_and_arity_list) |> return
+     AttrImport (line, module_name, name_and_arity_list) |> return
 
   (* attribute -module *)
   | Sf.Tuple (4, [Sf.Atom "attribute";
