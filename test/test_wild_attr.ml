@@ -6,23 +6,51 @@ let%expect_test "test_wild_attr.beam" =
     (Ok (
       AbstractCode (
         ModDecl (
-          (AttrFile 1 test_wild_attr.erl 1)
-          (AttrMod 1 test_wild_attr)
-          (AttrWild 4 compile (List ((Atom export_all))))
-          (AttrWild 6 vsn (Atom 1.0.0))
-          (AttrWild 8 on_load (
-            Tuple 2 (
-              (Atom    f)
-              (Integer 0))))
-          (AttrWild 10 behaviour (Atom   gen_server))
-          (AttrWild 12 foo       (Binary bar))
+          (AttrFile
+            (line      1)
+            (file      test_wild_attr.erl)
+            (file_line 1))
+          (AttrMod
+            (line        1)
+            (module_name test_wild_attr))
+          (AttrWild
+            (line      4)
+            (attribute compile)
+            (term (List ((Atom export_all)))))
+          (AttrWild
+            (line      6)
+            (attribute vsn)
+            (term (Atom 1.0.0)))
+          (AttrWild
+            (line      8)
+            (attribute on_load)
+            (term (
+              Tuple 2 (
+                (Atom    f)
+                (Integer 0)))))
+          (AttrWild
+            (line      10)
+            (attribute behaviour)
+            (term (Atom gen_server)))
+          (AttrWild
+            (line      12)
+            (attribute foo)
+            (term (Binary bar)))
           (DeclFun
-           14
-           f
-           0
-           ((
-             ClsFun 14
-             ()
-             ()
-             (ExprBody ((ExprLit (LitAtom 14 ok)))))))
+            (line          14)
+            (function_name f)
+            (arity         0)
+            (clauses ((
+              ClsFun
+              (line 14)
+              (patterns       ())
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs ((
+                    ExprLit (
+                      lit (
+                        LitAtom
+                        (line 14)
+                        (atom ok))))))))))))
           FormEof)))) |}]

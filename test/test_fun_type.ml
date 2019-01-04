@@ -6,17 +6,68 @@ let%expect_test "test_fun_type.beam" =
     (Ok (
       AbstractCode (
         ModDecl (
-          (AttrFile 1 test_fun_type.erl 1)
-          (AttrMod 1 test_fun_type)
-          (AttrExportType 3 (
-            (t 0)
-            (u 0)
-            (v 0)
-            (w 0)))
-          (DeclType 6 t () (TyFunAny 6))
-          (DeclType 7 u () (TyFunAnyArity 7 7 (TyPredef 7 integer ())))
-          (DeclType 8 v () (TyFun 8 8 () (TyPredef 8 integer ())))
-          (DeclType 9 w
-            ()
-            (TyFun 9 9 ((TyPredef 9 integer ())) (TyPredef 9 integer ())))
+          (AttrFile
+            (line      1)
+            (file      test_fun_type.erl)
+            (file_line 1))
+          (AttrMod
+            (line        1)
+            (module_name test_fun_type))
+          (AttrExportType
+            (line 3)
+            (type_arity_list (
+              (t 0)
+              (u 0)
+              (v 0)
+              (w 0))))
+          (DeclType
+            (line 6)
+            (name t)
+            (tvars ())
+            (ty (TyFunAny (line 6))))
+          (DeclType
+            (line 7)
+            (name u)
+            (tvars ())
+            (ty (
+              TyFunAnyArity
+              (line     7)
+              (line_any 7)
+              (ret (
+                TyPredef
+                (line 7)
+                (name integer)
+                (args ()))))))
+          (DeclType
+            (line 8)
+            (name v)
+            (tvars ())
+            (ty (
+              TyFun
+              (line        8)
+              (line_params 8)
+              (params ())
+              (ret (
+                TyPredef
+                (line 8)
+                (name integer)
+                (args ()))))))
+          (DeclType
+            (line 9)
+            (name w)
+            (tvars ())
+            (ty (
+              TyFun
+              (line        9)
+              (line_params 9)
+              (params ((
+                TyPredef
+                (line 9)
+                (name integer)
+                (args ()))))
+              (ret (
+                TyPredef
+                (line 9)
+                (name integer)
+                (args ()))))))
           FormEof)))) |}]

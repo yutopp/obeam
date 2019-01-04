@@ -6,69 +6,243 @@ let%expect_test "test_fun_call.beam" =
     (Ok (
       AbstractCode (
         ModDecl (
-          (AttrFile 1 test_fun_call.erl 1)
-          (AttrMod 1 test_fun_call)
-          (AttrExport 3 (
-            (f 0)
-            (f 1)
-            (f 2)))
+          (AttrFile
+            (line      1)
+            (file      test_fun_call.erl)
+            (file_line 1))
+          (AttrMod
+            (line        1)
+            (module_name test_fun_call))
+          (AttrExport
+            (line 3)
+            (function_arity_list (
+              (f 0)
+              (f 1)
+              (f 2))))
           (DeclFun
-           6
-           f
-           0
-           ((
-             ClsFun 6
-             ()
-             ()
-             (ExprBody (
-               (ExprMatch 7 (PatVar 7 F) (ExprLit (LitAtom 7 f)))
-               (ExprLocalCall 9
-                 (ExprLit (LitAtom 9 f))
-                 ((ExprLit (LitInteger 9 1))))
-               (ExprLocalCall 10 (ExprVar 10 F) ((ExprLit (LitInteger 10 1))))
-               (ExprLocalCall 11
-                 (ExprCase 11
-                   (ExprLit (LitAtom 11 true))
-                   ((ClsCase 11 (PatUniversal 11) () (ExprBody ((ExprVar 11 F))))))
-                 ((ExprLit (LitInteger 11 1)))))))))
+            (line          6)
+            (function_name f)
+            (arity         0)
+            (clauses ((
+              ClsFun
+              (line 6)
+              (patterns       ())
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs (
+                    (ExprMatch
+                      (line 7)
+                      (pattern (
+                        PatVar
+                        (line 7)
+                        (id   F)))
+                      (body (
+                        ExprLit (
+                          lit (
+                            LitAtom
+                            (line 7)
+                            (atom f))))))
+                    (ExprLocalCall
+                      (line 9)
+                      (function_expr (
+                        ExprLit (
+                          lit (
+                            LitAtom
+                            (line 9)
+                            (atom f)))))
+                      (args ((
+                        ExprLit (
+                          lit (
+                            LitInteger
+                            (line    9)
+                            (integer 1)))))))
+                    (ExprLocalCall
+                      (line 10)
+                      (function_expr (
+                        ExprVar
+                        (line 10)
+                        (id   F)))
+                      (args ((
+                        ExprLit (
+                          lit (
+                            LitInteger
+                            (line    10)
+                            (integer 1)))))))
+                    (ExprLocalCall
+                      (line 11)
+                      (function_expr (
+                        ExprCase
+                        (line 11)
+                        (expr (
+                          ExprLit (
+                            lit (
+                              LitAtom
+                              (line 11)
+                              (atom true)))))
+                        (clauses ((
+                          ClsCase
+                          (line 11)
+                          (pattern (PatUniversal (line 11)))
+                          (guard_sequence ())
+                          (body (
+                            ExprBody (
+                              exprs ((
+                                ExprVar
+                                (line 11)
+                                (id   F)))))))))))
+                      (args ((
+                        ExprLit (
+                          lit (
+                            LitInteger
+                            (line    11)
+                            (integer 1)))))))))))))))
           (DeclFun
-           14
-           f
-           1
-           ((
-             ClsFun 14
-             ((PatVar 14 N))
-             ()
-             (ExprBody (
-               (ExprMatch 15 (PatVar 15 M) (ExprLit (LitAtom 15 test_fun_call)))
-               (ExprMatch 16 (PatVar 16 F) (ExprLit (LitAtom 16 f)))
-               (ExprRemoteCall 18 18
-                 (ExprLit (LitAtom 18 test_fun_call))
-                 (ExprLit (LitAtom 18 f))
-                 ((ExprVar 18 N) (ExprLit (LitInteger 18 2))))
-               (ExprRemoteCall 19 19
-                 (ExprVar 19 M)
-                 (ExprVar 19 F)
-                 ((ExprVar 19 N) (ExprLit (LitInteger 19 2))))
-               (ExprRemoteCall 20 20
-                 (ExprCase 20
-                   (ExprLit (LitAtom 20 true))
-                   ((ClsCase 20 (PatUniversal 20) () (ExprBody ((ExprVar 20 M))))))
-                 (ExprCase 20
-                   (ExprLit (LitAtom 20 true))
-                   ((ClsCase 20 (PatUniversal 20) () (ExprBody ((ExprVar 20 F))))))
-                 ((ExprVar 20 N) (ExprLit (LitInteger 20 2)))))))))
+            (line          14)
+            (function_name f)
+            (arity         1)
+            (clauses ((
+              ClsFun
+              (line 14)
+              (patterns ((
+                PatVar
+                (line 14)
+                (id   N))))
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs (
+                    (ExprMatch
+                      (line 15)
+                      (pattern (
+                        PatVar
+                        (line 15)
+                        (id   M)))
+                      (body (
+                        ExprLit (
+                          lit (
+                            LitAtom
+                            (line 15)
+                            (atom test_fun_call))))))
+                    (ExprMatch
+                      (line 16)
+                      (pattern (
+                        PatVar
+                        (line 16)
+                        (id   F)))
+                      (body (
+                        ExprLit (
+                          lit (
+                            LitAtom
+                            (line 16)
+                            (atom f))))))
+                    (ExprRemoteCall
+                      (line        18)
+                      (line_remote 18)
+                      (module_expr (
+                        ExprLit (
+                          lit (
+                            LitAtom
+                            (line 18)
+                            (atom test_fun_call)))))
+                      (function_expr (
+                        ExprLit (
+                          lit (
+                            LitAtom
+                            (line 18)
+                            (atom f)))))
+                      (args (
+                        (ExprVar
+                          (line 18)
+                          (id   N))
+                        (ExprLit (
+                          lit (
+                            LitInteger
+                            (line    18)
+                            (integer 2)))))))
+                    (ExprRemoteCall
+                      (line        19)
+                      (line_remote 19)
+                      (module_expr   (ExprVar (line 19) (id M)))
+                      (function_expr (ExprVar (line 19) (id F)))
+                      (args (
+                        (ExprVar
+                          (line 19)
+                          (id   N))
+                        (ExprLit (
+                          lit (
+                            LitInteger
+                            (line    19)
+                            (integer 2)))))))
+                    (ExprRemoteCall
+                      (line        20)
+                      (line_remote 20)
+                      (module_expr (
+                        ExprCase
+                        (line 20)
+                        (expr (
+                          ExprLit (
+                            lit (
+                              LitAtom
+                              (line 20)
+                              (atom true)))))
+                        (clauses ((
+                          ClsCase
+                          (line 20)
+                          (pattern (PatUniversal (line 20)))
+                          (guard_sequence ())
+                          (body (
+                            ExprBody (
+                              exprs ((
+                                ExprVar
+                                (line 20)
+                                (id   M)))))))))))
+                      (function_expr (
+                        ExprCase
+                        (line 20)
+                        (expr (
+                          ExprLit (
+                            lit (
+                              LitAtom
+                              (line 20)
+                              (atom true)))))
+                        (clauses ((
+                          ClsCase
+                          (line 20)
+                          (pattern (PatUniversal (line 20)))
+                          (guard_sequence ())
+                          (body (
+                            ExprBody (
+                              exprs ((
+                                ExprVar
+                                (line 20)
+                                (id   F)))))))))))
+                      (args (
+                        (ExprVar
+                          (line 20)
+                          (id   N))
+                        (ExprLit (
+                          lit (
+                            LitInteger
+                            (line    20)
+                            (integer 2)))))))))))))))
           (DeclFun
-           22
-           f
-           2
-           ((
-             ClsFun 22
-             ((PatVar 22 N)
-              (PatVar 22 M))
-             ()
-             (ExprBody ((
-               ExprBinOp 22 +
-               (ExprVar 22 N)
-               (ExprVar 22 M)))))))
+            (line          22)
+            (function_name f)
+            (arity         2)
+            (clauses ((
+              ClsFun
+              (line 22)
+              (patterns (
+                (PatVar (line 22) (id N))
+                (PatVar (line 22) (id M))))
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs ((
+                    ExprBinOp
+                    (line 22)
+                    (op   +)
+                    (lhs (ExprVar (line 22) (id N)))
+                    (rhs (ExprVar (line 22) (id M))))))))))))
           FormEof)))) |}]

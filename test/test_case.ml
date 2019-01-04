@@ -6,26 +6,68 @@ let%expect_test "test_case.beam" =
     (Ok (
       AbstractCode (
         ModDecl (
-          (AttrFile 1 test_case.erl 1)
-          (AttrMod 1 test_case)
-          (AttrExport 3 ((f 1)))
+          (AttrFile
+            (line      1)
+            (file      test_case.erl)
+            (file_line 1))
+          (AttrMod
+            (line        1)
+            (module_name test_case))
+          (AttrExport (line 3) (function_arity_list ((f 1))))
           (DeclFun
-           6
-           f
-           1
-           ((
-             ClsFun 6
-             ((PatVar 6 R))
-             ()
-             (ExprBody ((
-               ExprCase 7
-               (ExprVar 7 R)
-               ((ClsCase 8
-                  (PatLit (LitAtom 8 ok))
-                  ()
-                  (ExprBody ((ExprLit (LitInteger 8 1)))))
-                (ClsCase 9
-                  (PatLit (LitAtom 9 error))
-                  ()
-                  (ExprBody ((ExprLit (LitInteger 9 2))))))))))))
+            (line          6)
+            (function_name f)
+            (arity         1)
+            (clauses ((
+              ClsFun
+              (line 6)
+              (patterns ((
+                PatVar
+                (line 6)
+                (id   R))))
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs ((
+                    ExprCase
+                    (line 7)
+                    (expr (
+                      ExprVar
+                      (line 7)
+                      (id   R)))
+                    (clauses (
+                      (ClsCase
+                        (line 8)
+                        (pattern (
+                          PatLit (
+                            lit (
+                              LitAtom
+                              (line 8)
+                              (atom ok)))))
+                        (guard_sequence ())
+                        (body (
+                          ExprBody (
+                            exprs ((
+                              ExprLit (
+                                lit (
+                                  LitInteger
+                                  (line    8)
+                                  (integer 1)))))))))
+                      (ClsCase
+                        (line 9)
+                        (pattern (
+                          PatLit (
+                            lit (
+                              LitAtom
+                              (line 9)
+                              (atom error)))))
+                        (guard_sequence ())
+                        (body (
+                          ExprBody (
+                            exprs ((
+                              ExprLit (
+                                lit (
+                                  LitInteger
+                                  (line    9)
+                                  (integer 2))))))))))))))))))))
           FormEof)))) |}]

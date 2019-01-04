@@ -6,54 +6,137 @@ let%expect_test "test_spec.beam" =
     (Ok (
       AbstractCode (
         ModDecl (
-          (AttrFile 1 test_spec.erl 1)
-          (AttrMod 1 test_spec)
-          (AttrExport 3 (
-            (f 1)
-            (g 1)))
-          (SpecFun 6
-            ()
-            f
-            1
-            ((
-              TyContFun 6
-              (TyFun 6 6 ((TyVar 6 A)) (TyPredef 6 integer ()))
-              (TyCont ((
-                TyContRel 6
-                (TyContIsSubType 6)
-                (TyVar 6 A)
-                (TyPredef 6 integer ())))))))
+          (AttrFile
+            (line      1)
+            (file      test_spec.erl)
+            (file_line 1))
+          (AttrMod
+            (line        1)
+            (module_name test_spec))
+          (AttrExport
+            (line 3)
+            (function_arity_list (
+              (f 1)
+              (g 1))))
+          (SpecFun
+            (line 6)
+            (module_name ())
+            (function_name f)
+            (arity         1)
+            (specs ((
+              TyContFun
+              (line 6)
+              (function_type (
+                TyFun
+                (line        6)
+                (line_params 6)
+                (params ((
+                  TyVar
+                  (line 6)
+                  (id   A))))
+                (ret (
+                  TyPredef
+                  (line 6)
+                  (name integer)
+                  (args ())))))
+              (constraints (
+                TyCont (
+                  constraints ((
+                    TyContRel
+                    (line 6)
+                    (constraint_kind (TyContIsSubType (line 6)))
+                    (lhs (
+                      TyVar
+                      (line 6)
+                      (id   A)))
+                    (rhs (
+                      TyPredef
+                      (line 6)
+                      (name integer)
+                      (args ()))))))))))))
           (DeclFun
-           7
-           f
-           1
-           ((ClsFun 7 ((PatVar 7 N)) () (ExprBody ((ExprVar 7 N))))))
-          (SpecFun 10
-            ()
-            g
-            1
-            ((
-              TyContFun 10
-              (TyFun 10 10 ((TyVar 10 A)) (TyVar 10 B))
-              (TyCont (
-                (TyContRel 10
-                  (TyContIsSubType 10)
-                  (TyVar 10 A)
-                  (TyPredef 10 integer ()))
-                (TyContRel 11
-                  (TyContIsSubType 11)
-                  (TyVar 11 B)
-                  (TyPredef 11 integer ())))))))
+            (line          7)
+            (function_name f)
+            (arity         1)
+            (clauses ((
+              ClsFun
+              (line 7)
+              (patterns ((
+                PatVar
+                (line 7)
+                (id   N))))
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs ((
+                    ExprVar
+                    (line 7)
+                    (id   N))))))))))
+          (SpecFun
+            (line 10)
+            (module_name ())
+            (function_name g)
+            (arity         1)
+            (specs ((
+              TyContFun
+              (line 10)
+              (function_type (
+                TyFun
+                (line        10)
+                (line_params 10)
+                (params ((
+                  TyVar
+                  (line 10)
+                  (id   A))))
+                (ret (
+                  TyVar
+                  (line 10)
+                  (id   B)))))
+              (constraints (
+                TyCont (
+                  constraints (
+                    (TyContRel
+                      (line 10)
+                      (constraint_kind (TyContIsSubType (line 10)))
+                      (lhs (
+                        TyVar
+                        (line 10)
+                        (id   A)))
+                      (rhs (
+                        TyPredef
+                        (line 10)
+                        (name integer)
+                        (args ()))))
+                    (TyContRel
+                      (line 11)
+                      (constraint_kind (TyContIsSubType (line 11)))
+                      (lhs (
+                        TyVar
+                        (line 11)
+                        (id   B)))
+                      (rhs (
+                        TyPredef
+                        (line 11)
+                        (name integer)
+                        (args ()))))))))))))
           (DeclFun
-           12
-           g
-           1
-           ((
-             ClsFun 12
-             ((PatVar 12 N))
-             ()
-             (ExprBody ((
-               ExprBinOp 13 *
-               (ExprVar 13 N)
-               (ExprVar 13 N)))))))
+            (line          12)
+            (function_name g)
+            (arity         1)
+            (clauses ((
+              ClsFun
+              (line 12)
+              (patterns ((
+                PatVar
+                (line 12)
+                (id   N))))
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs ((
+                    ExprBinOp
+                    (line 13)
+                    (op   *)
+                    (lhs (ExprVar (line 13) (id N)))
+                    (rhs (ExprVar (line 13) (id N))))))))))))
           FormEof)))) |}]

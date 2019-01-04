@@ -6,75 +6,172 @@ let%expect_test "test_fun_expr.beam" =
     (Ok (
       AbstractCode (
         ModDecl (
-          (AttrFile 1 test_fun_expr.erl 1)
-          (AttrMod 1 test_fun_expr)
-          (AttrExport 3 (
-            (f 0)
-            (g 0)
-            (h 0)))
+          (AttrFile
+            (line      1)
+            (file      test_fun_expr.erl)
+            (file_line 1))
+          (AttrMod
+            (line        1)
+            (module_name test_fun_expr))
+          (AttrExport
+            (line 3)
+            (function_arity_list (
+              (f 0)
+              (g 0)
+              (h 0))))
           (DeclFun
-           6
-           f
-           0
-           ((
-             ClsFun 6
-             ()
-             ()
-             (ExprBody ((
-               ExprFun 7
-               ()
-               ((ClsFun 7
-                  ((PatLit (LitInteger 7 42)))
-                  ()
-                  (ExprBody ((ExprLit (LitInteger 7 42)))))
-                (ClsFun 8
-                  ((PatUniversal 8))
-                  ()
-                  (ExprBody ((ExprLit (LitInteger 8 57))))))))))))
+            (line          6)
+            (function_name f)
+            (arity         0)
+            (clauses ((
+              ClsFun
+              (line 6)
+              (patterns       ())
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs ((
+                    ExprFun
+                    (line 7)
+                    (name ())
+                    (clauses (
+                      (ClsFun
+                        (line 7)
+                        (patterns ((
+                          PatLit (
+                            lit (
+                              LitInteger
+                              (line    7)
+                              (integer 42))))))
+                        (guard_sequence ())
+                        (body (
+                          ExprBody (
+                            exprs ((
+                              ExprLit (
+                                lit (
+                                  LitInteger
+                                  (line    7)
+                                  (integer 42)))))))))
+                      (ClsFun
+                        (line 8)
+                        (patterns ((PatUniversal (line 8))))
+                        (guard_sequence ())
+                        (body (
+                          ExprBody (
+                            exprs ((
+                              ExprLit (
+                                lit (
+                                  LitInteger
+                                  (line    8)
+                                  (integer 57))))))))))))))))))))
           (DeclFun
-           12
-           g
-           0
-           ((
-             ClsFun 12
-             ()
-             ()
-             (ExprBody ((
-               ExprFun 13
-               (F)
-               ((ClsFun 13
-                  ((PatLit (LitInteger 13 42)))
-                  ()
-                  (ExprBody ((
-                    ExprLocalCall 13
-                    (ExprVar 13 F)
-                    ((ExprLit (LitInteger 13 57)))))))
-                (ClsFun 14
-                  ((PatUniversal 14))
-                  ()
-                  (ExprBody ((ExprLit (LitInteger 14 57))))))))))))
+            (line          12)
+            (function_name g)
+            (arity         0)
+            (clauses ((
+              ClsFun
+              (line 12)
+              (patterns       ())
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs ((
+                    ExprFun
+                    (line 13)
+                    (name (F))
+                    (clauses (
+                      (ClsFun
+                        (line 13)
+                        (patterns ((
+                          PatLit (
+                            lit (
+                              LitInteger
+                              (line    13)
+                              (integer 42))))))
+                        (guard_sequence ())
+                        (body (
+                          ExprBody (
+                            exprs ((
+                              ExprLocalCall
+                              (line 13)
+                              (function_expr (
+                                ExprVar
+                                (line 13)
+                                (id   F)))
+                              (args ((
+                                ExprLit (
+                                  lit (
+                                    LitInteger
+                                    (line    13)
+                                    (integer 57))))))))))))
+                      (ClsFun
+                        (line 14)
+                        (patterns ((PatUniversal (line 14))))
+                        (guard_sequence ())
+                        (body (
+                          ExprBody (
+                            exprs ((
+                              ExprLit (
+                                lit (
+                                  LitInteger
+                                  (line    14)
+                                  (integer 57))))))))))))))))))))
           (DeclFun
-           18
-           h
-           0
-           ((
-             ClsFun 18
-             ()
-             ()
-             (ExprBody ((
-               ExprFun 19
-               ()
-               ((ClsFun 19
-                  ((PatVar 19 N))
-                  ((
-                    GuardSeq ((
-                      Guard ((
-                        GuardTestBinOp 19 =:=
-                        (GuardTestVar 19 N)
-                        (GuardTestLit (LitInteger 19 42))))))))
-                  (ExprBody ((ExprVar 19 N))))
-                (ClsFun 20
-                  ((PatUniversal 20))
-                  ()
-                  (ExprBody ((ExprLit (LitInteger 20 57))))))))))))
+            (line          18)
+            (function_name h)
+            (arity         0)
+            (clauses ((
+              ClsFun
+              (line 18)
+              (patterns       ())
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs ((
+                    ExprFun
+                    (line 19)
+                    (name ())
+                    (clauses (
+                      (ClsFun
+                        (line 19)
+                        (patterns ((
+                          PatVar
+                          (line 19)
+                          (id   N))))
+                        (guard_sequence ((
+                          GuardSeq (
+                            guards ((
+                              Guard (
+                                guard_tests ((
+                                  GuardTestBinOp
+                                  (line 19)
+                                  (op   =:=)
+                                  (lhs (
+                                    GuardTestVar
+                                    (line 19)
+                                    (id   N)))
+                                  (rhs (
+                                    GuardTestLit (
+                                      lit (
+                                        LitInteger
+                                        (line    19)
+                                        (integer 42))))))))))))))
+                        (body (
+                          ExprBody (
+                            exprs ((
+                              ExprVar
+                              (line 19)
+                              (id   N)))))))
+                      (ClsFun
+                        (line 20)
+                        (patterns ((PatUniversal (line 20))))
+                        (guard_sequence ())
+                        (body (
+                          ExprBody (
+                            exprs ((
+                              ExprLit (
+                                lit (
+                                  LitInteger
+                                  (line    20)
+                                  (integer 57))))))))))))))))))))
           FormEof)))) |}]

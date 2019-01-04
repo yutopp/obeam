@@ -6,31 +6,94 @@ let%expect_test "test_bitstring_type.beam" =
     (Ok (
       AbstractCode (
         ModDecl (
-          (AttrFile 1 test_bitstring_type.erl 1)
-          (AttrMod 1 test_bitstring_type)
-          (AttrExportType 3 (
-            (t 0)
-            (u 0)
-            (v 0)
-            (w 0)))
-          (DeclType 6 t
-            ()
-            (TyBitstring 6
-              (TyLit (LitInteger 6 0))
-              (TyLit (LitInteger 6 0))))
-          (DeclType 7 u
-            ()
-            (TyBitstring 7
-              (TyLit (LitInteger 7 1))
-              (TyLit (LitInteger 7 0))))
-          (DeclType 8 v
-            ()
-            (TyBitstring 8
-              (TyLit (LitInteger 8 0))
-              (TyLit (LitInteger 8 2))))
-          (DeclType 9 w
-            ()
-            (TyBitstring 9
-              (TyLit (LitInteger 9 3))
-              (TyLit (LitInteger 9 4))))
+          (AttrFile
+            (line      1)
+            (file      test_bitstring_type.erl)
+            (file_line 1))
+          (AttrMod
+            (line        1)
+            (module_name test_bitstring_type))
+          (AttrExportType
+            (line 3)
+            (type_arity_list (
+              (t 0)
+              (u 0)
+              (v 0)
+              (w 0))))
+          (DeclType
+            (line 6)
+            (name t)
+            (tvars ())
+            (ty (
+              TyBitstring
+              (line 6)
+              (m (
+                TyLit (
+                  lit (
+                    LitInteger
+                    (line    6)
+                    (integer 0)))))
+              (n (
+                TyLit (
+                  lit (
+                    LitInteger
+                    (line    6)
+                    (integer 0))))))))
+          (DeclType
+            (line 7)
+            (name u)
+            (tvars ())
+            (ty (
+              TyBitstring
+              (line 7)
+              (m (
+                TyLit (
+                  lit (
+                    LitInteger
+                    (line    7)
+                    (integer 1)))))
+              (n (
+                TyLit (
+                  lit (
+                    LitInteger
+                    (line    7)
+                    (integer 0))))))))
+          (DeclType
+            (line 8)
+            (name v)
+            (tvars ())
+            (ty (
+              TyBitstring
+              (line 8)
+              (m (
+                TyLit (
+                  lit (
+                    LitInteger
+                    (line    8)
+                    (integer 0)))))
+              (n (
+                TyLit (
+                  lit (
+                    LitInteger
+                    (line    8)
+                    (integer 2))))))))
+          (DeclType
+            (line 9)
+            (name w)
+            (tvars ())
+            (ty (
+              TyBitstring
+              (line 9)
+              (m (
+                TyLit (
+                  lit (
+                    LitInteger
+                    (line    9)
+                    (integer 3)))))
+              (n (
+                TyLit (
+                  lit (
+                    LitInteger
+                    (line    9)
+                    (integer 4))))))))
           FormEof)))) |}]
