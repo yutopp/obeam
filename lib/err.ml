@@ -15,6 +15,7 @@ type 'a t = {
 }
 and 'a kind_t =
   | Not_supported_absform of string * 'a
+  | Invalid_input of string * 'a
 [@@deriving sexp_of]
 
 let create ~loc reason =
