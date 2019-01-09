@@ -38,6 +38,7 @@ and form_t =
 
 and literal_t =
   | LitAtom of line_t * string
+  | LitChar of line_t * Uchar.t
   | LitInteger of line_t * int
   | LitBigInt of line_t * Z.t
   | LitString of line_t * string
@@ -377,8 +378,13 @@ and lit_of_sf sf : (literal_t, err_t) Result.t =
   | Sf.Tuple (3, [Sf.Atom "atom"; Sf.Integer line; Sf.Atom v]) ->
      LitAtom (line, v) |> return
 
-  | Sf.Tuple (3, [Sf.Atom "char"; Sf.Integer line; _]) ->
-     failwith "TODO"
+  | Sf.Tuple (3, [Sf.Atom "char"; Sf.Integer line; Sf.Integer c]) ->
+     begin match Uchar.of_scalar c with
+     | None ->
+        Err.create ~loc:[%here] (Err.Invalid_input ("not a valid unicode scalar value", sf)) |> Result.fail
+     | Some u ->
+        LitChar (line, u) |> return
+     end
 
   | Sf.Tuple (3, [Sf.Atom "float"; Sf.Integer line; _]) ->
      failwith "TODO"
