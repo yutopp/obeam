@@ -6,25 +6,45 @@ let%expect_test "test_funt.beam" =
     (Ok (
       AbstractCode (
         ModDecl (
-          (AttrFile 1 test_funt.erl 1)
-          (AttrMod 1 test_funt)
-          (AttrExport 3 ((g 0)))
+          (AttrFile
+            (line      1)
+            (file      test_funt.erl)
+            (file_line 1))
+          (AttrMod
+            (line        1)
+            (module_name test_funt))
+          (AttrExport (line 3) (function_arity_list ((g 0))))
           (DeclFun
-           5
-           f
-           0
-           ((
-             ClsFun 5
-             ()
-             ()
-             (ExprBody ((ExprLit (LitAtom 5 ok)))))))
+            (line          5)
+            (function_name f)
+            (arity         0)
+            (clauses ((
+              ClsFun
+              (line 5)
+              (patterns       ())
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs ((
+                    ExprLit (
+                      lit (
+                        LitAtom
+                        (line 5)
+                        (atom ok))))))))))))
           (DeclFun
-           8
-           g
-           0
-           ((
-             ClsFun 8
-             ()
-             ()
-             (ExprBody ((ExprLocalFunRef 8 f 0))))))
+            (line          8)
+            (function_name g)
+            (arity         0)
+            (clauses ((
+              ClsFun
+              (line 8)
+              (patterns       ())
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs ((
+                    ExprLocalFunRef
+                    (line          8)
+                    (function_name f)
+                    (arity         0))))))))))
           FormEof)))) |}]

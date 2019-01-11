@@ -6,15 +6,55 @@ let%expect_test "test_map_type.beam" =
     (Ok (
       AbstractCode (
         ModDecl (
-          (AttrFile 1 test_map_type.erl 1)
-          (AttrMod 1 test_map_type)
-          (AttrExportType 3 (
-            (any_map 0)
-            (ab_map  0)))
-          (DeclType 6 any_map () (TyAnyMap 6))
-          (DeclType 9 ab_map
-            ()
-            (TyMap 9 (
-              (TyAssocExact 9 (TyLit (LitAtom 9 a)) (TyPredef 9 integer ()))
-              (TyAssoc 9 (TyLit (LitAtom 9 b)) (TyPredef 9 atom ())))))
+          (AttrFile
+            (line      1)
+            (file      test_map_type.erl)
+            (file_line 1))
+          (AttrMod
+            (line        1)
+            (module_name test_map_type))
+          (AttrExportType
+            (line 3)
+            (type_arity_list (
+              (any_map 0)
+              (ab_map  0))))
+          (DeclType
+            (line 6)
+            (name any_map)
+            (tvars ())
+            (ty (TyAnyMap (line 6))))
+          (DeclType
+            (line 9)
+            (name ab_map)
+            (tvars ())
+            (ty (
+              TyMap
+              (line 9)
+              (assocs (
+                (TyAssocExact
+                  (line 9)
+                  (key (
+                    TyLit (
+                      lit (
+                        LitAtom
+                        (line 9)
+                        (atom a)))))
+                  (value (
+                    TyPredef
+                    (line 9)
+                    (name integer)
+                    (args ()))))
+                (TyAssoc
+                  (line 9)
+                  (key (
+                    TyLit (
+                      lit (
+                        LitAtom
+                        (line 9)
+                        (atom b)))))
+                  (value (
+                    TyPredef
+                    (line 9)
+                    (name atom)
+                    (args ())))))))))
           FormEof)))) |}]
