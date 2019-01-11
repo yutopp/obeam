@@ -538,8 +538,7 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
      ExprRemoteCall {line; line_remote; module_expr; function_expr; args} |> return
 
   (* a function call (local) *)
-  | Sf.Tuple (4, [Sf.Atom "call"; Sf.Integer line; sf_function_expr; Sf.List
-  sf_args]) ->
+  | Sf.Tuple (4, [Sf.Atom "call"; Sf.Integer line; sf_function_expr; Sf.List sf_args]) ->
      let%bind function_expr = sf_function_expr |> expr_of_sf |> track ~loc:[%here] in
      let%bind args = sf_args |> List.map ~f:expr_of_sf |> Result.all |> track ~loc:[%here] in
      ExprLocalCall {line; function_expr; args} |> return
