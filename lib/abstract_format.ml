@@ -65,7 +65,7 @@ and expr_t =
   | ExprFun of {line: line_t; name: string option; clauses: clause_t list}
   | ExprLocalCall of {line: line_t; function_expr: expr_t; args: expr_t list}
   | ExprRemoteCall of {line: line_t;  line_remote: line_t; module_expr: expr_t; function_expr: expr_t; args: expr_t list}
-  | ExprIf of {line: line_t; if_clauses: clause_t list}
+  | ExprIf of {line: line_t; clauses: clause_t list} (* `clauses` must be a list of if-clauses (ClsIf) *)
   | ExprMapCreation of {line: line_t; assocs: expr_assoc_t list}
   | ExprMapUpdate of {line: line_t; map: expr_t; assocs: expr_assoc_t list}
   | ExprMatch of {line: line_t; pattern: pattern_t; body: expr_t}
@@ -89,7 +89,7 @@ and integer_or_var_t =
 and clause_t =
   | ClsCase of {line: line_t; pattern: pattern_t; guard_sequence: guard_sequence_t option; body: expr_t}
   | ClsFun of {line: line_t; patterns: pattern_t list; guard_sequence: guard_sequence_t option; body: expr_t}
-  | ClsIf of {line: line_t; guard_sequence: guard_sequence_t; body: expr_t}
+  | ClsIf of {line: line_t; guard_sequence: guard_sequence_t; body: expr_t} (* guard_sequence must not be empty *)
 and guard_sequence_t =
   | GuardSeq of {guards: guard_t list}
 and guard_t =
@@ -548,8 +548,8 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
   | Sf.Tuple (3, [Sf.Atom "if";
                   Sf.Integer line;
                   Sf.List sf_clauses]) ->
-     let%bind if_clauses = sf_clauses |> List.map ~f:(cls_of_sf ~in_function:false) |> Result.all |> track ~loc:[%here] in
-     ExprIf {line; if_clauses} |> return
+     let%bind clauses = sf_clauses |> List.map ~f:(cls_of_sf ~in_function:false) |> Result.all |> track ~loc:[%here] in
+     ExprIf {line; clauses} |> return
 
   (* a map creation *)
   | Sf.Tuple (3, [Sf.Atom "map";

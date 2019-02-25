@@ -31,7 +31,7 @@ let%expect_test "test_if.beam" =
                   exprs ((
                     ExprIf
                     (line 7)
-                    (if_clauses (
+                    (clauses (
                       (ClsIf
                         (line 8)
                         (guard_sequence (
