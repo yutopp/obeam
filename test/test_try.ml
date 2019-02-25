@@ -1,18 +1,18 @@
 open Test_util
 
-let%expect_test "test_try_expr.beam" =
-  print_ast "test_try_expr.beam";
+let%expect_test "test_try.beam" =
+  print_ast "test_try.beam";
   [%expect {|
     (Ok (
       AbstractCode (
         ModDecl (
           (AttrFile
             (line      1)
-            (file      test_try_expr.erl)
+            (file      test_try.erl)
             (file_line 1))
           (AttrMod
             (line        1)
-            (module_name test_try_expr))
+            (module_name test_try))
           (AttrExport
             (line 3)
             (function_arity_list (

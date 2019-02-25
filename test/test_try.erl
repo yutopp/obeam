@@ -1,4 +1,4 @@
--module(test_try_expr).
+-module(test_try).
 
 -export([try_catch/0, try_of_catch/0, try_after/0,
          try_of_after/0, try_catch_after/0, try_of_catch_after/0]).
