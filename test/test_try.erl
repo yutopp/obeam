@@ -7,7 +7,7 @@
 %% The 'OTP_RELEASE' macro introduced at OTP-21,
 %% so we can use it for detecting whether the Erlang compiler supports new catch clause syntax or not.
 -define(STACKTRACE_WITH_GUARD_SEQUENCE_CLAUSE, Class:Err:Stacktrace when Err =:= error -> {Class, Err, Stacktrace}; ).
--define(STACKTRACE_CLAUSE, Class:Err:Stacktrace -> {Class, Err, Stacktrace} ).
+-define(STACKTRACE_CLAUSE, ; Class:Err:Stacktrace -> {Class, Err, Stacktrace} ).
 -else.
 -define(STACKTRACE_WITH_GUARD_SEQUENCE_CLAUSE, ).
 -define(STACKTRACE_CLAUSE, ).
@@ -23,7 +23,7 @@ try_catch() ->
         error:Err when Err =:= error -> Err;
         ?STACKTRACE_WITH_GUARD_SEQUENCE_CLAUSE
         Err -> Err;
-        error:Err -> Err;
+        error:Err -> Err
         ?STACKTRACE_CLAUSE
     end.
 
@@ -40,7 +40,7 @@ try_of_catch() ->
         error:Err when Err =:= error -> Err;
         ?STACKTRACE_WITH_GUARD_SEQUENCE_CLAUSE
         Err -> Err;
-        error:Err -> Err;
+        error:Err -> Err
         ?STACKTRACE_CLAUSE
     end.
 
@@ -77,7 +77,7 @@ try_catch_after() ->
         error:Err when Err =:= error -> Err;
         ?STACKTRACE_WITH_GUARD_SEQUENCE_CLAUSE
         Err -> Err;
-        error:Err -> Err;
+        error:Err -> Err
         ?STACKTRACE_CLAUSE
     after
         Ok = ok,
@@ -97,7 +97,7 @@ try_of_catch_after() ->
         error:Err when Err =:= error -> Err;
         ?STACKTRACE_WITH_GUARD_SEQUENCE_CLAUSE
         Err -> Err;
-        error:Err -> Err;
+        error:Err -> Err
         ?STACKTRACE_CLAUSE
    after
         Ok = ok,
