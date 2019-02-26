@@ -49,4 +49,4 @@ let otp_version () =
   let version = Stdio.In_channel.read_all "otp_version" in
   match Caml.int_of_string_opt version with
   | Some v -> v
-  | None -> failwith (Printf.sprintf "Failed: unsupported otp-version %s" version)
+  | None -> failwith (Printf.sprintf "Failed to read otp-version: %s" version)
