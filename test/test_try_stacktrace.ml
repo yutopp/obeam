@@ -1,8 +1,8 @@
 open Test_util
 open Obeam.Abstract_format
 
-(* `let%expect_test` marks unreachable expectation as [%expect {| DID NOT REACH THIS PROGRAM POINT |}],
- * So we use primitive `let%test`.
+(* We cannot use `let%expect_test` because it marks unreachable [%expect {| |}] as [%expect {| DID NOT REACH THIS PROGRAM POINT |}],
+ * So we use `let%test` which is more primitive than `let%expect_test`.
  *)
 let%test "test_try_stacktrace.beam" =
   match otp_version () with
