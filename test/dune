@@ -1,7 +1,7 @@
 (library
  (name abs_form_test)
  (libraries obeam expect_test_helpers_kernel)
- (inline_tests (deps (glob_files *.beam)))
+ (inline_tests (deps (glob_files *.beam) otp_version))
  (preprocess (pps ppx_sexp_conv ppx_expect)))
 
 (env
