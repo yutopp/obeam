@@ -5,8 +5,7 @@ open Obeam.Abstract_format
  * So we use `let%test` which is more primitive than `let%expect_test`.
  *)
 let%test "test_try_stacktrace.beam" =
-  match otp_version () with
-  | OTP21 ->
+  if otp_version () >= 21 then
     let dummy_clause =
       ClsCatch {line=20; line_cls=20; line_stacktrace=20;
                 exception_class=AtomVarAtom {line=20; atom="throw"};
@@ -56,5 +55,5 @@ let%test "test_try_stacktrace.beam" =
                FormEof]))
     in
     load_ast_from_beam "test_try_stacktrace.beam" = expect;
- | _ ->
+  else
      true

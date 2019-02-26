@@ -45,14 +45,8 @@ let print_ast beam_filename =
   |> [%sexp_of: (Abstract_format.t, Abstract_format.err_t) Result.t]
   |> Expect_test_helpers_kernel.print_s
 
-type otp_version =
-  | OTP19
-  | OTP20
-  | OTP21
-
 let otp_version () =
-  match Stdio.In_channel.read_all "otp_version" with
-  | "19" -> OTP19
-  | "20" -> OTP20
-  | "21" -> OTP21
-  | v -> failwith (Printf.sprintf "Failed: unsupported otp-version %s" v)
+  let version = Stdio.In_channel.read_all "otp_version" in
+  match Caml.int_of_string_opt version with
+  | Some v -> v
+  | None -> failwith (Printf.sprintf "Failed: unsupported otp-version %s" version)
