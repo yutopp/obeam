@@ -23,52 +23,52 @@ let%expect_test "test_try.beam" =
               (try_catch_after    0)
               (try_of_catch_after 0))))
           (DeclFun
-            (line          17)
+            (line          7)
             (function_name try_catch)
             (arity         0)
             (clauses ((
               ClsFun
-              (line 17)
+              (line 7)
               (patterns       ())
               (guard_sequence ())
               (body (
                 ExprBody (
                   exprs ((
                     ExprTry
-                    (line 18)
+                    (line 8)
                     (exprs (
                       (ExprMatch
-                        (line 19)
+                        (line 9)
                         (pattern (
                           PatVar
-                          (line 19)
+                          (line 9)
                           (id   R)))
                         (body (
                           ExprLit (
                             lit (
                               LitAtom
-                              (line 19)
+                              (line 9)
                               (atom reason))))))
                       (ExprLocalCall
-                        (line 20)
+                        (line 10)
                         (function_expr (
                           ExprLit (
                             lit (
                               LitAtom
-                              (line 20)
+                              (line 10)
                               (atom error)))))
                         (args ((
                           ExprVar
-                          (line 20)
+                          (line 10)
                           (id   R)))))))
                     (case_clauses ())
                     (catch_clauses (
                       (ClsCatch
-                        (line            22)
-                        (line_cls        22)
-                        (line_stacktrace 22)
-                        (exception_class (AtomVarAtom (line 22) (atom throw)))
-                        (pattern         (PatVar      (line 22) (id   Err)))
+                        (line            12)
+                        (line_cls        12)
+                        (line_stacktrace 12)
+                        (exception_class (AtomVarAtom (line 12) (atom throw)))
+                        (pattern         (PatVar      (line 12) (id   Err)))
                         (stacktrace _)
                         (guard_sequence ((
                           GuardSeq (
@@ -76,30 +76,30 @@ let%expect_test "test_try.beam" =
                               Guard (
                                 guard_tests ((
                                   GuardTestBinOp
-                                  (line 22)
+                                  (line 12)
                                   (op   =:=)
                                   (lhs (
                                     GuardTestVar
-                                    (line 22)
+                                    (line 12)
                                     (id   Err)))
                                   (rhs (
                                     GuardTestLit (
                                       lit (
                                         LitAtom
-                                        (line 22)
+                                        (line 12)
                                         (atom error))))))))))))))
                         (body (
                           ExprBody (
                             exprs ((
                               ExprVar
-                              (line 22)
+                              (line 12)
                               (id   Err)))))))
                       (ClsCatch
-                        (line            23)
-                        (line_cls        23)
-                        (line_stacktrace 23)
-                        (exception_class (AtomVarAtom (line 23) (atom error)))
-                        (pattern         (PatVar      (line 23) (id   Err)))
+                        (line            13)
+                        (line_cls        13)
+                        (line_stacktrace 13)
+                        (exception_class (AtomVarAtom (line 13) (atom error)))
+                        (pattern         (PatVar      (line 13) (id   Err)))
                         (stacktrace _)
                         (guard_sequence ((
                           GuardSeq (
@@ -107,172 +107,121 @@ let%expect_test "test_try.beam" =
                               Guard (
                                 guard_tests ((
                                   GuardTestBinOp
-                                  (line 23)
+                                  (line 13)
                                   (op   =:=)
                                   (lhs (
                                     GuardTestVar
-                                    (line 23)
+                                    (line 13)
                                     (id   Err)))
                                   (rhs (
                                     GuardTestLit (
                                       lit (
                                         LitAtom
-                                        (line 23)
+                                        (line 13)
                                         (atom error))))))))))))))
                         (body (
                           ExprBody (
                             exprs ((
                               ExprVar
-                              (line 23)
+                              (line 13)
                               (id   Err)))))))
                       (ClsCatch
-                        (line            24)
-                        (line_cls        24)
-                        (line_stacktrace 24)
-                        (exception_class (AtomVarVar (line 24) (id Class)))
-                        (pattern         (PatVar     (line 24) (id Err)))
-                        (stacktrace Stacktrace)
-                        (guard_sequence ((
-                          GuardSeq (
-                            guards ((
-                              Guard (
-                                guard_tests ((
-                                  GuardTestBinOp
-                                  (line 24)
-                                  (op   =:=)
-                                  (lhs (
-                                    GuardTestVar
-                                    (line 24)
-                                    (id   Err)))
-                                  (rhs (
-                                    GuardTestLit (
-                                      lit (
-                                        LitAtom
-                                        (line 24)
-                                        (atom error))))))))))))))
-                        (body (
-                          ExprBody (
-                            exprs ((
-                              ExprTuple
-                              (line 24)
-                              (elements (
-                                (ExprVar (line 24) (id Class))
-                                (ExprVar (line 24) (id Err))
-                                (ExprVar (line 24) (id Stacktrace))))))))))
-                      (ClsCatch
-                        (line            25)
-                        (line_cls        25)
-                        (line_stacktrace 25)
-                        (exception_class (AtomVarAtom (line 25) (atom throw)))
-                        (pattern         (PatVar      (line 25) (id   Err)))
+                        (line            14)
+                        (line_cls        14)
+                        (line_stacktrace 14)
+                        (exception_class (AtomVarAtom (line 14) (atom throw)))
+                        (pattern         (PatVar      (line 14) (id   Err)))
                         (stacktrace _)
                         (guard_sequence ())
                         (body (
                           ExprBody (
                             exprs ((
                               ExprVar
-                              (line 25)
+                              (line 14)
                               (id   Err)))))))
                       (ClsCatch
-                        (line            26)
-                        (line_cls        26)
-                        (line_stacktrace 26)
-                        (exception_class (AtomVarAtom (line 26) (atom error)))
-                        (pattern         (PatVar      (line 26) (id   Err)))
+                        (line            15)
+                        (line_cls        15)
+                        (line_stacktrace 15)
+                        (exception_class (AtomVarAtom (line 15) (atom error)))
+                        (pattern         (PatVar      (line 15) (id   Err)))
                         (stacktrace _)
                         (guard_sequence ())
                         (body (
                           ExprBody (
                             exprs ((
                               ExprVar
-                              (line 26)
-                              (id   Err)))))))
-                      (ClsCatch
-                        (line            27)
-                        (line_cls        27)
-                        (line_stacktrace 27)
-                        (exception_class (AtomVarVar (line 27) (id Class)))
-                        (pattern         (PatVar     (line 27) (id Err)))
-                        (stacktrace Stacktrace)
-                        (guard_sequence ())
-                        (body (
-                          ExprBody (
-                            exprs ((
-                              ExprTuple
-                              (line 27)
-                              (elements (
-                                (ExprVar (line 27) (id Class))
-                                (ExprVar (line 27) (id Err))
-                                (ExprVar (line 27) (id Stacktrace))))))))))))
+                              (line 15)
+                              (id   Err)))))))))
                     (after ()))))))))))
           (DeclFun
-            (line          31)
+            (line          19)
             (function_name try_of_catch)
             (arity         0)
             (clauses ((
               ClsFun
-              (line 31)
+              (line 19)
               (patterns       ())
               (guard_sequence ())
               (body (
                 ExprBody (
                   exprs ((
                     ExprTry
-                    (line 32)
+                    (line 20)
                     (exprs (
                       (ExprMatch
-                        (line 33)
+                        (line 21)
                         (pattern (
                           PatVar
-                          (line 33)
+                          (line 21)
                           (id   R)))
                         (body (
                           ExprLit (
                             lit (
                               LitAtom
-                              (line 33)
+                              (line 21)
                               (atom reason))))))
                       (ExprLocalCall
-                        (line 34)
+                        (line 22)
                         (function_expr (
                           ExprLit (
                             lit (
                               LitAtom
-                              (line 34)
+                              (line 22)
                               (atom error)))))
                         (args ((
                           ExprVar
-                          (line 34)
+                          (line 22)
                           (id   R)))))))
                     (case_clauses (
                       (ClsCase
-                        (line 36)
+                        (line 24)
                         (pattern (
                           PatTuple
-                          (line 36)
+                          (line 24)
                           (pats (
                             (PatLit (
                               lit (
                                 LitAtom
-                                (line 36)
+                                (line 24)
                                 (atom ok))))
                             (PatVar
-                              (line 36)
+                              (line 24)
                               (id   A))))))
                         (guard_sequence ())
                         (body (
                           ExprBody (
                             exprs ((
                               ExprVar
-                              (line 36)
+                              (line 24)
                               (id   A)))))))
                       (ClsCase
-                        (line 37)
+                        (line 25)
                         (pattern (
                           PatLit (
                             lit (
                               LitAtom
-                              (line 37)
+                              (line 25)
                               (atom error)))))
                         (guard_sequence ())
                         (body (
@@ -281,15 +230,15 @@ let%expect_test "test_try.beam" =
                               ExprLit (
                                 lit (
                                   LitAtom
-                                  (line 37)
+                                  (line 25)
                                   (atom error)))))))))))
                     (catch_clauses (
                       (ClsCatch
-                        (line            39)
-                        (line_cls        39)
-                        (line_stacktrace 39)
-                        (exception_class (AtomVarAtom (line 39) (atom throw)))
-                        (pattern         (PatVar      (line 39) (id   Err)))
+                        (line            27)
+                        (line_cls        27)
+                        (line_stacktrace 27)
+                        (exception_class (AtomVarAtom (line 27) (atom throw)))
+                        (pattern         (PatVar      (line 27) (id   Err)))
                         (stacktrace _)
                         (guard_sequence ((
                           GuardSeq (
@@ -297,30 +246,30 @@ let%expect_test "test_try.beam" =
                               Guard (
                                 guard_tests ((
                                   GuardTestBinOp
-                                  (line 39)
+                                  (line 27)
                                   (op   =:=)
                                   (lhs (
                                     GuardTestVar
-                                    (line 39)
+                                    (line 27)
                                     (id   Err)))
                                   (rhs (
                                     GuardTestLit (
                                       lit (
                                         LitAtom
-                                        (line 39)
+                                        (line 27)
                                         (atom error))))))))))))))
                         (body (
                           ExprBody (
                             exprs ((
                               ExprVar
-                              (line 39)
+                              (line 27)
                               (id   Err)))))))
                       (ClsCatch
-                        (line            40)
-                        (line_cls        40)
-                        (line_stacktrace 40)
-                        (exception_class (AtomVarAtom (line 40) (atom error)))
-                        (pattern         (PatVar      (line 40) (id   Err)))
+                        (line            28)
+                        (line_cls        28)
+                        (line_stacktrace 28)
+                        (exception_class (AtomVarAtom (line 28) (atom error)))
+                        (pattern         (PatVar      (line 28) (id   Err)))
                         (stacktrace _)
                         (guard_sequence ((
                           GuardSeq (
@@ -328,229 +277,178 @@ let%expect_test "test_try.beam" =
                               Guard (
                                 guard_tests ((
                                   GuardTestBinOp
-                                  (line 40)
+                                  (line 28)
                                   (op   =:=)
                                   (lhs (
                                     GuardTestVar
-                                    (line 40)
+                                    (line 28)
                                     (id   Err)))
                                   (rhs (
                                     GuardTestLit (
                                       lit (
                                         LitAtom
-                                        (line 40)
+                                        (line 28)
                                         (atom error))))))))))))))
                         (body (
                           ExprBody (
                             exprs ((
                               ExprVar
-                              (line 40)
+                              (line 28)
                               (id   Err)))))))
                       (ClsCatch
-                        (line            41)
-                        (line_cls        41)
-                        (line_stacktrace 41)
-                        (exception_class (AtomVarVar (line 41) (id Class)))
-                        (pattern         (PatVar     (line 41) (id Err)))
-                        (stacktrace Stacktrace)
-                        (guard_sequence ((
-                          GuardSeq (
-                            guards ((
-                              Guard (
-                                guard_tests ((
-                                  GuardTestBinOp
-                                  (line 41)
-                                  (op   =:=)
-                                  (lhs (
-                                    GuardTestVar
-                                    (line 41)
-                                    (id   Err)))
-                                  (rhs (
-                                    GuardTestLit (
-                                      lit (
-                                        LitAtom
-                                        (line 41)
-                                        (atom error))))))))))))))
-                        (body (
-                          ExprBody (
-                            exprs ((
-                              ExprTuple
-                              (line 41)
-                              (elements (
-                                (ExprVar (line 41) (id Class))
-                                (ExprVar (line 41) (id Err))
-                                (ExprVar (line 41) (id Stacktrace))))))))))
-                      (ClsCatch
-                        (line            42)
-                        (line_cls        42)
-                        (line_stacktrace 42)
-                        (exception_class (AtomVarAtom (line 42) (atom throw)))
-                        (pattern         (PatVar      (line 42) (id   Err)))
+                        (line            29)
+                        (line_cls        29)
+                        (line_stacktrace 29)
+                        (exception_class (AtomVarAtom (line 29) (atom throw)))
+                        (pattern         (PatVar      (line 29) (id   Err)))
                         (stacktrace _)
                         (guard_sequence ())
                         (body (
                           ExprBody (
                             exprs ((
                               ExprVar
-                              (line 42)
+                              (line 29)
                               (id   Err)))))))
                       (ClsCatch
-                        (line            43)
-                        (line_cls        43)
-                        (line_stacktrace 43)
-                        (exception_class (AtomVarAtom (line 43) (atom error)))
-                        (pattern         (PatVar      (line 43) (id   Err)))
+                        (line            30)
+                        (line_cls        30)
+                        (line_stacktrace 30)
+                        (exception_class (AtomVarAtom (line 30) (atom error)))
+                        (pattern         (PatVar      (line 30) (id   Err)))
                         (stacktrace _)
                         (guard_sequence ())
                         (body (
                           ExprBody (
                             exprs ((
                               ExprVar
-                              (line 43)
-                              (id   Err)))))))
-                      (ClsCatch
-                        (line            44)
-                        (line_cls        44)
-                        (line_stacktrace 44)
-                        (exception_class (AtomVarVar (line 44) (id Class)))
-                        (pattern         (PatVar     (line 44) (id Err)))
-                        (stacktrace Stacktrace)
-                        (guard_sequence ())
-                        (body (
-                          ExprBody (
-                            exprs ((
-                              ExprTuple
-                              (line 44)
-                              (elements (
-                                (ExprVar (line 44) (id Class))
-                                (ExprVar (line 44) (id Err))
-                                (ExprVar (line 44) (id Stacktrace))))))))))))
+                              (line 30)
+                              (id   Err)))))))))
                     (after ()))))))))))
           (DeclFun
-            (line          48)
+            (line          34)
             (function_name try_after)
             (arity         0)
             (clauses ((
               ClsFun
-              (line 48)
+              (line 34)
               (patterns       ())
               (guard_sequence ())
               (body (
                 ExprBody (
                   exprs ((
                     ExprTry
-                    (line 49)
+                    (line 35)
                     (exprs (
                       (ExprMatch
-                        (line 50)
+                        (line 36)
                         (pattern (
                           PatVar
-                          (line 50)
+                          (line 36)
                           (id   R)))
                         (body (
                           ExprLit (
                             lit (
                               LitAtom
-                              (line 50)
+                              (line 36)
                               (atom reason))))))
                       (ExprLocalCall
-                        (line 51)
+                        (line 37)
                         (function_expr (
                           ExprLit (
                             lit (
                               LitAtom
-                              (line 51)
+                              (line 37)
                               (atom error)))))
                         (args ((
                           ExprVar
-                          (line 51)
+                          (line 37)
                           (id   R)))))))
                     (case_clauses  ())
                     (catch_clauses ())
                     (after (
                       (ExprMatch
-                        (line 53)
+                        (line 39)
                         (pattern (
                           PatVar
-                          (line 53)
+                          (line 39)
                           (id   Ok)))
                         (body (
                           ExprLit (
                             lit (
                               LitAtom
-                              (line 53)
+                              (line 39)
                               (atom ok))))))
                       (ExprVar
-                        (line 54)
+                        (line 40)
                         (id   Ok)))))))))))))
           (DeclFun
-            (line          58)
+            (line          44)
             (function_name try_of_after)
             (arity         0)
             (clauses ((
               ClsFun
-              (line 58)
+              (line 44)
               (patterns       ())
               (guard_sequence ())
               (body (
                 ExprBody (
                   exprs ((
                     ExprTry
-                    (line 59)
+                    (line 45)
                     (exprs (
                       (ExprMatch
-                        (line 60)
+                        (line 46)
                         (pattern (
                           PatVar
-                          (line 60)
+                          (line 46)
                           (id   R)))
                         (body (
                           ExprLit (
                             lit (
                               LitAtom
-                              (line 60)
+                              (line 46)
                               (atom reason))))))
                       (ExprLocalCall
-                        (line 61)
+                        (line 47)
                         (function_expr (
                           ExprLit (
                             lit (
                               LitAtom
-                              (line 61)
+                              (line 47)
                               (atom error)))))
                         (args ((
                           ExprVar
-                          (line 61)
+                          (line 47)
                           (id   R)))))))
                     (case_clauses (
                       (ClsCase
-                        (line 63)
+                        (line 49)
                         (pattern (
                           PatTuple
-                          (line 63)
+                          (line 49)
                           (pats (
                             (PatLit (
                               lit (
                                 LitAtom
-                                (line 63)
+                                (line 49)
                                 (atom ok))))
                             (PatVar
-                              (line 63)
+                              (line 49)
                               (id   A))))))
                         (guard_sequence ())
                         (body (
                           ExprBody (
                             exprs ((
                               ExprVar
-                              (line 63)
+                              (line 49)
                               (id   A)))))))
                       (ClsCase
-                        (line 64)
+                        (line 50)
                         (pattern (
                           PatLit (
                             lit (
                               LitAtom
-                              (line 64)
+                              (line 50)
                               (atom error)))))
                         (guard_sequence ())
                         (body (
@@ -559,72 +457,72 @@ let%expect_test "test_try.beam" =
                               ExprLit (
                                 lit (
                                   LitAtom
-                                  (line 64)
+                                  (line 50)
                                   (atom error)))))))))))
                     (catch_clauses ())
                     (after (
                       (ExprMatch
-                        (line 66)
+                        (line 52)
                         (pattern (
                           PatVar
-                          (line 66)
+                          (line 52)
                           (id   Ok)))
                         (body (
                           ExprLit (
                             lit (
                               LitAtom
-                              (line 66)
+                              (line 52)
                               (atom ok))))))
                       (ExprVar
-                        (line 67)
+                        (line 53)
                         (id   Ok)))))))))))))
           (DeclFun
-            (line          71)
+            (line          57)
             (function_name try_catch_after)
             (arity         0)
             (clauses ((
               ClsFun
-              (line 71)
+              (line 57)
               (patterns       ())
               (guard_sequence ())
               (body (
                 ExprBody (
                   exprs ((
                     ExprTry
-                    (line 72)
+                    (line 58)
                     (exprs (
                       (ExprMatch
-                        (line 73)
+                        (line 59)
                         (pattern (
                           PatVar
-                          (line 73)
+                          (line 59)
                           (id   R)))
                         (body (
                           ExprLit (
                             lit (
                               LitAtom
-                              (line 73)
+                              (line 59)
                               (atom reason))))))
                       (ExprLocalCall
-                        (line 74)
+                        (line 60)
                         (function_expr (
                           ExprLit (
                             lit (
                               LitAtom
-                              (line 74)
+                              (line 60)
                               (atom error)))))
                         (args ((
                           ExprVar
-                          (line 74)
+                          (line 60)
                           (id   R)))))))
                     (case_clauses ())
                     (catch_clauses (
                       (ClsCatch
-                        (line            76)
-                        (line_cls        76)
-                        (line_stacktrace 76)
-                        (exception_class (AtomVarAtom (line 76) (atom throw)))
-                        (pattern         (PatVar      (line 76) (id   Err)))
+                        (line            62)
+                        (line_cls        62)
+                        (line_stacktrace 62)
+                        (exception_class (AtomVarAtom (line 62) (atom throw)))
+                        (pattern         (PatVar      (line 62) (id   Err)))
                         (stacktrace _)
                         (guard_sequence ((
                           GuardSeq (
@@ -632,30 +530,30 @@ let%expect_test "test_try.beam" =
                               Guard (
                                 guard_tests ((
                                   GuardTestBinOp
-                                  (line 76)
+                                  (line 62)
                                   (op   =:=)
                                   (lhs (
                                     GuardTestVar
-                                    (line 76)
+                                    (line 62)
                                     (id   Err)))
                                   (rhs (
                                     GuardTestLit (
                                       lit (
                                         LitAtom
-                                        (line 76)
+                                        (line 62)
                                         (atom error))))))))))))))
                         (body (
                           ExprBody (
                             exprs ((
                               ExprVar
-                              (line 76)
+                              (line 62)
                               (id   Err)))))))
                       (ClsCatch
-                        (line            77)
-                        (line_cls        77)
-                        (line_stacktrace 77)
-                        (exception_class (AtomVarAtom (line 77) (atom error)))
-                        (pattern         (PatVar      (line 77) (id   Err)))
+                        (line            63)
+                        (line_cls        63)
+                        (line_stacktrace 63)
+                        (exception_class (AtomVarAtom (line 63) (atom error)))
+                        (pattern         (PatVar      (line 63) (id   Err)))
                         (stacktrace _)
                         (guard_sequence ((
                           GuardSeq (
@@ -663,80 +561,172 @@ let%expect_test "test_try.beam" =
                               Guard (
                                 guard_tests ((
                                   GuardTestBinOp
-                                  (line 77)
+                                  (line 63)
                                   (op   =:=)
                                   (lhs (
                                     GuardTestVar
-                                    (line 77)
+                                    (line 63)
                                     (id   Err)))
                                   (rhs (
                                     GuardTestLit (
                                       lit (
                                         LitAtom
-                                        (line 77)
+                                        (line 63)
                                         (atom error))))))))))))))
+                        (body (
+                          ExprBody (
+                            exprs ((
+                              ExprVar
+                              (line 63)
+                              (id   Err)))))))
+                      (ClsCatch
+                        (line            64)
+                        (line_cls        64)
+                        (line_stacktrace 64)
+                        (exception_class (AtomVarAtom (line 64) (atom throw)))
+                        (pattern         (PatVar      (line 64) (id   Err)))
+                        (stacktrace _)
+                        (guard_sequence ())
+                        (body (
+                          ExprBody (
+                            exprs ((
+                              ExprVar
+                              (line 64)
+                              (id   Err)))))))
+                      (ClsCatch
+                        (line            65)
+                        (line_cls        65)
+                        (line_stacktrace 65)
+                        (exception_class (AtomVarAtom (line 65) (atom error)))
+                        (pattern         (PatVar      (line 65) (id   Err)))
+                        (stacktrace _)
+                        (guard_sequence ())
+                        (body (
+                          ExprBody (
+                            exprs ((
+                              ExprVar
+                              (line 65)
+                              (id   Err)))))))))
+                    (after (
+                      (ExprMatch
+                        (line 67)
+                        (pattern (
+                          PatVar
+                          (line 67)
+                          (id   Ok)))
+                        (body (
+                          ExprLit (
+                            lit (
+                              LitAtom
+                              (line 67)
+                              (atom ok))))))
+                      (ExprVar
+                        (line 68)
+                        (id   Ok)))))))))))))
+          (DeclFun
+            (line          72)
+            (function_name try_of_catch_after)
+            (arity         0)
+            (clauses ((
+              ClsFun
+              (line 72)
+              (patterns       ())
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs ((
+                    ExprTry
+                    (line 73)
+                    (exprs (
+                      (ExprMatch
+                        (line 74)
+                        (pattern (
+                          PatVar
+                          (line 74)
+                          (id   R)))
+                        (body (
+                          ExprLit (
+                            lit (
+                              LitAtom
+                              (line 74)
+                              (atom reason))))))
+                      (ExprLocalCall
+                        (line 75)
+                        (function_expr (
+                          ExprLit (
+                            lit (
+                              LitAtom
+                              (line 75)
+                              (atom error)))))
+                        (args ((
+                          ExprVar
+                          (line 75)
+                          (id   R)))))))
+                    (case_clauses (
+                      (ClsCase
+                        (line 77)
+                        (pattern (
+                          PatTuple
+                          (line 77)
+                          (pats (
+                            (PatLit (
+                              lit (
+                                LitAtom
+                                (line 77)
+                                (atom ok))))
+                            (PatVar
+                              (line 77)
+                              (id   A))))))
+                        (guard_sequence ())
                         (body (
                           ExprBody (
                             exprs ((
                               ExprVar
                               (line 77)
-                              (id   Err)))))))
+                              (id   A)))))))
+                      (ClsCase
+                        (line 78)
+                        (pattern (
+                          PatLit (
+                            lit (
+                              LitAtom
+                              (line 78)
+                              (atom error)))))
+                        (guard_sequence ())
+                        (body (
+                          ExprBody (
+                            exprs ((
+                              ExprLit (
+                                lit (
+                                  LitAtom
+                                  (line 78)
+                                  (atom error)))))))))))
+                    (catch_clauses (
                       (ClsCatch
-                        (line            78)
-                        (line_cls        78)
-                        (line_stacktrace 78)
-                        (exception_class (AtomVarVar (line 78) (id Class)))
-                        (pattern         (PatVar     (line 78) (id Err)))
-                        (stacktrace Stacktrace)
+                        (line            80)
+                        (line_cls        80)
+                        (line_stacktrace 80)
+                        (exception_class (AtomVarAtom (line 80) (atom throw)))
+                        (pattern         (PatVar      (line 80) (id   Err)))
+                        (stacktrace _)
                         (guard_sequence ((
                           GuardSeq (
                             guards ((
                               Guard (
                                 guard_tests ((
                                   GuardTestBinOp
-                                  (line 78)
+                                  (line 80)
                                   (op   =:=)
                                   (lhs (
                                     GuardTestVar
-                                    (line 78)
+                                    (line 80)
                                     (id   Err)))
                                   (rhs (
                                     GuardTestLit (
                                       lit (
                                         LitAtom
-                                        (line 78)
+                                        (line 80)
                                         (atom error))))))))))))))
-                        (body (
-                          ExprBody (
-                            exprs ((
-                              ExprTuple
-                              (line 78)
-                              (elements (
-                                (ExprVar (line 78) (id Class))
-                                (ExprVar (line 78) (id Err))
-                                (ExprVar (line 78) (id Stacktrace))))))))))
-                      (ClsCatch
-                        (line            79)
-                        (line_cls        79)
-                        (line_stacktrace 79)
-                        (exception_class (AtomVarAtom (line 79) (atom throw)))
-                        (pattern         (PatVar      (line 79) (id   Err)))
-                        (stacktrace _)
-                        (guard_sequence ())
-                        (body (
-                          ExprBody (
-                            exprs ((
-                              ExprVar
-                              (line 79)
-                              (id   Err)))))))
-                      (ClsCatch
-                        (line            80)
-                        (line_cls        80)
-                        (line_stacktrace 80)
-                        (exception_class (AtomVarAtom (line 80) (atom error)))
-                        (pattern         (PatVar      (line 80) (id   Err)))
-                        (stacktrace _)
-                        (guard_sequence ())
                         (body (
                           ExprBody (
                             exprs ((
@@ -747,269 +737,75 @@ let%expect_test "test_try.beam" =
                         (line            81)
                         (line_cls        81)
                         (line_stacktrace 81)
-                        (exception_class (AtomVarVar (line 81) (id Class)))
-                        (pattern         (PatVar     (line 81) (id Err)))
-                        (stacktrace Stacktrace)
-                        (guard_sequence ())
+                        (exception_class (AtomVarAtom (line 81) (atom error)))
+                        (pattern         (PatVar      (line 81) (id   Err)))
+                        (stacktrace _)
+                        (guard_sequence ((
+                          GuardSeq (
+                            guards ((
+                              Guard (
+                                guard_tests ((
+                                  GuardTestBinOp
+                                  (line 81)
+                                  (op   =:=)
+                                  (lhs (
+                                    GuardTestVar
+                                    (line 81)
+                                    (id   Err)))
+                                  (rhs (
+                                    GuardTestLit (
+                                      lit (
+                                        LitAtom
+                                        (line 81)
+                                        (atom error))))))))))))))
                         (body (
                           ExprBody (
                             exprs ((
-                              ExprTuple
+                              ExprVar
                               (line 81)
-                              (elements (
-                                (ExprVar (line 81) (id Class))
-                                (ExprVar (line 81) (id Err))
-                                (ExprVar (line 81) (id Stacktrace))))))))))))
-                    (after (
-                      (ExprMatch
-                        (line 83)
-                        (pattern (
-                          PatVar
-                          (line 83)
-                          (id   Ok)))
+                              (id   Err)))))))
+                      (ClsCatch
+                        (line            82)
+                        (line_cls        82)
+                        (line_stacktrace 82)
+                        (exception_class (AtomVarAtom (line 82) (atom throw)))
+                        (pattern         (PatVar      (line 82) (id   Err)))
+                        (stacktrace _)
+                        (guard_sequence ())
                         (body (
-                          ExprLit (
-                            lit (
-                              LitAtom
+                          ExprBody (
+                            exprs ((
+                              ExprVar
+                              (line 82)
+                              (id   Err)))))))
+                      (ClsCatch
+                        (line            83)
+                        (line_cls        83)
+                        (line_stacktrace 83)
+                        (exception_class (AtomVarAtom (line 83) (atom error)))
+                        (pattern         (PatVar      (line 83) (id   Err)))
+                        (stacktrace _)
+                        (guard_sequence ())
+                        (body (
+                          ExprBody (
+                            exprs ((
+                              ExprVar
                               (line 83)
-                              (atom ok))))))
-                      (ExprVar
-                        (line 84)
-                        (id   Ok)))))))))))))
-          (DeclFun
-            (line          88)
-            (function_name try_of_catch_after)
-            (arity         0)
-            (clauses ((
-              ClsFun
-              (line 88)
-              (patterns       ())
-              (guard_sequence ())
-              (body (
-                ExprBody (
-                  exprs ((
-                    ExprTry
-                    (line 89)
-                    (exprs (
-                      (ExprMatch
-                        (line 90)
-                        (pattern (
-                          PatVar
-                          (line 90)
-                          (id   R)))
-                        (body (
-                          ExprLit (
-                            lit (
-                              LitAtom
-                              (line 90)
-                              (atom reason))))))
-                      (ExprLocalCall
-                        (line 91)
-                        (function_expr (
-                          ExprLit (
-                            lit (
-                              LitAtom
-                              (line 91)
-                              (atom error)))))
-                        (args ((
-                          ExprVar
-                          (line 91)
-                          (id   R)))))))
-                    (case_clauses (
-                      (ClsCase
-                        (line 93)
-                        (pattern (
-                          PatTuple
-                          (line 93)
-                          (pats (
-                            (PatLit (
-                              lit (
-                                LitAtom
-                                (line 93)
-                                (atom ok))))
-                            (PatVar
-                              (line 93)
-                              (id   A))))))
-                        (guard_sequence ())
-                        (body (
-                          ExprBody (
-                            exprs ((
-                              ExprVar
-                              (line 93)
-                              (id   A)))))))
-                      (ClsCase
-                        (line 94)
-                        (pattern (
-                          PatLit (
-                            lit (
-                              LitAtom
-                              (line 94)
-                              (atom error)))))
-                        (guard_sequence ())
-                        (body (
-                          ExprBody (
-                            exprs ((
-                              ExprLit (
-                                lit (
-                                  LitAtom
-                                  (line 94)
-                                  (atom error)))))))))))
-                    (catch_clauses (
-                      (ClsCatch
-                        (line            96)
-                        (line_cls        96)
-                        (line_stacktrace 96)
-                        (exception_class (AtomVarAtom (line 96) (atom throw)))
-                        (pattern         (PatVar      (line 96) (id   Err)))
-                        (stacktrace _)
-                        (guard_sequence ((
-                          GuardSeq (
-                            guards ((
-                              Guard (
-                                guard_tests ((
-                                  GuardTestBinOp
-                                  (line 96)
-                                  (op   =:=)
-                                  (lhs (
-                                    GuardTestVar
-                                    (line 96)
-                                    (id   Err)))
-                                  (rhs (
-                                    GuardTestLit (
-                                      lit (
-                                        LitAtom
-                                        (line 96)
-                                        (atom error))))))))))))))
-                        (body (
-                          ExprBody (
-                            exprs ((
-                              ExprVar
-                              (line 96)
-                              (id   Err)))))))
-                      (ClsCatch
-                        (line            97)
-                        (line_cls        97)
-                        (line_stacktrace 97)
-                        (exception_class (AtomVarAtom (line 97) (atom error)))
-                        (pattern         (PatVar      (line 97) (id   Err)))
-                        (stacktrace _)
-                        (guard_sequence ((
-                          GuardSeq (
-                            guards ((
-                              Guard (
-                                guard_tests ((
-                                  GuardTestBinOp
-                                  (line 97)
-                                  (op   =:=)
-                                  (lhs (
-                                    GuardTestVar
-                                    (line 97)
-                                    (id   Err)))
-                                  (rhs (
-                                    GuardTestLit (
-                                      lit (
-                                        LitAtom
-                                        (line 97)
-                                        (atom error))))))))))))))
-                        (body (
-                          ExprBody (
-                            exprs ((
-                              ExprVar
-                              (line 97)
-                              (id   Err)))))))
-                      (ClsCatch
-                        (line            98)
-                        (line_cls        98)
-                        (line_stacktrace 98)
-                        (exception_class (AtomVarVar (line 98) (id Class)))
-                        (pattern         (PatVar     (line 98) (id Err)))
-                        (stacktrace Stacktrace)
-                        (guard_sequence ((
-                          GuardSeq (
-                            guards ((
-                              Guard (
-                                guard_tests ((
-                                  GuardTestBinOp
-                                  (line 98)
-                                  (op   =:=)
-                                  (lhs (
-                                    GuardTestVar
-                                    (line 98)
-                                    (id   Err)))
-                                  (rhs (
-                                    GuardTestLit (
-                                      lit (
-                                        LitAtom
-                                        (line 98)
-                                        (atom error))))))))))))))
-                        (body (
-                          ExprBody (
-                            exprs ((
-                              ExprTuple
-                              (line 98)
-                              (elements (
-                                (ExprVar (line 98) (id Class))
-                                (ExprVar (line 98) (id Err))
-                                (ExprVar (line 98) (id Stacktrace))))))))))
-                      (ClsCatch
-                        (line            99)
-                        (line_cls        99)
-                        (line_stacktrace 99)
-                        (exception_class (AtomVarAtom (line 99) (atom throw)))
-                        (pattern         (PatVar      (line 99) (id   Err)))
-                        (stacktrace _)
-                        (guard_sequence ())
-                        (body (
-                          ExprBody (
-                            exprs ((
-                              ExprVar
-                              (line 99)
-                              (id   Err)))))))
-                      (ClsCatch
-                        (line            100)
-                        (line_cls        100)
-                        (line_stacktrace 100)
-                        (exception_class (AtomVarAtom (line 100) (atom error)))
-                        (pattern         (PatVar      (line 100) (id   Err)))
-                        (stacktrace _)
-                        (guard_sequence ())
-                        (body (
-                          ExprBody (
-                            exprs ((
-                              ExprVar
-                              (line 100)
-                              (id   Err)))))))
-                      (ClsCatch
-                        (line            101)
-                        (line_cls        101)
-                        (line_stacktrace 101)
-                        (exception_class (AtomVarVar (line 101) (id Class)))
-                        (pattern         (PatVar     (line 101) (id Err)))
-                        (stacktrace Stacktrace)
-                        (guard_sequence ())
-                        (body (
-                          ExprBody (
-                            exprs ((
-                              ExprTuple
-                              (line 101)
-                              (elements (
-                                (ExprVar (line 101) (id Class))
-                                (ExprVar (line 101) (id Err))
-                                (ExprVar (line 101) (id Stacktrace))))))))))))
+                              (id   Err)))))))))
                     (after (
                       (ExprMatch
-                        (line 103)
+                        (line 85)
                         (pattern (
                           PatVar
-                          (line 103)
+                          (line 85)
                           (id   Ok)))
                         (body (
                           ExprLit (
                             lit (
                               LitAtom
-                              (line 103)
+                              (line 85)
                               (atom ok))))))
                       (ExprVar
-                        (line 104)
+                        (line 86)
                         (id   Ok)))))))))))))
           FormEof)))) |}]
