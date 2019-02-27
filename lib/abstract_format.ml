@@ -651,7 +651,7 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
        | Error e -> Error e
        end
      in
-     let%bind expr = sf_expr |> expr_of_sf in
+     let%bind expr = sf_expr |> expr_of_sf |> track ~loc:[%here] in
      let%bind update_fields = sf_update_fields |> List.map ~f:update_field_of_sf |> Result.all |> track ~loc:[%here] in
      ExprRecordUpdate {line; expr; name; update_fields} |> return
 
