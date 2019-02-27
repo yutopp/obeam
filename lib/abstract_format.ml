@@ -57,6 +57,7 @@ and pattern_assoc_t =
 and expr_t =
   | ExprBody of {exprs: expr_t list}
   | ExprCase of {line: line_t; expr: expr_t; clauses: clause_t list}
+  | ExprCatch of {line: line_t; expr: expr_t}
   | ExprCons of {line: line_t; head: expr_t; tail: expr_t}
   | ExprNil of {line: line_t}
   | ExprListComprehension of {line: line_t; expr: expr_t; qualifiers: qualifier_t list}
@@ -476,6 +477,11 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
      let%bind expr = sf_expr |> expr_of_sf |> track ~loc:[%here] in
      let%bind clauses = sf_clauses |> List.map ~f:cls_of_sf |> Result.all |> track ~loc:[%here] in
      ExprCase {line; expr; clauses} |> return
+
+  (* a catch expression *)
+  | Sf.Tuple (3, [Sf.Atom "catch"; Sf.Integer line; sf_expr]) ->
+     let%bind expr = sf_expr |> expr_of_sf |> track ~loc:[%here] in
+     ExprCatch {line; expr} |> return
 
   (* a cons expression *)
   | Sf.Tuple (4, [Sf.Atom "cons"; Sf.Integer line; sf_head; sf_tail]) ->
