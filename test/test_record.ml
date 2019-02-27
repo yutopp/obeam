@@ -16,34 +16,42 @@ let%expect_test "test_record.beam" =
           (DeclRecord
             (line 4)
             (fields (
-              (4 a
-                ()
-                ())
-              (5 b
-                ((
+              (RecordField
+                (line       4)
+                (field_name a)
+                (ty           ())
+                (default_expr ()))
+              (RecordField
+                (line       5)
+                (field_name b)
+                (ty ())
+                (default_expr ((
                   ExprLit (
                     lit (
                       LitInteger
                       (line    5)
-                      (integer 42)))))
-                ())
-              (6 c
-                ()
-                ((
+                      (integer 42)))))))
+              (RecordField
+                (line       6)
+                (field_name c)
+                (ty ((
                   TyPredef
                   (line 6)
                   (name string)
                   (args ()))))
-              (7 d
-                ((
+                (default_expr ()))
+              (RecordField
+                (line       7)
+                (field_name d)
+                (ty ((
+                  TyPredef
+                  (line 7)
+                  (name integer)
+                  (args ()))))
+                (default_expr ((
                   ExprLit (
                     lit (
                       LitInteger
                       (line    7)
-                      (integer 57)))))
-                ((
-                  TyPredef
-                  (line 7)
-                  (name integer)
-                  (args ())))))))
+                      (integer 57))))))))))
           FormEof)))) |}]
