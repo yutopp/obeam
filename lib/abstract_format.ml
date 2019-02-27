@@ -77,6 +77,7 @@ and expr_t =
   | ExprRecord of {line: line_t; name: string; record_fields: (line_t * string * expr_t) list}
   | ExprRecordFieldAccess of {line: line_t; expr: expr_t; name: string; field_name: string}
   | ExprRecordFieldIndex of {line: line_t; name: string; field_name: string}
+  | ExprRecordUpdate of {line: line_t; expr: expr_t; name: string; update_fields: (line_t * string * expr_t) list}
   | ExprTuple of {line: line_t; elements: expr_t list}
   | ExprTry of {line: line_t; exprs: expr_t list; case_clauses: clause_t list; catch_clauses: clause_t list; after: expr_t list}
   | ExprVar of {line: line_t; id: string}
@@ -633,6 +634,24 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
                   Sf.Atom name;
                   Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field_name])]) ->
      ExprRecordFieldIndex {line; name; field_name} |> return
+
+  (* a record update : U#user{admin = true} *)
+  | Sf.Tuple (5, [Sf.Atom "record";
+                  Sf.Integer line;
+                  sf_expr;
+                  Sf.Atom name;
+                  Sf.List sf_update_fields]) ->
+     let update_field_of_sf sf =
+       begin match record_field_of_sf sf with
+       | Ok (RecordField {line; field_name; ty=None; default_expr=Some e}) ->
+          (line, field_name, e) |> return
+       | Ok _ -> failwith "cannot reach here"
+       | Error e -> Error e
+       end
+     in
+     let%bind expr = sf_expr |> expr_of_sf in
+     let%bind update_fields = sf_update_fields |> List.map ~f:update_field_of_sf |> Result.all |> track ~loc:[%here] in
+     ExprRecordUpdate {line; expr; name; update_fields} |> return
 
   (* a tuple skeleton *)
   | Sf.Tuple (3, [Sf.Atom "tuple";
