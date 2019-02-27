@@ -76,6 +76,7 @@ and expr_t =
   | ExprBinOp of {line: line_t; op: string; lhs: expr_t; rhs: expr_t}
   | ExprRecord of {line: line_t; name: string; record_fields: (line_t * string * expr_t) list}
   | ExprRecordFieldAccess of {line: line_t; expr: expr_t; name: string; field_name: string}
+  | ExprRecordFieldIndex of {line: line_t; name: string; field_name: string}
   | ExprTuple of {line: line_t; elements: expr_t list}
   | ExprTry of {line: line_t; exprs: expr_t list; case_clauses: clause_t list; catch_clauses: clause_t list; after: expr_t list}
   | ExprVar of {line: line_t; id: string}
@@ -625,6 +626,13 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
                   Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field_name])]) ->
      let%bind expr = sf_expr |> expr_of_sf |> track ~loc:[%here] in
      ExprRecordFieldAccess {line; expr; name; field_name} |> return
+
+  (* a record field index : #user.name *)
+  | Sf.Tuple (4, [Sf.Atom "record_index";
+                  Sf.Integer line;
+                  Sf.Atom name;
+                  Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field_name])]) ->
+     ExprRecordFieldIndex {line; name; field_name} |> return
 
   (* a tuple skeleton *)
   | Sf.Tuple (3, [Sf.Atom "tuple";
