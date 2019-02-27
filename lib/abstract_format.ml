@@ -612,7 +612,8 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
        begin match record_field_of_sf sf with
        | Ok (RecordField {line; field_name; ty=None; default_expr=Some e}) ->
           (line, field_name, e) |> return
-       | Ok _ -> failwith "cannot reach here"
+       | Ok _ ->
+          Err.create ~loc:[%here] (Err.Invalid_input ("cannot reach here", sf)) |> Result.fail
        | Error e -> Error e
        end
      in
@@ -645,7 +646,8 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
        begin match record_field_of_sf sf with
        | Ok (RecordField {line; field_name; ty=None; default_expr=Some e}) ->
           (line, field_name, e) |> return
-       | Ok _ -> failwith "cannot reach here"
+       | Ok _ ->
+          Err.create ~loc:[%here] (Err.Invalid_input ("cannot reach here", sf)) |> Result.fail
        | Error e -> Error e
        end
      in
