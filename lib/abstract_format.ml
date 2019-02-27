@@ -71,6 +71,7 @@ and expr_t =
   | ExprMatch of {line: line_t; pattern: pattern_t; body: expr_t}
   | ExprBinOp of {line: line_t; op: string; lhs: expr_t; rhs: expr_t}
   | ExprTuple of {line: line_t; elements: expr_t list}
+  | ExprTry of {line: line_t; exprs: expr_t list; case_clauses: clause_t list; catch_clauses: clause_t list; after: expr_t list}
   | ExprVar of {line: line_t; id: string}
   | ExprLit of {lit: literal_t}
 and expr_assoc_t =
@@ -88,6 +89,9 @@ and integer_or_var_t =
 
 and clause_t =
   | ClsCase of {line: line_t; pattern: pattern_t; guard_sequence: guard_sequence_t option; body: expr_t}
+  | ClsCatch of {line: line_t; line_cls: line_t; line_stacktrace: line_t;
+                 exception_class: atom_or_var_t; pattern: pattern_t; stacktrace: string;
+                 guard_sequence: guard_sequence_t option; body: expr_t}
   | ClsFun of {line: line_t; patterns: pattern_t list; guard_sequence: guard_sequence_t option; body: expr_t}
   | ClsIf of {line: line_t; guard_sequence: guard_sequence_t; body: expr_t} (* guard_sequence must not be empty *)
 and guard_sequence_t =
@@ -593,6 +597,19 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
      let%bind elements = sf_elements |> List.map ~f:expr_of_sf |> Result.all |> track ~loc:[%here] in
      ExprTuple {line; elements} |> return
 
+  (* a try expression *)
+  | Sf.Tuple (6, [Sf.Atom "try";
+                  Sf.Integer line;
+                  Sf.List sf_exprs;
+                  Sf.List sf_case_clauses;
+                  Sf.List sf_catch_clauses;
+                  Sf.List sf_after]) ->
+     let%bind exprs = sf_exprs |> List.map ~f:expr_of_sf |> Result.all |> track ~loc:[%here] in
+     let%bind case_clauses = sf_case_clauses |> List.map ~f:cls_of_sf |> Result.all |> track ~loc:[%here] in
+     let%bind catch_clauses = sf_catch_clauses |> List.map ~f:cls_of_sf |> Result.all |> track ~loc:[%here] in
+     let%bind after = sf_after |> List.map ~f:expr_of_sf |> Result.all |> track ~loc:[%here] in
+     ExprTry {line; exprs; case_clauses; catch_clauses; after} |> return
+
   (* a variable *)
   | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom id]) ->
      ExprVar {line; id} |> return
@@ -671,6 +688,41 @@ and integer_or_var_of_sf sf =
 and cls_of_sf ?(in_function=false) sf : (clause_t, err_t) Result.t =
   let open Result.Let_syntax in
   match sf, in_function with
+  (* catch clause P -> B or E:P -> B or E:P:S -> B *)
+  | Sf.Tuple  (5, [
+                 Sf.Atom "clause";
+                 Sf.Integer line;
+                 Sf.List [Sf.Tuple (3, [Sf.Atom "tuple";
+                                        Sf.Integer line_cls;
+                                        Sf.List [sf_exception_class;
+                                                 sf_pattern;
+                                                 Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line_stacktrace; Sf.Atom stacktrace])]])];
+                 Sf.List [];
+                 sf_body
+              ]), false ->
+     let%bind exception_class = sf_exception_class |> atom_or_var_of_sf |> track ~loc:[%here] in
+     let%bind pattern = sf_pattern |> pat_of_sf |> track ~loc:[%here] in
+     let%bind body = sf_body |> expr_of_sf |> track ~loc:[%here] in
+     ClsCatch {line; line_cls; line_stacktrace; exception_class; pattern; stacktrace; guard_sequence=None; body} |> return
+
+  (* catch clause P when Gs -> B or E:P when Gs -> B or E:P:S when Gs -> B *)
+  | Sf.Tuple  (5, [
+                 Sf.Atom "clause";
+                 Sf.Integer line;
+                 Sf.List [Sf.Tuple (3, [Sf.Atom "tuple";
+                                        Sf.Integer line_cls;
+                                        Sf.List [sf_exception_class;
+                                                 sf_pattern;
+                                                 Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line_stacktrace; Sf.Atom stacktrace])]])];
+                 sf_guard_sequence;
+                 sf_body
+              ]), false ->
+     let%bind exception_class = sf_exception_class |> atom_or_var_of_sf |> track ~loc:[%here] in
+     let%bind pattern = sf_pattern |> pat_of_sf |> track ~loc:[%here] in
+     let%bind guard_sequence = sf_guard_sequence |> guard_sequence_of_sf |> track ~loc:[%here] in
+     let%bind body = sf_body |> expr_of_sf |> track ~loc:[%here] in
+     ClsCatch {line; line_cls; line_stacktrace; exception_class; pattern; stacktrace; guard_sequence=Some guard_sequence; body} |> return
+
   (* case clause P -> B *)
   | Sf.Tuple (5, [
                  Sf.Atom "clause";

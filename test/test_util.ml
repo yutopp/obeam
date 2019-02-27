@@ -44,3 +44,9 @@ let print_ast beam_filename =
   load_ast_from_beam beam_filename
   |> [%sexp_of: (Abstract_format.t, Abstract_format.err_t) Result.t]
   |> Expect_test_helpers_kernel.print_s
+
+let otp_version () =
+  let version = Stdio.In_channel.read_all "otp_version" in
+  match Caml.int_of_string_opt version with
+  | Some v -> v
+  | None -> failwith (Printf.sprintf "Failed to read otp-version: %s" version)
