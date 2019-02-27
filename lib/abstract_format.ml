@@ -75,6 +75,7 @@ and expr_t =
   | ExprMatch of {line: line_t; pattern: pattern_t; body: expr_t}
   | ExprBinOp of {line: line_t; op: string; lhs: expr_t; rhs: expr_t}
   | ExprRecord of {line: line_t; name: string; record_fields: (line_t * string * expr_t) list}
+  | ExprRecordFieldAccess of {line: line_t; expr: expr_t; name: string; field_name: string}
   | ExprTuple of {line: line_t; elements: expr_t list}
   | ExprTry of {line: line_t; exprs: expr_t list; case_clauses: clause_t list; catch_clauses: clause_t list; after: expr_t list}
   | ExprVar of {line: line_t; id: string}
@@ -615,6 +616,15 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
      in
      let%bind record_fields = sf_record_fields |> List.map ~f:field_of_sf |> Result.all |> track ~loc:[%here] in
      ExprRecord {line; name; record_fields} |> return
+
+  (* a record field access : U#user.name *)
+  | Sf.Tuple (5, [Sf.Atom "record_field";
+                  Sf.Integer line;
+                  sf_expr;
+                  Sf.Atom name;
+                  Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field_name])]) ->
+     let%bind expr = sf_expr |> expr_of_sf |> track ~loc:[%here] in
+     ExprRecordFieldAccess {line; expr; name; field_name} |> return
 
   (* a tuple skeleton *)
   | Sf.Tuple (3, [Sf.Atom "tuple";
