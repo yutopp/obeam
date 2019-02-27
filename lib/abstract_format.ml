@@ -74,6 +74,7 @@ and expr_t =
   | ExprMapUpdate of {line: line_t; map: expr_t; assocs: expr_assoc_t list}
   | ExprMatch of {line: line_t; pattern: pattern_t; body: expr_t}
   | ExprBinOp of {line: line_t; op: string; lhs: expr_t; rhs: expr_t}
+  | ExprRecord of {line: line_t; name: string; record_fields: (line_t * string * expr_t) list}
   | ExprTuple of {line: line_t; elements: expr_t list}
   | ExprTry of {line: line_t; exprs: expr_t list; case_clauses: clause_t list; catch_clauses: clause_t list; after: expr_t list}
   | ExprVar of {line: line_t; id: string}
@@ -598,6 +599,22 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
      let%bind lhs = sf_lhs |> expr_of_sf |> track ~loc:[%here] in
      let%bind rhs = sf_rhs |> expr_of_sf |> track ~loc:[%here] in
      ExprBinOp {line; op; lhs; rhs} |> return
+
+  (* a record creation : #user{name = "Taro", admin = true} *)
+  | Sf.Tuple (4, [Sf.Atom "record";
+                  Sf.Integer line;
+                  Sf.Atom name;
+                  Sf.List sf_record_fields]) ->
+     let field_of_sf sf =
+       begin match record_field_of_sf sf with
+       | Ok (RecordField {line; field_name; ty=None; default_expr=Some e}) ->
+          (line, field_name, e) |> return
+       | Ok _ -> failwith "cannot reach here"
+       | Error e -> Error e
+       end
+     in
+     let%bind record_fields = sf_record_fields |> List.map ~f:field_of_sf |> Result.all |> track ~loc:[%here] in
+     ExprRecord {line; name; record_fields} |> return
 
   (* a tuple skeleton *)
   | Sf.Tuple (3, [Sf.Atom "tuple";
