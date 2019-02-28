@@ -29,12 +29,15 @@ and form_t =
   | AttrFile of {line: line_t; file: string; file_line: line_t}
   | DeclFun of {line: line_t; function_name: string; arity: int; clauses: clause_t list}
   | SpecFun of {line: line_t; module_name: string option; function_name: string; arity: int; specs: type_t list}
-  | DeclRecord of {line: line_t; fields: (line_t * string * expr_t option * type_t option) list}
+  | DeclRecord of {line: line_t; fields: record_field_t list}
   | DeclType of {line: line_t; name: string; tvars: (line_t * string) list; ty: type_t}
   | DeclOpaqueType of {line: line_t; name: string; tvars: (line_t * string) list; ty: type_t}
   | AttrWild of {line: line_t; attribute: string; term: Sf.t}
 
   | FormEof
+
+and record_field_t =
+  | RecordField of {line: line_t; field_name: string; ty: type_t option; default_expr: expr_t option}
 
 and literal_t =
   | LitAtom of {line: line_t; atom: string}
@@ -71,6 +74,10 @@ and expr_t =
   | ExprMapUpdate of {line: line_t; map: expr_t; assocs: expr_assoc_t list}
   | ExprMatch of {line: line_t; pattern: pattern_t; body: expr_t}
   | ExprBinOp of {line: line_t; op: string; lhs: expr_t; rhs: expr_t}
+  | ExprRecord of {line: line_t; name: string; record_fields: (line_t * string * expr_t) list}
+  | ExprRecordFieldAccess of {line: line_t; expr: expr_t; name: string; field_name: string}
+  | ExprRecordFieldIndex of {line: line_t; name: string; field_name: string}
+  | ExprRecordUpdate of {line: line_t; expr: expr_t; name: string; update_fields: (line_t * string * expr_t) list}
   | ExprTuple of {line: line_t; elements: expr_t list}
   | ExprTry of {line: line_t; exprs: expr_t list; case_clauses: clause_t list; catch_clauses: clause_t list; after: expr_t list}
   | ExprVar of {line: line_t; id: string}
@@ -326,44 +333,44 @@ and name_and_arity_of_sf sf : ((string * int), err_t) Result.t =
   | _ ->
      Err.create ~loc:[%here] (Err.Not_supported_absform ("name_and_arity", sf)) |> Result.fail
 
-and record_field_of_sf sf : ((int * string * expr_t option * type_t option), err_t) Result.t =
+and record_field_of_sf sf : (record_field_t, err_t) Result.t =
   let open Result.Let_syntax in
   match sf with
   | Sf.Tuple (3, [Sf.Atom "record_field";
                   Sf.Integer line;
-                  Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field]);
+                  Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field_name]);
              ]) ->
-     (line, field, None, None) |> return
+     RecordField {line; field_name; ty=None; default_expr=None} |> return
 
   | Sf.Tuple (4, [Sf.Atom "record_field";
                   Sf.Integer line;
-                  Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field]);
+                  Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field_name]);
                   sf_e
              ]) ->
      let%bind e = sf_e |> expr_of_sf |> track ~loc:[%here] in
-     (line, field, Some e, None) |> return
+     RecordField {line; field_name; ty=None; default_expr=Some e} |> return
 
   | Sf.Tuple (3, [Sf.Atom "typed_record_field";
                   Sf.Tuple (3, [Sf.Atom "record_field";
                                 Sf.Integer line;
-                                Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field])
+                                Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field_name])
                            ]);
                   sf_t
              ]) ->
      let%bind t = sf_t |> type_of_sf |> track ~loc:[%here] in
-     (line, field, None, Some t) |> return
+     RecordField {line; field_name; ty=Some t; default_expr=None} |> return
 
   | Sf.Tuple (3, [Sf.Atom "typed_record_field";
                   Sf.Tuple (4, [Sf.Atom "record_field";
                                 Sf.Integer line;
-                                Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field]);
+                                Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field_name]);
                                 sf_e
                            ]);
                   sf_t
              ]) ->
      let%bind e = sf_e |> expr_of_sf |> track ~loc:[%here] in
      let%bind t = sf_t |> type_of_sf |> track ~loc:[%here] in
-     (line, field, Some e, Some t) |> return
+     RecordField {line; field_name; ty=Some t; default_expr=Some e} |> return
 
   | _ ->
      Err.create ~loc:[%here] (Err.Not_supported_absform ("record_field", sf)) |> Result.fail
@@ -595,6 +602,58 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
      let%bind lhs = sf_lhs |> expr_of_sf |> track ~loc:[%here] in
      let%bind rhs = sf_rhs |> expr_of_sf |> track ~loc:[%here] in
      ExprBinOp {line; op; lhs; rhs} |> return
+
+  (* a record creation : #user{name = "Taro", admin = true} *)
+  | Sf.Tuple (4, [Sf.Atom "record";
+                  Sf.Integer line;
+                  Sf.Atom name;
+                  Sf.List sf_record_fields]) ->
+     let field_of_sf sf =
+       begin match record_field_of_sf sf with
+       | Ok (RecordField {line; field_name; ty=None; default_expr=Some e}) ->
+          (line, field_name, e) |> return
+       | Ok _ ->
+          Err.create ~loc:[%here] (Err.Invalid_input ("cannot reach here: the field of a record creation must have an expression", sf)) |> Result.fail
+       | Error e -> Error e
+       end
+     in
+     let%bind record_fields = sf_record_fields |> List.map ~f:field_of_sf |> Result.all |> track ~loc:[%here] in
+     ExprRecord {line; name; record_fields} |> return
+
+  (* a record field access : U#user.name *)
+  | Sf.Tuple (5, [Sf.Atom "record_field";
+                  Sf.Integer line;
+                  sf_expr;
+                  Sf.Atom name;
+                  Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field_name])]) ->
+     let%bind expr = sf_expr |> expr_of_sf |> track ~loc:[%here] in
+     ExprRecordFieldAccess {line; expr; name; field_name} |> return
+
+  (* a record field index : #user.name *)
+  | Sf.Tuple (4, [Sf.Atom "record_index";
+                  Sf.Integer line;
+                  Sf.Atom name;
+                  Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field_name])]) ->
+     ExprRecordFieldIndex {line; name; field_name} |> return
+
+  (* a record update : U#user{admin = true} *)
+  | Sf.Tuple (5, [Sf.Atom "record";
+                  Sf.Integer line;
+                  sf_expr;
+                  Sf.Atom name;
+                  Sf.List sf_update_fields]) ->
+     let update_field_of_sf sf =
+       begin match record_field_of_sf sf with
+       | Ok (RecordField {line; field_name; ty=None; default_expr=Some e}) ->
+          (line, field_name, e) |> return
+       | Ok _ ->
+          Err.create ~loc:[%here] (Err.Invalid_input ("cannot reach here: the field of a record update must have an expression", sf)) |> Result.fail
+       | Error e -> Error e
+       end
+     in
+     let%bind expr = sf_expr |> expr_of_sf |> track ~loc:[%here] in
+     let%bind update_fields = sf_update_fields |> List.map ~f:update_field_of_sf |> Result.all |> track ~loc:[%here] in
+     ExprRecordUpdate {line; expr; name; update_fields} |> return
 
   (* a tuple skeleton *)
   | Sf.Tuple (3, [Sf.Atom "tuple";
