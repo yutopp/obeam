@@ -48,6 +48,7 @@ and literal_t =
   | LitString of {line: line_t; str: string}
 
 and pattern_t =
+  | PatBitstr of {line: line_t; elements: (pattern_t * expr_t option * (type_spec_t list) option) list}
   | PatCons of {line: line_t; head: pattern_t; tail: pattern_t}
   | PatNil of {line: line_t}
   | PatMap of {line: line_t;  assocs: pattern_assoc_t list}
@@ -170,6 +171,39 @@ type err_t = Sf.t Err.t
 
 let track ~loc result =
   Result.map_error ~f:(Err.record_backtrace ~loc:loc) result
+
+(* bitstring element type specifiers *)
+let tsl_of_sf sf =
+  let open Result.Let_syntax in
+  match sf with
+  | Sf.List sf_tss ->
+     let ts_of_sf = function
+       | Sf.Atom atom -> TypeSpec {atom; value=None} |> return
+       | Sf.Tuple (2, [Sf.Atom atom; Sf.Integer value]) -> TypeSpec {atom; value=Some value} |> return
+       | _ -> Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of type specifier", sf)) |> Result.fail
+     in
+     sf_tss |> List.map ~f:ts_of_sf |> Result.all |> track ~loc:[%here]
+  | _ ->
+     Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of type specifiers", sf)) |> Result.fail
+
+(* bitstring element *)
+(* NOTE: this function cannot be placed at big mutual recursions without explicit type signature *)
+(*       because type inference for polymorphic recursion is undecidable *)
+(*       ref: https://discuss.ocaml.org/t/value-restriction-and-mutually-recursive-functions/2432 *)
+let bin_element_of_sf ~value_of_sf ~size_of_sf sf =
+  let open Result.Let_syntax in
+  match sf with
+  | Sf.Tuple (5, [Sf.Atom "bin_element"; Sf.Integer line; sf_value; sf_size; sf_tsl]) ->
+     let default_or of_sf = function
+       | Sf.Atom "default" -> None |> return
+       | sf -> sf |> of_sf |> Result.map ~f:(fun e -> Some e) |> track ~loc:[%here]
+     in
+     let%bind value = sf_value |> value_of_sf |> track ~loc:[%here] in
+     let%bind size = sf_size |> default_or size_of_sf |> track ~loc:[%here] in
+     let%bind tsl = sf_tsl |> default_or tsl_of_sf |> track ~loc:[%here] in
+     (value, size, tsl) |> return
+  | _ ->
+     Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of bin_element", sf)) |> Result.fail
 
 (*
  * Entry
@@ -442,6 +476,16 @@ and lit_of_sf sf : (literal_t, err_t) Result.t =
 and pat_of_sf sf : (pattern_t, err_t) Result.t =
   let open Result.Let_syntax in
   match sf with
+  (* a bitstring pattern *)
+  | Sf.Tuple (3, [Sf.Atom "bin"; Sf.Integer line; Sf.List sf_elements]) ->
+     let%bind elements =
+       sf_elements
+       |> List.map ~f:(bin_element_of_sf ~value_of_sf:pat_of_sf ~size_of_sf:expr_of_sf)
+       |> Result.all
+       |> track ~loc:[%here]
+     in
+     PatBitstr {line; elements} |> return
+
   (* a cons pattern *)
   | Sf.Tuple (4, [Sf.Atom "cons"; Sf.Integer line; sf_head; sf_tail]) ->
      let%bind head = sf_head |> pat_of_sf |> track ~loc:[%here] in
@@ -793,36 +837,6 @@ and integer_or_var_of_sf sf =
     IntegerVarVar {line; id} |> return
   | _ ->
      Err.create ~loc:[%here] (Err.Not_supported_absform ("integer_or_var", sf)) |> Result.fail
-
-(* bitstring element *)
-and bin_element_of_sf ~value_of_sf ~size_of_sf sf =
-  let open Result.Let_syntax in
-  match sf with
-  | Sf.Tuple (5, [Sf.Atom "bin_element"; Sf.Integer line; sf_value; sf_size; sf_tsl]) ->
-     let default_or of_sf = function
-       | Sf.Atom "default" -> None |> return
-       | sf -> sf |> of_sf |> Result.map ~f:(fun e -> Some e) |> track ~loc:[%here]
-     in
-     let%bind value = sf_value |> value_of_sf |> track ~loc:[%here] in
-     let%bind size = sf_size |> default_or size_of_sf |> track ~loc:[%here] in
-     let%bind tsl = sf_tsl |> default_or tsl_of_sf |> track ~loc:[%here] in
-     (value, size, tsl) |> return
-  | _ ->
-     Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of bin_element", sf)) |> Result.fail
-
-(* bitstring element type specifiers *)
-and tsl_of_sf sf =
-  let open Result.Let_syntax in
-  match sf with
-  | Sf.List sf_tss ->
-     let ts_of_sf = function
-       | Sf.Atom atom -> TypeSpec {atom; value=None} |> return
-       | Sf.Tuple (2, [Sf.Atom atom; Sf.Integer value]) -> TypeSpec {atom; value=Some value} |> return
-       | _ -> Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of type specifier", sf)) |> Result.fail
-     in
-     sf_tss |> List.map ~f:ts_of_sf |> Result.all |> track ~loc:[%here]
-  | _ ->
-     Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of type specifiers", sf)) |> Result.fail
 
 (*
  * 8.5  Clauses

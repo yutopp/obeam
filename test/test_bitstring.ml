@@ -13,7 +13,11 @@ let%expect_test "test_bitstring.beam" =
           (AttrMod
             (line        1)
             (module_name test_bitstring))
-          (AttrExport (line 3) (function_arity_list ((f 0))))
+          (AttrExport
+            (line 3)
+            (function_arity_list (
+              (f 0)
+              (g 1))))
           (DeclFun
             (line          6)
             (function_name f)
@@ -106,4 +110,95 @@ let%expect_test "test_bitstring.beam" =
                                (line    11)
                                (integer 2)))))))
                        ()))))))))))))
+          (DeclFun
+            (line          15)
+            (function_name g)
+            (arity         1)
+            (clauses ((
+              ClsFun
+              (line 15)
+              (patterns ((
+                PatBitstr
+                (line 15)
+                (elements (
+                  ((PatLit (
+                     lit (
+                       LitInteger
+                       (line    15)
+                       (integer 0))))
+                   ()
+                   ())
+                  ((PatLit (
+                     lit (
+                       LitInteger
+                       (line    15)
+                       (integer 1))))
+                   ((
+                     ExprLit (
+                       lit (
+                         LitInteger
+                         (line    15)
+                         (integer 1)))))
+                   ())
+                  ((PatLit (
+                     lit (
+                       LitInteger
+                       (line    15)
+                       (integer 2))))
+                   ()
+                   ((
+                     (TypeSpec (atom little)  (value ()))
+                     (TypeSpec (atom signed)  (value ()))
+                     (TypeSpec (atom integer) (value ())))))
+                  ((PatLit (
+                     lit (
+                       LitInteger
+                       (line    15)
+                       (integer 3))))
+                   ((
+                     ExprLit (
+                       lit (
+                         LitInteger
+                         (line    15)
+                         (integer 3)))))
+                   ((
+                     (TypeSpec (atom little) (value ()))
+                     (TypeSpec (atom signed) (value ()))
+                     (TypeSpec (atom unit) (value (8)))
+                     (TypeSpec (atom integer) (value ())))))
+                  ((PatVar
+                     (line 15)
+                     (id   L))
+                   ((
+                     ExprBinOp
+                     (line 15)
+                     (op   +)
+                     (lhs (
+                       ExprLit (
+                         lit (
+                           LitInteger
+                           (line    15)
+                           (integer 2)))))
+                     (rhs (
+                       ExprLit (
+                         lit (
+                           LitInteger
+                           (line    15)
+                           (integer 2)))))))
+                   ())
+                  ((PatVar
+                     (line 15)
+                     (id   B))
+                   ((
+                     ExprVar
+                     (line 15)
+                     (id   L)))
+                   ()))))))
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs ((
+                    ExprVar
+                    (line 15)
+                    (id   B))))))))))
           FormEof)))) |}]
