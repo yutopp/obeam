@@ -613,7 +613,7 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
        | Ok (RecordField {line; field_name; ty=None; default_expr=Some e}) ->
           (line, field_name, e) |> return
        | Ok _ ->
-          Err.create ~loc:[%here] (Err.Invalid_input ("cannot reach here", sf)) |> Result.fail
+          Err.create ~loc:[%here] (Err.Invalid_input ("cannot reach here: the field of a record creation must have an expression", sf)) |> Result.fail
        | Error e -> Error e
        end
      in
@@ -647,7 +647,7 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
        | Ok (RecordField {line; field_name; ty=None; default_expr=Some e}) ->
           (line, field_name, e) |> return
        | Ok _ ->
-          Err.create ~loc:[%here] (Err.Invalid_input ("cannot reach here", sf)) |> Result.fail
+          Err.create ~loc:[%here] (Err.Invalid_input ("cannot reach here: the field of a record update must have an expression", sf)) |> Result.fail
        | Error e -> Error e
        end
      in
