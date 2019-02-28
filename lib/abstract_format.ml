@@ -50,6 +50,8 @@ and pattern_t =
   | PatCons of {line: line_t; head: pattern_t; tail: pattern_t}
   | PatNil of {line: line_t}
   | PatMap of {line: line_t;  assocs: pattern_assoc_t list}
+  | PatRecordFieldIndex of {line: line_t; name: string; field_name: string}
+  | PatRecord of {line: line_t; name: string; record_fields: (line_t * atom_or_wildcard * pattern_t) list}
   | PatTuple of {line: line_t; pats: pattern_t list}
   | PatUniversal of {line: line_t}
   | PatVar of {line: line_t; id: string}
@@ -445,6 +447,34 @@ and pat_of_sf sf : (pattern_t, err_t) Result.t =
   | Sf.Tuple (3, [Sf.Atom "map"; Sf.Integer line; Sf.List sf_assocs]) ->
      let%bind assocs = sf_assocs |> List.map ~f:pat_assoc_of_sf |> Result.all |> track ~loc:[%here] in
      PatMap {line; assocs} |> return
+
+  (* a record field index pattern : #user.name *)
+  | Sf.Tuple (4, [Sf.Atom "record_index";
+                  Sf.Integer line;
+                  Sf.Atom name;
+                  Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field_name])]) ->
+     PatRecordFieldIndex {line; name; field_name} |> return
+
+  (* a record pattern : #user{name = "Taro", admin = true} *)
+  | Sf.Tuple (4, [Sf.Atom "record";
+                  Sf.Integer line;
+                  Sf.Atom name;
+                  Sf.List sf_record_fields]) ->
+     let field_of_sf sf =
+       begin match sf with
+       | Sf.Tuple (4, [Sf.Atom "record_field";
+                       Sf.Integer line;
+                       sf_atom_or_wildcard;
+                       sf_pattern]) ->
+          let%bind field_name = atom_or_wildcard_of_sf sf_atom_or_wildcard in
+          let%bind rhs = pat_of_sf sf_pattern in
+          (line, field_name, rhs) |> return
+       | _ ->
+          Err.create ~loc:[%here] (Err.Not_supported_absform ("cannot reach here", sf)) |> Result.fail
+       end
+     in
+     let%bind record_fields = sf_record_fields |> List.map ~f:field_of_sf |> Result.all |> track ~loc:[%here] in
+     PatRecord {line; name; record_fields} |> return
 
   (* a tuple pattern *)
   | Sf.Tuple (3, [Sf.Atom "tuple"; Sf.Integer line; Sf.List sf_pats]) ->
