@@ -245,9 +245,65 @@ let%expect_test "test_record.beam" =
                                       LitAtom
                                       (line 22)
                                       (atom baz))))))))))))))
+                    (ExprMatch
+                      (line 24)
+                      (pattern (PatUniversal (line 24)))
+                      (body (
+                        ExprCase
+                        (line 25)
+                        (expr (
+                          ExprVar
+                          (line 25)
+                          (id   R)))
+                        (clauses (
+                          (ClsCase
+                            (line 26)
+                            (pattern (
+                              PatRecordFieldIndex
+                              (line       26)
+                              (name       r)
+                              (field_name a)))
+                            (guard_sequence ())
+                            (body (
+                              ExprBody (
+                                exprs ((
+                                  ExprLit (
+                                    lit (
+                                      LitAtom
+                                      (line 26)
+                                      (atom foo)))))))))
+                          (ClsCase
+                            (line 27)
+                            (pattern (
+                              PatRecord
+                              (line 27)
+                              (name r)
+                              (record_fields (
+                                (27
+                                  (AtomWildcardAtom a)
+                                  (PatLit (
+                                    lit (
+                                      LitAtom
+                                      (line 27)
+                                      (atom true)))))
+                                (27 AtomWildcardWildcard (
+                                  PatLit (
+                                    lit (
+                                      LitInteger
+                                      (line    27)
+                                      (integer 111)))))))))
+                            (guard_sequence ())
+                            (body (
+                              ExprBody (
+                                exprs ((
+                                  ExprLit (
+                                    lit (
+                                      LitAtom
+                                      (line 27)
+                                      (atom bar))))))))))))))
                     (ExprLit (
                       lit (
                         LitAtom
-                        (line 24)
+                        (line 29)
                         (atom ok))))))))))))
           FormEof)))) |}]

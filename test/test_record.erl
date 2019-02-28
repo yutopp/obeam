@@ -21,4 +21,9 @@ g(R) ->
             _ when R#r.b -> bar;                 % Record Field Access in Guard test
             _ when #r.c -> baz                   % Record Field Index in Guard test
         end,
+    _ =
+        case R of
+            #r.a -> foo;                 % Record Field Index Pattern
+            #r{a = true, _ = 111} -> bar % Record Pattern
+        end,
     ok.
