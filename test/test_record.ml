@@ -54,7 +54,11 @@ let%expect_test "test_record.beam" =
                       LitInteger
                       (line    7)
                       (integer 57))))))))))
-          (AttrExport (line 9) (function_arity_list ((f 0))))
+          (AttrExport
+            (line 9)
+            (function_arity_list (
+              (f 0)
+              (g 1))))
           (DeclFun
             (line          11)
             (function_name f)
@@ -133,4 +137,112 @@ let%expect_test "test_record.beam" =
                               LitString
                               (line 15)
                               (str  hoge))))))))))))))))
+          (DeclFun
+            (line          17)
+            (function_name g)
+            (arity         1)
+            (clauses ((
+              ClsFun
+              (line 17)
+              (patterns ((
+                PatVar
+                (line 17)
+                (id   R))))
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs (
+                    (ExprMatch
+                      (line 18)
+                      (pattern (PatUniversal (line 18)))
+                      (body (
+                        ExprCase
+                        (line 19)
+                        (expr (
+                          ExprVar
+                          (line 19)
+                          (id   R)))
+                        (clauses (
+                          (ClsCase
+                            (line 20)
+                            (pattern (PatUniversal (line 20)))
+                            (guard_sequence ((
+                              GuardSeq (
+                                guards ((
+                                  Guard (
+                                    guard_tests ((
+                                      GuardTestRecord
+                                      (line 20)
+                                      (name r)
+                                      (record_fields (
+                                        (20
+                                          (AtomWildcardAtom a)
+                                          (GuardTestLit (
+                                            lit (
+                                              LitAtom
+                                              (line 20)
+                                              (atom true)))))
+                                        (20 AtomWildcardWildcard (
+                                          GuardTestLit (
+                                            lit (
+                                              LitInteger
+                                              (line    20)
+                                              (integer 111))))))))))))))))
+                            (body (
+                              ExprBody (
+                                exprs ((
+                                  ExprLit (
+                                    lit (
+                                      LitAtom
+                                      (line 20)
+                                      (atom foo)))))))))
+                          (ClsCase
+                            (line 21)
+                            (pattern (PatUniversal (line 21)))
+                            (guard_sequence ((
+                              GuardSeq (
+                                guards ((
+                                  Guard (
+                                    guard_tests ((
+                                      GuardTestRecordFieldAccess
+                                      (line 21)
+                                      (record (
+                                        GuardTestVar
+                                        (line 21)
+                                        (id   R)))
+                                      (name       r)
+                                      (field_name b))))))))))
+                            (body (
+                              ExprBody (
+                                exprs ((
+                                  ExprLit (
+                                    lit (
+                                      LitAtom
+                                      (line 21)
+                                      (atom bar)))))))))
+                          (ClsCase
+                            (line 22)
+                            (pattern (PatUniversal (line 22)))
+                            (guard_sequence ((
+                              GuardSeq (
+                                guards ((
+                                  Guard (
+                                    guard_tests ((
+                                      GuardTestRecordFieldIndex
+                                      (line       22)
+                                      (name       r)
+                                      (field_name c))))))))))
+                            (body (
+                              ExprBody (
+                                exprs ((
+                                  ExprLit (
+                                    lit (
+                                      LitAtom
+                                      (line 22)
+                                      (atom baz))))))))))))))
+                    (ExprLit (
+                      lit (
+                        LitAtom
+                        (line 24)
+                        (atom ok))))))))))))
           FormEof)))) |}]
