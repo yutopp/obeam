@@ -188,8 +188,9 @@ let tsl_of_sf sf =
      Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of type specifiers", sf)) |> Result.fail
 
 (* bitstring element *)
-(* NOTE: this function cannot be placed at big mutual recursions without explicit type signature *)
-(*       because type inference for polymorphic recursion is undecidable *)
+(* This function is used at bitstring constructor expression, pattern, and guard test. *)
+(* NOTE: This function cannot be contained in big mutual recursions started at `of_sf` without explicit type signature *)
+(*       because type inference for polymorphic recursion is undecidable. *)
 (*       ref: https://discuss.ocaml.org/t/value-restriction-and-mutually-recursive-functions/2432 *)
 let bin_element_of_sf ~value_of_sf ~size_of_sf sf =
   let open Result.Let_syntax in
