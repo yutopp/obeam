@@ -1,6 +1,6 @@
 -module(test_bitstring).
 
--export([f/0, g/1]).
+-export([f/0, g/1, h/1]).
 
 %% test case for bitstring constructor expr
 f() ->
@@ -13,3 +13,6 @@ f() ->
 
 %% test case for bitstring pattern
 g(<<0, 1:1, 2/little-signed-integer, 3:3/little-signed-unit:8-integer, L:(2 + 2), B:L>>) -> B.
+
+%% test case for bitstring constructor guard test
+h(B) when B =:= <<0, 1:1, 2/little-signed-integer, 3:3/little-signed-unit:8-integer, (2 + 2):(2 + 2)>> -> ok.

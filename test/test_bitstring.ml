@@ -17,7 +17,8 @@ let%expect_test "test_bitstring.beam" =
             (line 3)
             (function_arity_list (
               (f 0)
-              (g 1))))
+              (g 1)
+              (h 1))))
           (DeclFun
             (line          6)
             (function_name f)
@@ -201,4 +202,116 @@ let%expect_test "test_bitstring.beam" =
                     ExprVar
                     (line 15)
                     (id   B))))))))))
+          (DeclFun
+            (line          18)
+            (function_name h)
+            (arity         1)
+            (clauses ((
+              ClsFun
+              (line 18)
+              (patterns ((
+                PatVar
+                (line 18)
+                (id   B))))
+              (guard_sequence ((
+                GuardSeq (
+                  guards ((
+                    Guard (
+                      guard_tests ((
+                        GuardTestBinOp
+                        (line 18)
+                        (op   =:=)
+                        (lhs (
+                          GuardTestVar
+                          (line 18)
+                          (id   B)))
+                        (rhs (
+                          GuardTestBitstr
+                          (line 18)
+                          (elements (
+                            ((GuardTestLit (
+                               lit (
+                                 LitInteger
+                                 (line    18)
+                                 (integer 0))))
+                             ()
+                             ())
+                            ((GuardTestLit (
+                               lit (
+                                 LitInteger
+                                 (line    18)
+                                 (integer 1))))
+                             ((
+                               GuardTestLit (
+                                 lit (
+                                   LitInteger
+                                   (line    18)
+                                   (integer 1)))))
+                             ())
+                            ((GuardTestLit (
+                               lit (
+                                 LitInteger
+                                 (line    18)
+                                 (integer 2))))
+                             ()
+                             ((
+                               (TypeSpec (atom little)  (value ()))
+                               (TypeSpec (atom signed)  (value ()))
+                               (TypeSpec (atom integer) (value ())))))
+                            ((GuardTestLit (
+                               lit (
+                                 LitInteger
+                                 (line    18)
+                                 (integer 3))))
+                             ((
+                               GuardTestLit (
+                                 lit (
+                                   LitInteger
+                                   (line    18)
+                                   (integer 3)))))
+                             ((
+                               (TypeSpec (atom little) (value ()))
+                               (TypeSpec (atom signed) (value ()))
+                               (TypeSpec (atom unit) (value (8)))
+                               (TypeSpec (atom integer) (value ())))))
+                            ((GuardTestBinOp
+                               (line 18)
+                               (op   +)
+                               (lhs (
+                                 GuardTestLit (
+                                   lit (
+                                     LitInteger
+                                     (line    18)
+                                     (integer 2)))))
+                               (rhs (
+                                 GuardTestLit (
+                                   lit (
+                                     LitInteger
+                                     (line    18)
+                                     (integer 2))))))
+                             ((
+                               GuardTestBinOp
+                               (line 18)
+                               (op   +)
+                               (lhs (
+                                 GuardTestLit (
+                                   lit (
+                                     LitInteger
+                                     (line    18)
+                                     (integer 2)))))
+                               (rhs (
+                                 GuardTestLit (
+                                   lit (
+                                     LitInteger
+                                     (line    18)
+                                     (integer 2)))))))
+                             ()))))))))))))))
+              (body (
+                ExprBody (
+                  exprs ((
+                    ExprLit (
+                      lit (
+                        LitAtom
+                        (line 18)
+                        (atom ok))))))))))))
           FormEof)))) |}]

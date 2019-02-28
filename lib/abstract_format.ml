@@ -116,6 +116,7 @@ and guard_sequence_t =
 and guard_t =
   | Guard of {guard_tests: guard_test_t list}
 and guard_test_t =
+  | GuardTestBitstr of {line: line_t; elements: (guard_test_t * guard_test_t option * (type_spec_t list) option) list}
   | GuardTestCall of {line: line_t; function_name: literal_t; args: guard_test_t list}
   | GuardTestMapCreation of {line: line_t; assocs: guard_test_assoc_t list}
   | GuardTestMapUpdate of {line: line_t; map: guard_test_t; assocs: guard_test_assoc_t list}
@@ -972,6 +973,16 @@ and guard_of_sf sf : (guard_t, err_t) Result.t =
 and guard_test_of_sf sf : (guard_test_t, err_t) Result.t =
   let open Result.Let_syntax in
   match sf with
+  (* bitstring constructor *)
+  | Sf.Tuple (3, [Sf.Atom "bin"; Sf.Integer line; Sf.List sf_elements]) ->
+     let%bind elements =
+       sf_elements
+       |> List.map ~f:(bin_element_of_sf ~value_of_sf:guard_test_of_sf ~size_of_sf:guard_test_of_sf)
+       |> Result.all
+       |> track ~loc:[%here]
+     in
+     GuardTestBitstr {line; elements} |> return
+
   (* function call *)
   | Sf.Tuple (4, [
                  Sf.Atom "call";
