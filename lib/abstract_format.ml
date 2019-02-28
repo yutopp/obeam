@@ -62,6 +62,7 @@ and pattern_assoc_t =
 
 and expr_t =
   | ExprBody of {exprs: expr_t list}
+  | ExprBitstr of {line: line_t; elements: (expr_t * expr_t option * (type_spec_t list) option) list}
   | ExprCase of {line: line_t; expr: expr_t; clauses: clause_t list}
   | ExprCatch of {line: line_t; expr: expr_t}
   | ExprCons of {line: line_t; head: expr_t; tail: expr_t}
@@ -99,6 +100,8 @@ and integer_or_var_t =
   | IntegerVarVar of {line: line_t; id: string}
 and record_field_for_expr =
   | RecordFieldForExpr of {line: line_t; line_name: line_t; name: string; value: expr_t}
+and type_spec_t =
+  | TypeSpec of {atom: string; value: int option}
 
 and clause_t =
   | ClsCase of {line: line_t; pattern: pattern_t; guard_sequence: guard_sequence_t option; body: expr_t}
@@ -522,6 +525,16 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
      let%bind exprs = sf_exprs |> List.map ~f:expr_of_sf |> Result.all |> track ~loc:[%here] in
      ExprBody {exprs} |> return
 
+  (* a bitstring constructor *)
+  | Sf.Tuple (3, [Sf.Atom "bin"; Sf.Integer line; Sf.List sf_elements]) ->
+     let%bind elements =
+       sf_elements
+       |> List.map ~f:(bin_element_of_sf ~value_of_sf:expr_of_sf ~size_of_sf:expr_of_sf)
+       |> Result.all
+       |> track ~loc:[%here]
+     in
+     ExprBitstr {line; elements} |> return
+
   (* a case expression *)
   | Sf.Tuple (4, [Sf.Atom "case"; Sf.Integer line; sf_expr; Sf.List sf_clauses]) ->
      let%bind expr = sf_expr |> expr_of_sf |> track ~loc:[%here] in
@@ -780,6 +793,36 @@ and integer_or_var_of_sf sf =
     IntegerVarVar {line; id} |> return
   | _ ->
      Err.create ~loc:[%here] (Err.Not_supported_absform ("integer_or_var", sf)) |> Result.fail
+
+(* bitstring element *)
+and bin_element_of_sf ~value_of_sf ~size_of_sf sf =
+  let open Result.Let_syntax in
+  match sf with
+  | Sf.Tuple (5, [Sf.Atom "bin_element"; Sf.Integer line; sf_value; sf_size; sf_tsl]) ->
+     let default_or of_sf = function
+       | Sf.Atom "default" -> None |> return
+       | sf -> sf |> of_sf |> Result.map ~f:(fun e -> Some e) |> track ~loc:[%here]
+     in
+     let%bind value = sf_value |> value_of_sf |> track ~loc:[%here] in
+     let%bind size = sf_size |> default_or size_of_sf |> track ~loc:[%here] in
+     let%bind tsl = sf_tsl |> default_or tsl_of_sf |> track ~loc:[%here] in
+     (value, size, tsl) |> return
+  | _ ->
+     Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of bin_element", sf)) |> Result.fail
+
+(* bitstring element type specifiers *)
+and tsl_of_sf sf =
+  let open Result.Let_syntax in
+  match sf with
+  | Sf.List sf_tss ->
+     let ts_of_sf = function
+       | Sf.Atom atom -> TypeSpec {atom; value=None} |> return
+       | Sf.Tuple (2, [Sf.Atom atom; Sf.Integer value]) -> TypeSpec {atom; value=Some value} |> return
+       | _ -> Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of type specifier", sf)) |> Result.fail
+     in
+     sf_tss |> List.map ~f:ts_of_sf |> Result.all |> track ~loc:[%here]
+  | _ ->
+     Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of type specifiers", sf)) |> Result.fail
 
 (*
  * 8.5  Clauses
