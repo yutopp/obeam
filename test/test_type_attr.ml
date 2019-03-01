@@ -66,9 +66,9 @@ let%expect_test "test_type_attr.beam" =
             (tvars ((13 A)))
             (ty (
               TyRecord
-              (line             13)
-              (name             state)
-              (line_field_types 13)
+              (line      13)
+              (line_name 13)
+              (name      state)
               (field_types ((
                 RecordFieldType
                 (line      13)
