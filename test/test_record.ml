@@ -17,13 +17,15 @@ let%expect_test "test_record.beam" =
             (line 4)
             (fields (
               (RecordField
-                (line       4)
-                (field_name a)
+                (line            4)
+                (line_field_name 4)
+                (field_name      a)
                 (ty           ())
                 (default_expr ()))
               (RecordField
-                (line       5)
-                (field_name b)
+                (line            5)
+                (line_field_name 5)
+                (field_name      b)
                 (ty ())
                 (default_expr ((
                   ExprLit (
@@ -32,8 +34,9 @@ let%expect_test "test_record.beam" =
                       (line    5)
                       (integer 42)))))))
               (RecordField
-                (line       6)
-                (field_name c)
+                (line            6)
+                (line_field_name 6)
+                (field_name      c)
                 (ty ((
                   TyPredef
                   (line 6)
@@ -41,8 +44,9 @@ let%expect_test "test_record.beam" =
                   (args ()))))
                 (default_expr ()))
               (RecordField
-                (line       7)
-                (field_name d)
+                (line            7)
+                (line_field_name 7)
+                (field_name      d)
                 (ty ((
                   TyPredef
                   (line 7)
@@ -82,18 +86,26 @@ let%expect_test "test_record.beam" =
                         (line 12)
                         (name r)
                         (record_fields (
-                          (12 a (
-                            ExprLit (
-                              lit (
-                                LitInteger
-                                (line    12)
-                                (integer 3)))))
-                          (12 c (
-                            ExprLit (
-                              lit (
-                                LitString
-                                (line 12)
-                                (str  hello))))))))))
+                          (RecordFieldForExpr
+                            (line      12)
+                            (line_name 12)
+                            (name      a)
+                            (value (
+                              ExprLit (
+                                lit (
+                                  LitInteger
+                                  (line    12)
+                                  (integer 3))))))
+                          (RecordFieldForExpr
+                            (line      12)
+                            (line_name 12)
+                            (name      c)
+                            (value (
+                              ExprLit (
+                                lit (
+                                  LitString
+                                  (line 12)
+                                  (str  hello)))))))))))
                     (ExprMatch
                       (line 13)
                       (pattern (PatUniversal (line 13)))
@@ -104,8 +116,9 @@ let%expect_test "test_record.beam" =
                           ExprVar
                           (line 13)
                           (id   R)))
-                        (name       r)
-                        (field_name c))))
+                        (name            r)
+                        (line_field_name 13)
+                        (field_name      c))))
                     (ExprMatch
                       (line 14)
                       (pattern (
@@ -114,9 +127,10 @@ let%expect_test "test_record.beam" =
                         (id   Index)))
                       (body (
                         ExprRecordFieldIndex
-                        (line       14)
-                        (name       r)
-                        (field_name b))))
+                        (line            14)
+                        (name            r)
+                        (line_field_name 14)
+                        (field_name      b))))
                     (ExprRecordUpdate
                       (line 15)
                       (expr (
@@ -125,18 +139,26 @@ let%expect_test "test_record.beam" =
                         (id   R)))
                       (name r)
                       (update_fields (
-                        (15 a (
-                          ExprLit (
-                            lit (
-                              LitInteger
-                              (line    15)
-                              (integer 100)))))
-                        (15 c (
-                          ExprLit (
-                            lit (
-                              LitString
-                              (line 15)
-                              (str  hoge))))))))))))))))
+                        (RecordFieldForExpr
+                          (line      15)
+                          (line_name 15)
+                          (name      a)
+                          (value (
+                            ExprLit (
+                              lit (
+                                LitInteger
+                                (line    15)
+                                (integer 100))))))
+                        (RecordFieldForExpr
+                          (line      15)
+                          (line_name 15)
+                          (name      c)
+                          (value (
+                            ExprLit (
+                              lit (
+                                LitString
+                                (line 15)
+                                (str  hoge)))))))))))))))))
           (DeclFun
             (line          17)
             (function_name g)
