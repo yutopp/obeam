@@ -729,7 +729,7 @@ and record_field_for_expr_of_sf sf =
   | Ok (RecordField {line; line_field_name; field_name; ty=None; default_expr=Some value}) ->
      RecordFieldForExpr {line; line_name=line_field_name; name=field_name; value} |> return
   | Ok _ ->
-     Err.create ~loc:[%here] (Err.Invalid_input ("the field of a record creation must have an expression", sf)) |> Result.fail
+     Err.create ~loc:[%here] (Err.Invalid_input ("the field of a record expr must have an expression", sf)) |> Result.fail
   | Error e -> Error e |> track ~loc:[%here]
 
 and integer_or_var_of_sf sf =
