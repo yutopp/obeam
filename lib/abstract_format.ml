@@ -48,6 +48,7 @@ and literal_t =
   | LitString of {line: line_t; str: string}
 
 and pattern_t =
+  | PatBitstr of {line: line_t; elements: pattern_bin_element_t list}
   | PatCons of {line: line_t; head: pattern_t; tail: pattern_t}
   | PatNil of {line: line_t}
   | PatMap of {line: line_t;  assocs: pattern_assoc_t list}
@@ -59,9 +60,12 @@ and pattern_t =
   | PatLit of {lit: literal_t}
 and pattern_assoc_t =
   | PatAssocExact of {line: line_t; key: pattern_t; value: pattern_t}
+and pattern_bin_element_t =
+  | PatBinElement of {pattern: pattern_t; size: expr_t option; tsl: (type_spec_t list) option}
 
 and expr_t =
   | ExprBody of {exprs: expr_t list}
+  | ExprBitstr of {line: line_t; elements: expr_bin_element_t list}
   | ExprCase of {line: line_t; expr: expr_t; clauses: clause_t list}
   | ExprCatch of {line: line_t; expr: expr_t}
   | ExprCons of {line: line_t; head: expr_t; tail: expr_t}
@@ -99,6 +103,10 @@ and integer_or_var_t =
   | IntegerVarVar of {line: line_t; id: string}
 and record_field_for_expr =
   | RecordFieldForExpr of {line: line_t; line_name: line_t; name: string; value: expr_t}
+and type_spec_t =
+  | TypeSpec of {atom: string; value: int option}
+and expr_bin_element_t =
+  | ExprBinElement of {expr: expr_t; size: expr_t option; tsl: (type_spec_t list) option}
 
 and clause_t =
   | ClsCase of {line: line_t; pattern: pattern_t; guard_sequence: guard_sequence_t option; body: expr_t}
@@ -112,6 +120,7 @@ and guard_sequence_t =
 and guard_t =
   | Guard of {guard_tests: guard_test_t list}
 and guard_test_t =
+  | GuardTestBitstr of {line: line_t; elements: guard_test_bin_element_t list}
   | GuardTestCall of {line: line_t; function_name: literal_t; args: guard_test_t list}
   | GuardTestMapCreation of {line: line_t; assocs: guard_test_assoc_t list}
   | GuardTestMapUpdate of {line: line_t; map: guard_test_t; assocs: guard_test_assoc_t list}
@@ -129,6 +138,8 @@ and guard_test_assoc_t =
 and atom_or_wildcard = (* atom or _ for the fields of a record creation in guard tests *)
   | AtomWildcardAtom of {line: line_t; atom: string}
   | AtomWildcardWildcard of {line: line_t}
+and guard_test_bin_element_t =
+  | GuardTestBinElement of {guard_test: guard_test_t; size: guard_test_t option; tsl: (type_spec_t list) option}
 
 and type_t =
   | TyAnn of {line: line_t; annotation: type_t; tyvar: type_t}
@@ -167,6 +178,40 @@ type err_t = Sf.t Err.t
 
 let track ~loc result =
   Result.map_error ~f:(Err.record_backtrace ~loc:loc) result
+
+(* bitstring element type specifiers *)
+let tsl_of_sf sf =
+  let open Result.Let_syntax in
+  match sf with
+  | Sf.List sf_tss ->
+     let ts_of_sf = function
+       | Sf.Atom atom -> TypeSpec {atom; value=None} |> return
+       | Sf.Tuple (2, [Sf.Atom atom; Sf.Integer value]) -> TypeSpec {atom; value=Some value} |> return
+       | _ -> Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of type specifier", sf)) |> Result.fail
+     in
+     sf_tss |> List.map ~f:ts_of_sf |> Result.all |> track ~loc:[%here]
+  | _ ->
+     Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of type specifiers", sf)) |> Result.fail
+
+(* bitstring element *)
+(* This function is used at bitstring constructor expression, pattern, and guard test. *)
+(* NOTE: This function cannot be contained in big mutual recursions started at `of_sf` without explicit type signature *)
+(*       because type inference for polymorphic recursion is undecidable. *)
+(*       ref: https://discuss.ocaml.org/t/value-restriction-and-mutually-recursive-functions/2432 *)
+let bin_element_of_sf ~value_of_sf ~size_of_sf sf =
+  let open Result.Let_syntax in
+  match sf with
+  | Sf.Tuple (5, [Sf.Atom "bin_element"; Sf.Integer line; sf_value; sf_size; sf_tsl]) ->
+     let default_or of_sf = function
+       | Sf.Atom "default" -> None |> return
+       | sf -> sf |> of_sf |> Result.map ~f:(fun e -> Some e) |> track ~loc:[%here]
+     in
+     let%bind value = sf_value |> value_of_sf |> track ~loc:[%here] in
+     let%bind size = sf_size |> default_or size_of_sf |> track ~loc:[%here] in
+     let%bind tsl = sf_tsl |> default_or tsl_of_sf |> track ~loc:[%here] in
+     (value, size, tsl) |> return
+  | _ ->
+     Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of bin_element", sf)) |> Result.fail
 
 (*
  * Entry
@@ -439,6 +484,17 @@ and lit_of_sf sf : (literal_t, err_t) Result.t =
 and pat_of_sf sf : (pattern_t, err_t) Result.t =
   let open Result.Let_syntax in
   match sf with
+  (* a bitstring pattern *)
+  | Sf.Tuple (3, [Sf.Atom "bin"; Sf.Integer line; Sf.List sf_elements]) ->
+     let%bind elements =
+       sf_elements
+       |> List.map ~f:(bin_element_of_sf ~value_of_sf:pat_of_sf ~size_of_sf:expr_of_sf)
+       |> Result.all
+       |> Result.map ~f:(List.map ~f:(fun (pattern, size, tsl) -> PatBinElement {pattern; size; tsl}))
+       |> track ~loc:[%here]
+     in
+     PatBitstr {line; elements} |> return
+
   (* a cons pattern *)
   | Sf.Tuple (4, [Sf.Atom "cons"; Sf.Integer line; sf_head; sf_tail]) ->
      let%bind head = sf_head |> pat_of_sf |> track ~loc:[%here] in
@@ -521,6 +577,17 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
   | Sf.List sf_exprs ->
      let%bind exprs = sf_exprs |> List.map ~f:expr_of_sf |> Result.all |> track ~loc:[%here] in
      ExprBody {exprs} |> return
+
+  (* a bitstring constructor *)
+  | Sf.Tuple (3, [Sf.Atom "bin"; Sf.Integer line; Sf.List sf_elements]) ->
+     let%bind elements =
+       sf_elements
+       |> List.map ~f:(bin_element_of_sf ~value_of_sf:expr_of_sf ~size_of_sf:expr_of_sf)
+       |> Result.all
+       |> Result.map ~f:(List.map ~f:(fun (expr, size, tsl) -> ExprBinElement {expr; size; tsl}))
+       |> track ~loc:[%here]
+     in
+     ExprBitstr {line; elements} |> return
 
   (* a case expression *)
   | Sf.Tuple (4, [Sf.Atom "case"; Sf.Integer line; sf_expr; Sf.List sf_clauses]) ->
@@ -915,6 +982,17 @@ and guard_of_sf sf : (guard_t, err_t) Result.t =
 and guard_test_of_sf sf : (guard_test_t, err_t) Result.t =
   let open Result.Let_syntax in
   match sf with
+  (* bitstring constructor *)
+  | Sf.Tuple (3, [Sf.Atom "bin"; Sf.Integer line; Sf.List sf_elements]) ->
+     let%bind elements =
+       sf_elements
+       |> List.map ~f:(bin_element_of_sf ~value_of_sf:guard_test_of_sf ~size_of_sf:guard_test_of_sf)
+       |> Result.all
+       |> Result.map ~f:(List.map ~f:(fun (guard_test, size, tsl) -> GuardTestBinElement {guard_test; size; tsl}))
+       |> track ~loc:[%here]
+     in
+     GuardTestBitstr {line; elements} |> return
+
   (* function call *)
   | Sf.Tuple (4, [
                  Sf.Atom "call";
