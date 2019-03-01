@@ -43,6 +43,7 @@ and record_field_t =
 and literal_t =
   | LitAtom of {line: line_t; atom: string}
   | LitChar of {line: line_t; uchar: Uchar.t}
+  | LitFloat of {line: line_t; float: float}
   | LitInteger of {line: line_t; integer: int}
   | LitBigInt of {line: line_t; bigint: Z.t}
   | LitString of {line: line_t; str: string}
@@ -463,8 +464,8 @@ and lit_of_sf sf : (literal_t, err_t) Result.t =
         LitChar {line; uchar} |> return
      end
 
-  | Sf.Tuple (3, [Sf.Atom "float"; Sf.Integer line; _]) ->
-     failwith "TODO"
+  | Sf.Tuple (3, [Sf.Atom "float"; Sf.Integer line; Sf.Float float]) ->
+     LitFloat {line; float} |> return
 
   | Sf.Tuple (3, [Sf.Atom "integer"; Sf.Integer line; Sf.Integer integer]) ->
      LitInteger {line; integer} |> return
