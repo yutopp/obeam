@@ -132,6 +132,7 @@ and type_t =
   | TyFunAnyArity of {line: line_t; line_any: line_t; ret: type_t}
   | TyContFun of {line: line_t; function_type: type_t; constraints: type_func_cont_t}
   | TyFun of {line: line_t; line_params: line_t; params: type_t list; ret: type_t}
+  | TyRecord of {line: line_t; name: string; line_field_types: line_t; field_types: record_field_type_t list}
   | TyAnyTuple of {line: line_t}
   | TyTuple of {line: line_t; elements: type_t list}
   | TyUnion of {line: line_t; elements: type_t list}
@@ -145,6 +146,8 @@ and type_func_cont_t =
   | TyCont of {constraints: type_func_cont_t list}
   | TyContRel of {line: line_t; constraint_kind: type_func_cont_t; lhs: type_t; rhs: type_t}
   | TyContIsSubType of {line: line_t}
+and record_field_type_t =
+  | RecordFieldType of {line: line_t; line_name: line_t; name: string; ty: type_t}
 [@@deriving sexp_of]
 
 type err_t = Sf.t Err.t
@@ -1027,6 +1030,16 @@ and type_of_sf sf : (type_t, err_t) Result.t =
      let%bind high = sf_high |> type_of_sf |> track ~loc:[%here] in
      TyRange {line; low; high} |> return
 
+  (* record type : t(A) = #state{name :: A} *)
+  | Sf.Tuple (4, [Sf.Atom "type";
+                  Sf.Integer line;
+                  Sf.Atom "record";
+                  Sf.List (
+                      Sf.Tuple(3, [Sf.Atom "atom"; Sf.Integer line_field_types; Sf.Atom name])
+                      :: sf_field_types)]) ->
+     let%bind field_types = sf_field_types |> List.map ~f:record_field_type_of_sf |> Result.all |> track ~loc:[%here] in
+     TyRecord {line; name; line_field_types; field_types} |> return
+
   (* tuple type (any) *)
   | Sf.Tuple (4, [Sf.Atom "type"; Sf.Integer line; Sf.Atom "tuple"; Sf.Atom "any"]) ->
      TyAnyTuple {line} |> return
@@ -1151,6 +1164,22 @@ and type_assoc_of_sf sf : (type_assoc_t, err_t) Result.t =
 
   | _ ->
      Err.create ~loc:[%here] (Err.Not_supported_absform ("type_assoc", sf)) |> Result.fail
+
+and record_field_type_of_sf sf =
+  let open Result.Let_syntax in
+  match sf with
+  | Sf.Tuple (4, [Sf.Atom "type";
+                  Sf.Integer line;
+                  Sf.Atom "field_type";
+                  Sf.List [
+                      Sf.Tuple (3, [Sf.Atom "atom"; Sf.Integer line_name; Sf.Atom field_name]);
+                      sf_ty;
+                    ]
+             ]) ->
+     let%bind ty = sf_ty |> type_of_sf |> track ~loc:[%here] in
+     RecordFieldType {line; line_name; name=field_name; ty} |> return
+  | _ ->
+     Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of a record field type", sf)) |> Result.fail
 
 (**)
 let of_etf etf : (t, err_t) Result.t =
