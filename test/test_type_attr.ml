@@ -43,8 +43,9 @@ let%expect_test "test_type_attr.beam" =
             (line 12)
             (fields (
               (RecordField
-                (line       12)
-                (field_name name)
+                (line            12)
+                (line_field_name 12)
+                (field_name      name)
                 (ty ((
                   TyPredef
                   (line 12)
@@ -52,8 +53,9 @@ let%expect_test "test_type_attr.beam" =
                   (args ()))))
                 (default_expr ()))
               (RecordField
-                (line       12)
-                (field_name param)
+                (line            12)
+                (line_field_name 12)
+                (field_name      param)
                 (ty ((
                   TyPredef
                   (line 12)
