@@ -48,7 +48,7 @@ and literal_t =
   | LitString of {line: line_t; str: string}
 
 and pattern_t =
-  | PatBitstr of {line: line_t; elements: (pattern_t * expr_t option * (type_spec_t list) option) list}
+  | PatBitstr of {line: line_t; elements: pattern_bin_element_t list}
   | PatCons of {line: line_t; head: pattern_t; tail: pattern_t}
   | PatNil of {line: line_t}
   | PatMap of {line: line_t;  assocs: pattern_assoc_t list}
@@ -60,10 +60,12 @@ and pattern_t =
   | PatLit of {lit: literal_t}
 and pattern_assoc_t =
   | PatAssocExact of {line: line_t; key: pattern_t; value: pattern_t}
+and pattern_bin_element_t =
+  | PatBinElement of {pattern: pattern_t; size: expr_t option; tsl: (type_spec_t list) option}
 
 and expr_t =
   | ExprBody of {exprs: expr_t list}
-  | ExprBitstr of {line: line_t; elements: (expr_t * expr_t option * (type_spec_t list) option) list}
+  | ExprBitstr of {line: line_t; elements: expr_bin_element_t list}
   | ExprCase of {line: line_t; expr: expr_t; clauses: clause_t list}
   | ExprCatch of {line: line_t; expr: expr_t}
   | ExprCons of {line: line_t; head: expr_t; tail: expr_t}
@@ -103,6 +105,8 @@ and record_field_for_expr =
   | RecordFieldForExpr of {line: line_t; line_name: line_t; name: string; value: expr_t}
 and type_spec_t =
   | TypeSpec of {atom: string; value: int option}
+and expr_bin_element_t =
+  | ExprBinElement of {expr: expr_t; size: expr_t option; tsl: (type_spec_t list) option}
 
 and clause_t =
   | ClsCase of {line: line_t; pattern: pattern_t; guard_sequence: guard_sequence_t option; body: expr_t}
@@ -116,7 +120,7 @@ and guard_sequence_t =
 and guard_t =
   | Guard of {guard_tests: guard_test_t list}
 and guard_test_t =
-  | GuardTestBitstr of {line: line_t; elements: (guard_test_t * guard_test_t option * (type_spec_t list) option) list}
+  | GuardTestBitstr of {line: line_t; elements: guard_test_bin_element_t list}
   | GuardTestCall of {line: line_t; function_name: literal_t; args: guard_test_t list}
   | GuardTestMapCreation of {line: line_t; assocs: guard_test_assoc_t list}
   | GuardTestMapUpdate of {line: line_t; map: guard_test_t; assocs: guard_test_assoc_t list}
@@ -134,6 +138,8 @@ and guard_test_assoc_t =
 and atom_or_wildcard = (* atom or _ for the fields of a record creation in guard tests *)
   | AtomWildcardAtom of {line: line_t; atom: string}
   | AtomWildcardWildcard of {line: line_t}
+and guard_test_bin_element_t =
+  | GuardTestBinElement of {guard_test: guard_test_t; size: guard_test_t option; tsl: (type_spec_t list) option}
 
 and type_t =
   | TyAnn of {line: line_t; annotation: type_t; tyvar: type_t}
@@ -484,6 +490,7 @@ and pat_of_sf sf : (pattern_t, err_t) Result.t =
        sf_elements
        |> List.map ~f:(bin_element_of_sf ~value_of_sf:pat_of_sf ~size_of_sf:expr_of_sf)
        |> Result.all
+       |> Result.map ~f:(List.map ~f:(fun (pattern, size, tsl) -> PatBinElement {pattern; size; tsl}))
        |> track ~loc:[%here]
      in
      PatBitstr {line; elements} |> return
@@ -577,6 +584,7 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
        sf_elements
        |> List.map ~f:(bin_element_of_sf ~value_of_sf:expr_of_sf ~size_of_sf:expr_of_sf)
        |> Result.all
+       |> Result.map ~f:(List.map ~f:(fun (expr, size, tsl) -> ExprBinElement {expr; size; tsl}))
        |> track ~loc:[%here]
      in
      ExprBitstr {line; elements} |> return
@@ -980,6 +988,7 @@ and guard_test_of_sf sf : (guard_test_t, err_t) Result.t =
        sf_elements
        |> List.map ~f:(bin_element_of_sf ~value_of_sf:guard_test_of_sf ~size_of_sf:guard_test_of_sf)
        |> Result.all
+       |> Result.map ~f:(List.map ~f:(fun (guard_test, size, tsl) -> GuardTestBinElement {guard_test; size; tsl}))
        |> track ~loc:[%here]
      in
      GuardTestBitstr {line; elements} |> return

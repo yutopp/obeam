@@ -34,83 +34,93 @@ let%expect_test "test_bitstring.beam" =
                     ExprBitstr
                     (line 7)
                     (elements (
-                      ((ExprLit (
-                         lit (
-                           LitInteger
-                           (line    7)
-                           (integer 0))))
-                       ()
-                       ())
-                      ((ExprLit (
-                         lit (
-                           LitInteger
-                           (line    8)
-                           (integer 1))))
-                       ((
-                         ExprLit (
-                           lit (
-                             LitInteger
-                             (line    8)
-                             (integer 1)))))
-                       ())
-                      ((ExprLit (
-                         lit (
-                           LitInteger
-                           (line    9)
-                           (integer 2))))
-                       ()
-                       ((
-                         (TypeSpec (atom little)  (value ()))
-                         (TypeSpec (atom signed)  (value ()))
-                         (TypeSpec (atom integer) (value ())))))
-                      ((ExprLit (
-                         lit (
-                           LitInteger
-                           (line    10)
-                           (integer 3))))
-                       ((
-                         ExprLit (
-                           lit (
-                             LitInteger
-                             (line    10)
-                             (integer 3)))))
-                       ((
-                         (TypeSpec (atom little) (value ()))
-                         (TypeSpec (atom signed) (value ()))
-                         (TypeSpec (atom unit) (value (8)))
-                         (TypeSpec (atom integer) (value ())))))
-                      ((ExprBinOp
-                         (line 11)
-                         (op   +)
-                         (lhs (
-                           ExprLit (
-                             lit (
-                               LitInteger
-                               (line    11)
-                               (integer 2)))))
-                         (rhs (
-                           ExprLit (
-                             lit (
-                               LitInteger
-                               (line    11)
-                               (integer 2))))))
-                       ((
-                         ExprBinOp
-                         (line 11)
-                         (op   +)
-                         (lhs (
-                           ExprLit (
-                             lit (
-                               LitInteger
-                               (line    11)
-                               (integer 2)))))
-                         (rhs (
-                           ExprLit (
-                             lit (
-                               LitInteger
-                               (line    11)
-                               (integer 2)))))))
-                       ()))))))))))))
+                      (ExprBinElement
+                        (expr (
+                          ExprLit (
+                            lit (
+                              LitInteger
+                              (line    7)
+                              (integer 0)))))
+                        (size ())
+                        (tsl  ()))
+                      (ExprBinElement
+                        (expr (
+                          ExprLit (
+                            lit (
+                              LitInteger
+                              (line    8)
+                              (integer 1)))))
+                        (size ((
+                          ExprLit (
+                            lit (
+                              LitInteger
+                              (line    8)
+                              (integer 1))))))
+                        (tsl ()))
+                      (ExprBinElement
+                        (expr (
+                          ExprLit (
+                            lit (
+                              LitInteger
+                              (line    9)
+                              (integer 2)))))
+                        (size ())
+                        (tsl ((
+                          (TypeSpec (atom little)  (value ()))
+                          (TypeSpec (atom signed)  (value ()))
+                          (TypeSpec (atom integer) (value ()))))))
+                      (ExprBinElement
+                        (expr (
+                          ExprLit (
+                            lit (
+                              LitInteger
+                              (line    10)
+                              (integer 3)))))
+                        (size ((
+                          ExprLit (
+                            lit (
+                              LitInteger
+                              (line    10)
+                              (integer 3))))))
+                        (tsl ((
+                          (TypeSpec (atom little) (value ()))
+                          (TypeSpec (atom signed) (value ()))
+                          (TypeSpec (atom unit) (value (8)))
+                          (TypeSpec (atom integer) (value ()))))))
+                      (ExprBinElement
+                        (expr (
+                          ExprBinOp
+                          (line 11)
+                          (op   +)
+                          (lhs (
+                            ExprLit (
+                              lit (
+                                LitInteger
+                                (line    11)
+                                (integer 2)))))
+                          (rhs (
+                            ExprLit (
+                              lit (
+                                LitInteger
+                                (line    11)
+                                (integer 2)))))))
+                        (size ((
+                          ExprBinOp
+                          (line 11)
+                          (op   +)
+                          (lhs (
+                            ExprLit (
+                              lit (
+                                LitInteger
+                                (line    11)
+                                (integer 2)))))
+                          (rhs (
+                            ExprLit (
+                              lit (
+                                LitInteger
+                                (line    11)
+                                (integer 2))))))))
+                        (tsl ())))))))))))))
           (DeclFun
             (line          15)
             (function_name g)
@@ -122,79 +132,91 @@ let%expect_test "test_bitstring.beam" =
                 PatBitstr
                 (line 15)
                 (elements (
-                  ((PatLit (
-                     lit (
-                       LitInteger
-                       (line    15)
-                       (integer 0))))
-                   ()
-                   ())
-                  ((PatLit (
-                     lit (
-                       LitInteger
-                       (line    15)
-                       (integer 1))))
-                   ((
-                     ExprLit (
-                       lit (
-                         LitInteger
-                         (line    15)
-                         (integer 1)))))
-                   ())
-                  ((PatLit (
-                     lit (
-                       LitInteger
-                       (line    15)
-                       (integer 2))))
-                   ()
-                   ((
-                     (TypeSpec (atom little)  (value ()))
-                     (TypeSpec (atom signed)  (value ()))
-                     (TypeSpec (atom integer) (value ())))))
-                  ((PatLit (
-                     lit (
-                       LitInteger
-                       (line    15)
-                       (integer 3))))
-                   ((
-                     ExprLit (
-                       lit (
-                         LitInteger
-                         (line    15)
-                         (integer 3)))))
-                   ((
-                     (TypeSpec (atom little) (value ()))
-                     (TypeSpec (atom signed) (value ()))
-                     (TypeSpec (atom unit) (value (8)))
-                     (TypeSpec (atom integer) (value ())))))
-                  ((PatVar
-                     (line 15)
-                     (id   L))
-                   ((
-                     ExprBinOp
-                     (line 15)
-                     (op   +)
-                     (lhs (
-                       ExprLit (
-                         lit (
-                           LitInteger
-                           (line    15)
-                           (integer 2)))))
-                     (rhs (
-                       ExprLit (
-                         lit (
-                           LitInteger
-                           (line    15)
-                           (integer 2)))))))
-                   ())
-                  ((PatVar
-                     (line 15)
-                     (id   B))
-                   ((
-                     ExprVar
-                     (line 15)
-                     (id   L)))
-                   ()))))))
+                  (PatBinElement
+                    (pattern (
+                      PatLit (
+                        lit (
+                          LitInteger
+                          (line    15)
+                          (integer 0)))))
+                    (size ())
+                    (tsl  ()))
+                  (PatBinElement
+                    (pattern (
+                      PatLit (
+                        lit (
+                          LitInteger
+                          (line    15)
+                          (integer 1)))))
+                    (size ((
+                      ExprLit (
+                        lit (
+                          LitInteger
+                          (line    15)
+                          (integer 1))))))
+                    (tsl ()))
+                  (PatBinElement
+                    (pattern (
+                      PatLit (
+                        lit (
+                          LitInteger
+                          (line    15)
+                          (integer 2)))))
+                    (size ())
+                    (tsl ((
+                      (TypeSpec (atom little)  (value ()))
+                      (TypeSpec (atom signed)  (value ()))
+                      (TypeSpec (atom integer) (value ()))))))
+                  (PatBinElement
+                    (pattern (
+                      PatLit (
+                        lit (
+                          LitInteger
+                          (line    15)
+                          (integer 3)))))
+                    (size ((
+                      ExprLit (
+                        lit (
+                          LitInteger
+                          (line    15)
+                          (integer 3))))))
+                    (tsl ((
+                      (TypeSpec (atom little) (value ()))
+                      (TypeSpec (atom signed) (value ()))
+                      (TypeSpec (atom unit) (value (8)))
+                      (TypeSpec (atom integer) (value ()))))))
+                  (PatBinElement
+                    (pattern (
+                      PatVar
+                      (line 15)
+                      (id   L)))
+                    (size ((
+                      ExprBinOp
+                      (line 15)
+                      (op   +)
+                      (lhs (
+                        ExprLit (
+                          lit (
+                            LitInteger
+                            (line    15)
+                            (integer 2)))))
+                      (rhs (
+                        ExprLit (
+                          lit (
+                            LitInteger
+                            (line    15)
+                            (integer 2))))))))
+                    (tsl ()))
+                  (PatBinElement
+                    (pattern (
+                      PatVar
+                      (line 15)
+                      (id   B)))
+                    (size ((
+                      ExprVar
+                      (line 15)
+                      (id   L))))
+                    (tsl ())))))))
               (guard_sequence ())
               (body (
                 ExprBody (
@@ -229,83 +251,93 @@ let%expect_test "test_bitstring.beam" =
                           GuardTestBitstr
                           (line 18)
                           (elements (
-                            ((GuardTestLit (
-                               lit (
-                                 LitInteger
-                                 (line    18)
-                                 (integer 0))))
-                             ()
-                             ())
-                            ((GuardTestLit (
-                               lit (
-                                 LitInteger
-                                 (line    18)
-                                 (integer 1))))
-                             ((
-                               GuardTestLit (
-                                 lit (
-                                   LitInteger
-                                   (line    18)
-                                   (integer 1)))))
-                             ())
-                            ((GuardTestLit (
-                               lit (
-                                 LitInteger
-                                 (line    18)
-                                 (integer 2))))
-                             ()
-                             ((
-                               (TypeSpec (atom little)  (value ()))
-                               (TypeSpec (atom signed)  (value ()))
-                               (TypeSpec (atom integer) (value ())))))
-                            ((GuardTestLit (
-                               lit (
-                                 LitInteger
-                                 (line    18)
-                                 (integer 3))))
-                             ((
-                               GuardTestLit (
-                                 lit (
-                                   LitInteger
-                                   (line    18)
-                                   (integer 3)))))
-                             ((
-                               (TypeSpec (atom little) (value ()))
-                               (TypeSpec (atom signed) (value ()))
-                               (TypeSpec (atom unit) (value (8)))
-                               (TypeSpec (atom integer) (value ())))))
-                            ((GuardTestBinOp
-                               (line 18)
-                               (op   +)
-                               (lhs (
-                                 GuardTestLit (
-                                   lit (
-                                     LitInteger
-                                     (line    18)
-                                     (integer 2)))))
-                               (rhs (
-                                 GuardTestLit (
-                                   lit (
-                                     LitInteger
-                                     (line    18)
-                                     (integer 2))))))
-                             ((
-                               GuardTestBinOp
-                               (line 18)
-                               (op   +)
-                               (lhs (
-                                 GuardTestLit (
-                                   lit (
-                                     LitInteger
-                                     (line    18)
-                                     (integer 2)))))
-                               (rhs (
-                                 GuardTestLit (
-                                   lit (
-                                     LitInteger
-                                     (line    18)
-                                     (integer 2)))))))
-                             ()))))))))))))))
+                            (GuardTestBinElement
+                              (guard_test (
+                                GuardTestLit (
+                                  lit (
+                                    LitInteger
+                                    (line    18)
+                                    (integer 0)))))
+                              (size ())
+                              (tsl  ()))
+                            (GuardTestBinElement
+                              (guard_test (
+                                GuardTestLit (
+                                  lit (
+                                    LitInteger
+                                    (line    18)
+                                    (integer 1)))))
+                              (size ((
+                                GuardTestLit (
+                                  lit (
+                                    LitInteger
+                                    (line    18)
+                                    (integer 1))))))
+                              (tsl ()))
+                            (GuardTestBinElement
+                              (guard_test (
+                                GuardTestLit (
+                                  lit (
+                                    LitInteger
+                                    (line    18)
+                                    (integer 2)))))
+                              (size ())
+                              (tsl ((
+                                (TypeSpec (atom little)  (value ()))
+                                (TypeSpec (atom signed)  (value ()))
+                                (TypeSpec (atom integer) (value ()))))))
+                            (GuardTestBinElement
+                              (guard_test (
+                                GuardTestLit (
+                                  lit (
+                                    LitInteger
+                                    (line    18)
+                                    (integer 3)))))
+                              (size ((
+                                GuardTestLit (
+                                  lit (
+                                    LitInteger
+                                    (line    18)
+                                    (integer 3))))))
+                              (tsl ((
+                                (TypeSpec (atom little) (value ()))
+                                (TypeSpec (atom signed) (value ()))
+                                (TypeSpec (atom unit) (value (8)))
+                                (TypeSpec (atom integer) (value ()))))))
+                            (GuardTestBinElement
+                              (guard_test (
+                                GuardTestBinOp
+                                (line 18)
+                                (op   +)
+                                (lhs (
+                                  GuardTestLit (
+                                    lit (
+                                      LitInteger
+                                      (line    18)
+                                      (integer 2)))))
+                                (rhs (
+                                  GuardTestLit (
+                                    lit (
+                                      LitInteger
+                                      (line    18)
+                                      (integer 2)))))))
+                              (size ((
+                                GuardTestBinOp
+                                (line 18)
+                                (op   +)
+                                (lhs (
+                                  GuardTestLit (
+                                    lit (
+                                      LitInteger
+                                      (line    18)
+                                      (integer 2)))))
+                                (rhs (
+                                  GuardTestLit (
+                                    lit (
+                                      LitInteger
+                                      (line    18)
+                                      (integer 2))))))))
+                              (tsl ())))))))))))))))
               (body (
                 ExprBody (
                   exprs ((
