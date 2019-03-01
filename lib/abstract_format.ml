@@ -466,8 +466,8 @@ and pat_of_sf sf : (pattern_t, err_t) Result.t =
                        Sf.Integer line;
                        sf_atom_or_wildcard;
                        sf_pattern]) ->
-          let%bind field_name = atom_or_wildcard_of_sf sf_atom_or_wildcard in
-          let%bind rhs = pat_of_sf sf_pattern in
+          let%bind field_name = atom_or_wildcard_of_sf sf_atom_or_wildcard |> track ~loc:[%here] in
+          let%bind rhs = pat_of_sf sf_pattern |> track ~loc:[%here] in
           (line, field_name, rhs) |> return
        | _ ->
           Err.create ~loc:[%here] (Err.Not_supported_absform ("cannot reach here", sf)) |> Result.fail
