@@ -1039,7 +1039,7 @@ and guard_test_of_sf sf : (guard_test_t, err_t) Result.t =
      let%bind assocs = sf_assocs |> List.map ~f:guard_test_assoc_of_sf |> Result.all |> track ~loc:[%here] in
      GuardTestMapUpdate {line; map; assocs} |> return
 
-  (* a map update *)
+  (* nil *)
   | Sf.Tuple (2, [Sf.Atom "nil"; Sf.Integer line]) ->
      GuardTestNil {line} |> return
 
