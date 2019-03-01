@@ -39,4 +39,43 @@ let%expect_test "test_type_attr.beam" =
               (line 9)
               (name integer)
               (args ()))))
+          (DeclRecord
+            (line 12)
+            (fields (
+              (RecordField
+                (line       12)
+                (field_name name)
+                (ty ((
+                  TyPredef
+                  (line 12)
+                  (name string)
+                  (args ()))))
+                (default_expr ()))
+              (RecordField
+                (line       12)
+                (field_name param)
+                (ty ((
+                  TyPredef
+                  (line 12)
+                  (name term)
+                  (args ()))))
+                (default_expr ())))))
+          (DeclType
+            (line 13)
+            (name record_as_type)
+            (tvars ((13 A)))
+            (ty (
+              TyRecord
+              (line      13)
+              (line_name 13)
+              (name      state)
+              (field_types ((
+                RecordFieldType
+                (line      13)
+                (line_name 13)
+                (name      param)
+                (ty (
+                  TyVar
+                  (line 13)
+                  (id   A)))))))))
           FormEof)))) |}]
