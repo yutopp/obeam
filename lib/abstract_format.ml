@@ -66,6 +66,7 @@ and pattern_bin_element_t =
 and expr_t =
   | ExprBody of {exprs: expr_t list}
   | ExprBitstr of {line: line_t; elements: expr_bin_element_t list}
+  | ExprBlock of {line: line_t; exprs: expr_t list}
   | ExprCase of {line: line_t; expr: expr_t; clauses: clause_t list}
   | ExprCatch of {line: line_t; expr: expr_t}
   | ExprCons of {line: line_t; head: expr_t; tail: expr_t}
@@ -588,6 +589,11 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
        |> track ~loc:[%here]
      in
      ExprBitstr {line; elements} |> return
+
+  (* a block expression *)
+  | Sf.Tuple (3, [Sf.Atom "block"; Sf.Integer line; Sf.List sf_exprs]) ->
+     let%bind exprs = sf_exprs |> List.map ~f:expr_of_sf |> Result.all |> track ~loc:[%here] in
+     ExprBlock {line; exprs} |> return
 
   (* a case expression *)
   | Sf.Tuple (4, [Sf.Atom "case"; Sf.Integer line; sf_expr; Sf.List sf_clauses]) ->
