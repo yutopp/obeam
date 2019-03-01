@@ -7,3 +7,6 @@
 
 %% test case for opaque decl
 -opaque int() :: integer().
+
+-record(state, {name :: string(), param :: term()}).
+-type record_as_type(A) :: #state{param :: A}.
