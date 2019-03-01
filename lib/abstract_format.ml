@@ -50,7 +50,7 @@ and pattern_t =
   | PatCons of {line: line_t; head: pattern_t; tail: pattern_t}
   | PatNil of {line: line_t}
   | PatMap of {line: line_t;  assocs: pattern_assoc_t list}
-  | PatRecordFieldIndex of {line: line_t; name: string; field_name: string}
+  | PatRecordFieldIndex of {line: line_t; name: string; line_field_name: line_t; field_name: string}
   | PatRecord of {line: line_t; name: string; record_fields: (line_t * atom_or_wildcard * pattern_t) list}
   | PatTuple of {line: line_t; pats: pattern_t list}
   | PatUniversal of {line: line_t}
@@ -452,8 +452,8 @@ and pat_of_sf sf : (pattern_t, err_t) Result.t =
   | Sf.Tuple (4, [Sf.Atom "record_index";
                   Sf.Integer line;
                   Sf.Atom name;
-                  Sf.Tuple (3, [Sf.Atom "atom"; _; Sf.Atom field_name])]) ->
-     PatRecordFieldIndex {line; name; field_name} |> return
+                  Sf.Tuple (3, [Sf.Atom "atom"; Sf.Integer line_field_name; Sf.Atom field_name])]) ->
+     PatRecordFieldIndex {line; name; line_field_name; field_name} |> return
 
   (* a record pattern : #user{name = "Taro", admin = true} *)
   | Sf.Tuple (4, [Sf.Atom "record";

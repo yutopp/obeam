@@ -260,9 +260,10 @@ let%expect_test "test_record.beam" =
                             (line 26)
                             (pattern (
                               PatRecordFieldIndex
-                              (line       26)
-                              (name       r)
-                              (field_name a)))
+                              (line            26)
+                              (name            r)
+                              (line_field_name 26)
+                              (field_name      a)))
                             (guard_sequence ())
                             (body (
                               ExprBody (
@@ -280,14 +281,17 @@ let%expect_test "test_record.beam" =
                               (name r)
                               (record_fields (
                                 (27
-                                  (AtomWildcardAtom a)
+                                  (AtomWildcardAtom
+                                    (line 27)
+                                    (atom a))
                                   (PatLit (
                                     lit (
                                       LitAtom
                                       (line 27)
                                       (atom true)))))
-                                (27 AtomWildcardWildcard (
-                                  PatLit (
+                                (27
+                                  (AtomWildcardWildcard (line 27))
+                                  (PatLit (
                                     lit (
                                       LitInteger
                                       (line    27)
