@@ -176,14 +176,17 @@ let%expect_test "test_record.beam" =
                                       (name r)
                                       (record_fields (
                                         (20
-                                          (AtomWildcardAtom a)
+                                          (AtomWildcardAtom
+                                            (line 20)
+                                            (atom a))
                                           (GuardTestLit (
                                             lit (
                                               LitAtom
                                               (line 20)
                                               (atom true)))))
-                                        (20 AtomWildcardWildcard (
-                                          GuardTestLit (
+                                        (20
+                                          (AtomWildcardWildcard (line 20))
+                                          (GuardTestLit (
                                             lit (
                                               LitInteger
                                               (line    20)
@@ -210,8 +213,9 @@ let%expect_test "test_record.beam" =
                                         GuardTestVar
                                         (line 21)
                                         (id   R)))
-                                      (name       r)
-                                      (field_name b))))))))))
+                                      (name            r)
+                                      (line_field_name 21)
+                                      (field_name      b))))))))))
                             (body (
                               ExprBody (
                                 exprs ((
@@ -229,9 +233,10 @@ let%expect_test "test_record.beam" =
                                   Guard (
                                     guard_tests ((
                                       GuardTestRecordFieldIndex
-                                      (line       22)
-                                      (name       r)
-                                      (field_name c))))))))))
+                                      (line            22)
+                                      (name            r)
+                                      (line_field_name 22)
+                                      (field_name      c))))))))))
                             (body (
                               ExprBody (
                                 exprs ((
