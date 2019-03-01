@@ -1,5 +1,5 @@
 -module(test_list).
--export([f/0, g/1]).
+-export([f/0, g/1, h/1]).
 
 %% test case for list expressions
 f() ->
@@ -22,3 +22,10 @@ g(List) ->
     [3 | [1, 4]] = List,
 
     [3, 1 | 4] = List.
+
+%% test case for list guard test
+h(List) when List =:= [3, 1, 4] -> ok;
+h(List) when List =:= [3 | [1 | [4]]] -> ok;
+h(List) when List =:= [3, 1 | [4]] -> ok;
+h(List) when List =:= [3 | [1, 4]] -> ok;
+h(List) when List =:= [3, 1 | 4] -> ok.
