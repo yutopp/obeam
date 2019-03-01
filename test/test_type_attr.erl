@@ -8,5 +8,6 @@
 %% test case for opaque decl
 -opaque int() :: integer().
 
+%% test case for record type and record field type
 -record(state, {name :: string(), param :: term()}).
 -type record_as_type(A) :: #state{param :: A}.
