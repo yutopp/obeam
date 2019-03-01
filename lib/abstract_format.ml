@@ -124,9 +124,11 @@ and guard_t =
   | Guard of {guard_tests: guard_test_t list}
 and guard_test_t =
   | GuardTestBitstr of {line: line_t; elements: guard_test_bin_element_t list}
+  | GuardTestCons of {line: line_t; head: guard_test_t; tail: guard_test_t}
   | GuardTestCall of {line: line_t; function_name: literal_t; args: guard_test_t list}
   | GuardTestMapCreation of {line: line_t; assocs: guard_test_assoc_t list}
   | GuardTestMapUpdate of {line: line_t; map: guard_test_t; assocs: guard_test_assoc_t list}
+  | GuardTestNil of {line: line_t}
   | GuardTestBinOp of {line: line_t; op: string; lhs: guard_test_t; rhs: guard_test_t}
   | GuardTestRecord of {line: line_t; name: string; record_fields: (line_t * atom_or_wildcard * guard_test_t) list}
   | GuardTestRecordFieldAccess of
@@ -1009,6 +1011,12 @@ and guard_test_of_sf sf : (guard_test_t, err_t) Result.t =
      in
      GuardTestBitstr {line; elements} |> return
 
+  (* cons skeleton *)
+  | Sf.Tuple (4, [Sf.Atom "cons"; Sf.Integer line; sf_head; sf_tail]) ->
+     let%bind head = sf_head |> guard_test_of_sf |> track ~loc:[%here] in
+     let%bind tail = sf_tail |> guard_test_of_sf |> track ~loc:[%here] in
+     GuardTestCons {line; head; tail} |> return
+
   (* function call *)
   | Sf.Tuple (4, [
                  Sf.Atom "call";
@@ -1030,6 +1038,10 @@ and guard_test_of_sf sf : (guard_test_t, err_t) Result.t =
      let%bind map = sf_map |> guard_test_of_sf |> track ~loc:[%here] in
      let%bind assocs = sf_assocs |> List.map ~f:guard_test_assoc_of_sf |> Result.all |> track ~loc:[%here] in
      GuardTestMapUpdate {line; map; assocs} |> return
+
+  (* a map update *)
+  | Sf.Tuple (2, [Sf.Atom "nil"; Sf.Integer line]) ->
+     GuardTestNil {line} |> return
 
   (* a binary operator *)
   | Sf.Tuple (5, [Sf.Atom "op"; Sf.Integer line; Sf.Atom op; sf_lhs; sf_rhs]) ->

@@ -17,7 +17,8 @@ let%expect_test "test_list.beam" =
             (line 2)
             (function_arity_list (
               (f 0)
-              (g 1))))
+              (g 1)
+              (h 1))))
           (DeclFun
             (line          5)
             (function_name f)
@@ -413,4 +414,275 @@ let%expect_test "test_list.beam" =
                         ExprVar
                         (line 24)
                         (id   List))))))))))))
+          (DeclFun
+            (line          27)
+            (function_name h)
+            (arity         1)
+            (clauses (
+              (ClsFun
+                (line 27)
+                (patterns ((
+                  PatVar
+                  (line 27)
+                  (id   List))))
+                (guard_sequence ((
+                  GuardSeq (
+                    guards ((
+                      Guard (
+                        guard_tests ((
+                          GuardTestBinOp
+                          (line 27)
+                          (op   =:=)
+                          (lhs (
+                            GuardTestVar
+                            (line 27)
+                            (id   List)))
+                          (rhs (
+                            GuardTestCons
+                            (line 27)
+                            (head (
+                              GuardTestLit (
+                                lit (
+                                  LitInteger
+                                  (line    27)
+                                  (integer 3)))))
+                            (tail (
+                              GuardTestCons
+                              (line 27)
+                              (head (
+                                GuardTestLit (
+                                  lit (
+                                    LitInteger
+                                    (line    27)
+                                    (integer 1)))))
+                              (tail (
+                                GuardTestCons
+                                (line 27)
+                                (head (
+                                  GuardTestLit (
+                                    lit (
+                                      LitInteger
+                                      (line    27)
+                                      (integer 4)))))
+                                (tail (GuardTestNil (line 27))))))))))))))))))
+                (body (
+                  ExprBody (
+                    exprs ((
+                      ExprLit (
+                        lit (
+                          LitAtom
+                          (line 27)
+                          (atom ok)))))))))
+              (ClsFun
+                (line 28)
+                (patterns ((
+                  PatVar
+                  (line 28)
+                  (id   List))))
+                (guard_sequence ((
+                  GuardSeq (
+                    guards ((
+                      Guard (
+                        guard_tests ((
+                          GuardTestBinOp
+                          (line 28)
+                          (op   =:=)
+                          (lhs (
+                            GuardTestVar
+                            (line 28)
+                            (id   List)))
+                          (rhs (
+                            GuardTestCons
+                            (line 28)
+                            (head (
+                              GuardTestLit (
+                                lit (
+                                  LitInteger
+                                  (line    28)
+                                  (integer 3)))))
+                            (tail (
+                              GuardTestCons
+                              (line 28)
+                              (head (
+                                GuardTestLit (
+                                  lit (
+                                    LitInteger
+                                    (line    28)
+                                    (integer 1)))))
+                              (tail (
+                                GuardTestCons
+                                (line 28)
+                                (head (
+                                  GuardTestLit (
+                                    lit (
+                                      LitInteger
+                                      (line    28)
+                                      (integer 4)))))
+                                (tail (GuardTestNil (line 28))))))))))))))))))
+                (body (
+                  ExprBody (
+                    exprs ((
+                      ExprLit (
+                        lit (
+                          LitAtom
+                          (line 28)
+                          (atom ok)))))))))
+              (ClsFun
+                (line 29)
+                (patterns ((
+                  PatVar
+                  (line 29)
+                  (id   List))))
+                (guard_sequence ((
+                  GuardSeq (
+                    guards ((
+                      Guard (
+                        guard_tests ((
+                          GuardTestBinOp
+                          (line 29)
+                          (op   =:=)
+                          (lhs (
+                            GuardTestVar
+                            (line 29)
+                            (id   List)))
+                          (rhs (
+                            GuardTestCons
+                            (line 29)
+                            (head (
+                              GuardTestLit (
+                                lit (
+                                  LitInteger
+                                  (line    29)
+                                  (integer 3)))))
+                            (tail (
+                              GuardTestCons
+                              (line 29)
+                              (head (
+                                GuardTestLit (
+                                  lit (
+                                    LitInteger
+                                    (line    29)
+                                    (integer 1)))))
+                              (tail (
+                                GuardTestCons
+                                (line 29)
+                                (head (
+                                  GuardTestLit (
+                                    lit (
+                                      LitInteger
+                                      (line    29)
+                                      (integer 4)))))
+                                (tail (GuardTestNil (line 29))))))))))))))))))
+                (body (
+                  ExprBody (
+                    exprs ((
+                      ExprLit (
+                        lit (
+                          LitAtom
+                          (line 29)
+                          (atom ok)))))))))
+              (ClsFun
+                (line 30)
+                (patterns ((
+                  PatVar
+                  (line 30)
+                  (id   List))))
+                (guard_sequence ((
+                  GuardSeq (
+                    guards ((
+                      Guard (
+                        guard_tests ((
+                          GuardTestBinOp
+                          (line 30)
+                          (op   =:=)
+                          (lhs (
+                            GuardTestVar
+                            (line 30)
+                            (id   List)))
+                          (rhs (
+                            GuardTestCons
+                            (line 30)
+                            (head (
+                              GuardTestLit (
+                                lit (
+                                  LitInteger
+                                  (line    30)
+                                  (integer 3)))))
+                            (tail (
+                              GuardTestCons
+                              (line 30)
+                              (head (
+                                GuardTestLit (
+                                  lit (
+                                    LitInteger
+                                    (line    30)
+                                    (integer 1)))))
+                              (tail (
+                                GuardTestCons
+                                (line 30)
+                                (head (
+                                  GuardTestLit (
+                                    lit (
+                                      LitInteger
+                                      (line    30)
+                                      (integer 4)))))
+                                (tail (GuardTestNil (line 30))))))))))))))))))
+                (body (
+                  ExprBody (
+                    exprs ((
+                      ExprLit (
+                        lit (
+                          LitAtom
+                          (line 30)
+                          (atom ok)))))))))
+              (ClsFun
+                (line 31)
+                (patterns ((
+                  PatVar
+                  (line 31)
+                  (id   List))))
+                (guard_sequence ((
+                  GuardSeq (
+                    guards ((
+                      Guard (
+                        guard_tests ((
+                          GuardTestBinOp
+                          (line 31)
+                          (op   =:=)
+                          (lhs (
+                            GuardTestVar
+                            (line 31)
+                            (id   List)))
+                          (rhs (
+                            GuardTestCons
+                            (line 31)
+                            (head (
+                              GuardTestLit (
+                                lit (
+                                  LitInteger
+                                  (line    31)
+                                  (integer 3)))))
+                            (tail (
+                              GuardTestCons
+                              (line 31)
+                              (head (
+                                GuardTestLit (
+                                  lit (
+                                    LitInteger
+                                    (line    31)
+                                    (integer 1)))))
+                              (tail (
+                                GuardTestLit (
+                                  lit (
+                                    LitInteger
+                                    (line    31)
+                                    (integer 4))))))))))))))))))
+                (body (
+                  ExprBody (
+                    exprs ((
+                      ExprLit (
+                        lit (
+                          LitAtom
+                          (line 31)
+                          (atom ok))))))))))))
           FormEof)))) |}]
