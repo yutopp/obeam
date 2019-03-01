@@ -84,6 +84,8 @@ and expr_t =
   | ExprMatch of {line: line_t; pattern: pattern_t; body: expr_t}
   | ExprBinOp of {line: line_t; op: string; lhs: expr_t; rhs: expr_t}
   | ExprUnaryOp of {line: line_t; op: string; expr: expr_t}
+  | ExprReceive of {line: line_t; clauses: clause_t list} (* `clauses` must be a list of case-clauses (ClsCase) *)
+  | ExprReceiveAfter of {line: line_t; clauses: clause_t list; timeout: expr_t; body: expr_t list} (* `clauses` must be a list of case-clauses (ClsCase) *)
   | ExprRecord of {line: line_t; name: string; record_fields: record_field_for_expr list}
   | ExprRecordFieldAccess of {line: line_t; expr: expr_t; name: string; line_field_name: line_t; field_name: string}
   | ExprRecordFieldIndex of {line: line_t; name: string; line_field_name: line_t; field_name: string}
@@ -730,6 +732,24 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
                   sf_expr]) ->
      let%bind expr = sf_expr |> expr_of_sf |> track ~loc:[%here] in
      ExprUnaryOp {line; op; expr} |> return
+
+  (* a receive expression *)
+  | Sf.Tuple (3, [Sf.Atom "receive";
+                  Sf.Integer line;
+                  Sf.List sf_clauses]) ->
+     let%bind clauses = sf_clauses |> List.map ~f:cls_of_sf |> Result.all |> track ~loc:[%here] in
+     ExprReceive {line; clauses} |> return
+
+  (* a receive-after expression *)
+  | Sf.Tuple (5, [Sf.Atom "receive";
+                  Sf.Integer line;
+                  Sf.List sf_clauses;
+                  sf_timeout;
+                  Sf.List sf_body]) ->
+     let%bind clauses = sf_clauses |> List.map ~f:cls_of_sf |> Result.all |> track ~loc:[%here] in
+     let%bind timeout = sf_timeout |> expr_of_sf |> track ~loc:[%here] in
+     let%bind body = sf_body |> List.map ~f:expr_of_sf |> Result.all |> track ~loc:[%here] in
+     ExprReceiveAfter {line; clauses; timeout; body} |> return
 
   (* a record creation : #user{name = "Taro", admin = true} *)
   | Sf.Tuple (4, [Sf.Atom "record";
