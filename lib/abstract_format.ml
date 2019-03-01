@@ -111,12 +111,19 @@ and guard_test_t =
   | GuardTestMapCreation of {line: line_t; assocs: guard_test_assoc_t list}
   | GuardTestMapUpdate of {line: line_t; map: guard_test_t; assocs: guard_test_assoc_t list}
   | GuardTestBinOp of {line: line_t; op: string; lhs: guard_test_t; rhs: guard_test_t}
+  | GuardTestRecord of {line: line_t; name: string; record_fields: (line_t * atom_or_wildcard * guard_test_t) list}
+  | GuardTestRecordFieldAccess of
+      {line: line_t; record: guard_test_t; name: string; line_field_name: line_t; field_name: string}
+  | GuardTestRecordFieldIndex of {line: line_t; name: string; line_field_name: line_t; field_name: string}
   | GuardTestTuple of {line: line_t; elements: guard_test_t list}
   | GuardTestVar of {line: line_t; id: string}
   | GuardTestLit of {lit: literal_t}
 and guard_test_assoc_t =
   | GuardTestAssoc of {line: line_t; key: guard_test_t; value: guard_test_t}
   | GuardTestAssocExact of {line: line_t; key: guard_test_t; value: guard_test_t}
+and atom_or_wildcard = (* atom or _ for the fields of a record creation in guard tests *)
+  | AtomWildcardAtom of {line: line_t; atom: string}
+  | AtomWildcardWildcard of {line: line_t}
 
 and type_t =
   | TyAnn of {line: line_t; annotation: type_t; tyvar: type_t}
@@ -909,6 +916,43 @@ and guard_test_of_sf sf : (guard_test_t, err_t) Result.t =
      let%bind rhs = sf_rhs |> guard_test_of_sf |> track ~loc:[%here] in
      GuardTestBinOp {line; op; lhs; rhs} |> return
 
+  (* a record creation : #user{name = "Taro", admin = true} *)
+  | Sf.Tuple (4, [Sf.Atom "record";
+                  Sf.Integer line;
+                  Sf.Atom name;
+                  Sf.List sf_record_fields]) ->
+     let field_of_sf sf =
+       begin match sf with
+       | Sf.Tuple (4, [Sf.Atom "record_field";
+                       Sf.Integer line;
+                       sf_atom_or_wildcard;
+                       sf_guard_test]) ->
+          let%bind field_name = atom_or_wildcard_of_sf sf_atom_or_wildcard |> track ~loc:[%here] in
+          let%bind rhs = guard_test_of_sf sf_guard_test |> track ~loc:[%here] in
+          (line, field_name, rhs) |> return
+       | _ ->
+          Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of record_field", sf)) |> Result.fail
+       end
+     in
+     let%bind record_fields = sf_record_fields |> List.map ~f:field_of_sf |> Result.all |> track ~loc:[%here] in
+     GuardTestRecord {line; name; record_fields} |> return
+
+  (* a record field access : U#user.name *)
+  | Sf.Tuple (5, [Sf.Atom "record_field";
+                  Sf.Integer line;
+                  sf_record;
+                  Sf.Atom name;
+                  Sf.Tuple (3, [Sf.Atom "atom"; Sf.Integer line_field_name; Sf.Atom field_name])]) ->
+     let%bind record = sf_record |> guard_test_of_sf |> track ~loc:[%here] in
+     GuardTestRecordFieldAccess {line; record; name; line_field_name; field_name} |> return
+
+  (* a record field index : #user.name *)
+  | Sf.Tuple (4, [Sf.Atom "record_index";
+                  Sf.Integer line;
+                  Sf.Atom name;
+                  Sf.Tuple (3, [Sf.Atom "atom"; Sf.Integer line_field_name; Sf.Atom field_name])]) ->
+     GuardTestRecordFieldIndex {line; name; line_field_name; field_name} |> return
+
   (* a tuple skeleton *)
   | Sf.Tuple (3, [Sf.Atom "tuple"; Sf.Integer line; Sf.List sf_elements]) ->
      let%bind elements = sf_elements |> List.map ~f:guard_test_of_sf |> Result.all |> track ~loc:[%here] in
@@ -940,6 +984,15 @@ and guard_test_assoc_of_sf sf : (guard_test_assoc_t, err_t) Result.t =
 
   | _ ->
      Err.create ~loc:[%here] (Err.Not_supported_absform ("guard_test_assoc", sf)) |> Result.fail
+
+and atom_or_wildcard_of_sf sf =
+  match sf with
+  | Sf.Tuple (3, [Sf.Atom "atom"; Sf.Integer line; Sf.Atom field_name]) ->
+     AtomWildcardAtom {line; atom=field_name} |> Result.return
+  | Sf.Tuple (3, [Sf.Atom "var"; Sf.Integer line; Sf.Atom "_"]) ->
+     AtomWildcardWildcard {line} |> Result.return
+  | _ ->
+     Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of atom_or_wildcard", sf)) |> Result.fail
 
 (*
  * 8.7  Types
