@@ -470,7 +470,7 @@ and pat_of_sf sf : (pattern_t, err_t) Result.t =
           let%bind rhs = pat_of_sf sf_pattern |> track ~loc:[%here] in
           (line, field_name, rhs) |> return
        | _ ->
-          Err.create ~loc:[%here] (Err.Not_supported_absform ("cannot reach here", sf)) |> Result.fail
+          Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of a field of record pattern", sf)) |> Result.fail
        end
      in
      let%bind record_fields = sf_record_fields |> List.map ~f:field_of_sf |> Result.all |> track ~loc:[%here] in
