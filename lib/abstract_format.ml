@@ -50,6 +50,8 @@ and literal_t =
   | LitString of {line: line_t; str: chars}
 and chars =
   | Asciis of string
+  (* The char in the [Ascii s] is in 0-255 range chars and length is less than or equal to 65535.
+     See also http://erlang.org/doc/apps/erts/erl_ext_dist.html#string_ext *)
   | CharList of int list
 
 and pattern_t =
