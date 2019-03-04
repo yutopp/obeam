@@ -18,125 +18,172 @@ let%expect_test "test_spec.beam" =
             (function_arity_list (
               (f 1)
               (g 1))))
+          (Callback
+            (line          6)
+            (function_name foo)
+            (arity         1)
+            (specs ((
+              TyFun
+              (line        6)
+              (line_params 6)
+              (params ((
+                TyLit (
+                  lit (
+                    LitAtom
+                    (line 6)
+                    (atom ok))))))
+              (ret (
+                TyPredef
+                (line 6)
+                (name term)
+                (args ())))))))
           (SpecFun
-            (line 6)
+            (line 9)
             (module_name ())
             (function_name f)
             (arity         1)
             (specs ((
               TyContFun
-              (line 6)
+              (line 9)
               (function_type (
                 TyFun
-                (line        6)
-                (line_params 6)
+                (line        9)
+                (line_params 9)
                 (params ((
                   TyVar
-                  (line 6)
+                  (line 9)
                   (id   A))))
                 (ret (
                   TyPredef
-                  (line 6)
+                  (line 9)
                   (name integer)
                   (args ())))))
               (constraints (
                 TyCont (
                   constraints ((
                     TyContRel
-                    (line 6)
-                    (constraint_kind (TyContIsSubType (line 6)))
+                    (line 9)
+                    (constraint_kind (TyContIsSubType (line 9)))
                     (lhs (
                       TyVar
-                      (line 6)
+                      (line 9)
                       (id   A)))
                     (rhs (
                       TyPredef
-                      (line 6)
+                      (line 9)
                       (name integer)
                       (args ()))))))))))))
           (DeclFun
-            (line          7)
+            (line          10)
             (function_name f)
             (arity         1)
             (clauses ((
               ClsFun
-              (line 7)
+              (line 10)
               (patterns ((
                 PatVar
-                (line 7)
+                (line 10)
                 (id   N))))
               (guard_sequence ())
               (body (
                 ExprBody (
                   exprs ((
                     ExprVar
-                    (line 7)
+                    (line 10)
                     (id   N))))))))))
           (SpecFun
-            (line 10)
+            (line 13)
             (module_name ())
             (function_name g)
             (arity         1)
             (specs ((
               TyContFun
-              (line 10)
+              (line 13)
               (function_type (
                 TyFun
-                (line        10)
-                (line_params 10)
+                (line        13)
+                (line_params 13)
                 (params ((
                   TyVar
-                  (line 10)
+                  (line 13)
                   (id   A))))
                 (ret (
                   TyVar
-                  (line 10)
+                  (line 13)
                   (id   B)))))
               (constraints (
                 TyCont (
                   constraints (
                     (TyContRel
-                      (line 10)
-                      (constraint_kind (TyContIsSubType (line 10)))
+                      (line 13)
+                      (constraint_kind (TyContIsSubType (line 13)))
                       (lhs (
                         TyVar
-                        (line 10)
+                        (line 13)
                         (id   A)))
                       (rhs (
                         TyPredef
-                        (line 10)
+                        (line 13)
                         (name integer)
                         (args ()))))
                     (TyContRel
-                      (line 11)
-                      (constraint_kind (TyContIsSubType (line 11)))
+                      (line 14)
+                      (constraint_kind (TyContIsSubType (line 14)))
                       (lhs (
                         TyVar
-                        (line 11)
+                        (line 14)
                         (id   B)))
                       (rhs (
                         TyPredef
-                        (line 11)
+                        (line 14)
                         (name integer)
                         (args ()))))))))))))
           (DeclFun
-            (line          12)
+            (line          15)
             (function_name g)
             (arity         1)
             (clauses ((
               ClsFun
-              (line 12)
+              (line 15)
               (patterns ((
                 PatVar
-                (line 12)
+                (line 15)
                 (id   N))))
               (guard_sequence ())
               (body (
                 ExprBody (
                   exprs ((
                     ExprBinOp
-                    (line 13)
+                    (line 16)
                     (op   *)
-                    (lhs (ExprVar (line 13) (id N)))
-                    (rhs (ExprVar (line 13) (id N))))))))))))
+                    (lhs (ExprVar (line 16) (id N)))
+                    (rhs (ExprVar (line 16) (id N))))))))))))
+          (SpecFun
+            (line 19)
+            (module_name (lists))
+            (function_name member)
+            (arity         2)
+            (specs ((
+              TyFun
+              (line        19)
+              (line_params 19)
+              (params (
+                (TyPredef
+                  (line 19)
+                  (name number)
+                  (args ()))
+                (TyPredef
+                  (line 19)
+                  (name list)
+                  (args ((
+                    TyPredef
+                    (line 19)
+                    (name number)
+                    (args ())))))))
+              (ret (
+                TyLit (
+                  lit (
+                    LitAtom
+                    (line 19)
+                    (atom boolean)))))))))
           FormEof)))) |}]
