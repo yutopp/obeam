@@ -2,6 +2,9 @@
 
 -export([f/1, g/1]).
 
+%% test case for a callback of behaviour
+-callback foo(ok) -> term().
+
 %% test case for basic spec
 -spec f(A) -> integer() when A :: integer().
 f(N) -> N.
@@ -11,3 +14,6 @@ f(N) -> N.
                      B :: integer().
 g(N) ->
     N * N.
+
+%% test case for spec with module (spec of remote function)
+-spec lists:member(number(), [number()]) -> boolean.
