@@ -13,7 +13,11 @@ let%expect_test "test_op_pattern.beam" =
           (AttrMod
             (line        1)
             (module_name test_op_pattern))
-          (AttrExport (line 3) (function_arity_list ((f 1))))
+          (AttrExport
+            (line 3)
+            (function_arity_list (
+              (f 1)
+              (g 1))))
           (DeclFun
             (line          6)
             (function_name f)
@@ -69,4 +73,34 @@ let%expect_test "test_op_pattern.beam" =
                           LitInteger
                           (line    7)
                           (integer 3))))))))))))
+          (DeclFun
+            (line          10)
+            (function_name g)
+            (arity         1)
+            (clauses ((
+              ClsFun
+              (line 10)
+              (patterns ((
+                PatUnaryOp
+                (line 10)
+                (op   -)
+                (operand (
+                  PatLit (
+                    lit (
+                      LitInteger
+                      (line    10)
+                      (integer 1))))))))
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs ((
+                    ExprUnaryOp
+                    (line 10)
+                    (op   -)
+                    (expr (
+                      ExprLit (
+                        lit (
+                          LitInteger
+                          (line    10)
+                          (integer 1))))))))))))))
           FormEof)))) |}]
