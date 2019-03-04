@@ -29,6 +29,7 @@ and form_t =
   | AttrFile of {line: line_t; file: string; file_line: line_t}
   | DeclFun of {line: line_t; function_name: string; arity: int; clauses: clause_t list}
   | SpecFun of {line: line_t; module_name: string option; function_name: string; arity: int; specs: type_t list}
+  | Callback of {line: line_t; function_name: string; arity: int; specs: type_t list}
   | DeclRecord of {line: line_t; fields: record_field_t list}
   | DeclType of {line: line_t; name: string; tvars: (line_t * string) list; ty: type_t}
   | DeclOpaqueType of {line: line_t; name: string; tvars: (line_t * string) list; ty: type_t}
@@ -330,6 +331,16 @@ and form_of_sf sf : (form_t, err_t) Result.t =
      let%bind specs = sf_specs |> List.map ~f:fun_type_of_sf |> Result.all |> track ~loc:[%here] in
      let module_name = None in
      SpecFun {line; module_name; function_name; arity; specs} |> return
+
+  (* function specification (callback attribute) *)
+  | Sf.Tuple (4, [Sf.Atom "attribute";
+                  Sf.Integer line;
+                  Sf.Atom "callback";
+                  Sf.Tuple (2, [Sf.Tuple (2, [Sf.Atom function_name; Sf.Integer arity]);
+                                Sf.List sf_specs])
+             ]) ->
+     let%bind specs = sf_specs |> List.map ~f:fun_type_of_sf |> Result.all |> track ~loc:[%here] in
+     Callback {line; function_name; arity; specs} |> return
 
   (* function specification(Mod) *)
   | Sf.Tuple (4, [Sf.Atom "attribute";
