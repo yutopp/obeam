@@ -17,7 +17,8 @@ let%expect_test "test_string.beam" =
             (line 3)
             (function_arity_list (
               (f 0)
-              (g 0))))
+              (g 0)
+              (h 0))))
           (DeclFun
             (line          6)
             (function_name f)
@@ -61,5 +62,17 @@ let%expect_test "test_string.beam" =
                             12396
                             12427
                             12434))))))))))))))
+          (DeclFun
+            (line          12)
+            (function_name h)
+            (arity         0)
+            (clauses ((
+              ClsFun
+              (line 12)
+              (patterns       ())
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs ((ExprLit (lit (LitString (line 12) (str (CharList ())))))))))))))
           FormEof))))
  |}]
