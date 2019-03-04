@@ -73,6 +73,7 @@ and pattern_bin_element_t =
 and expr_t =
   | ExprBody of {exprs: expr_t list}
   | ExprBitstr of {line: line_t; elements: expr_bin_element_t list}
+  | ExprBitstrComprehension of {line: line_t; expr: expr_t; qualifiers: qualifier_t list}
   | ExprBlock of {line: line_t; exprs: expr_t list}
   | ExprCase of {line: line_t; expr: expr_t; clauses: clause_t list}
   | ExprCatch of {line: line_t; expr: expr_t}
@@ -106,6 +107,7 @@ and expr_assoc_t =
 and qualifier_t =
   | QualifierGenerator of {line: line_t; pattern: pattern_t; expr: expr_t}
   | QualifierFilter of {filter: expr_t}
+  | QualifierBitstrGenerator of {line: line_t; pattern: pattern_t; expr: expr_t}
 and atom_or_var_t =
   | AtomVarAtom of {line: line_t; atom: string}
   | AtomVarVar of {line: line_t; id: string}
@@ -624,6 +626,12 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
      in
      ExprBitstr {line; elements} |> return
 
+  (* a bitstring comprehension *)
+  | Sf.Tuple (4, [Sf.Atom "bc"; Sf.Integer line; sf_expr; Sf.List sf_qualifiers]) ->
+     let%bind expr = sf_expr |> expr_of_sf |> track ~loc:[%here] in
+     let%bind qualifiers = sf_qualifiers |> List.map ~f:qualifier_of_sf |> Result.all |> track ~loc:[%here] in
+     ExprBitstrComprehension {line; expr; qualifiers} |> return
+
   (* a block expression *)
   | Sf.Tuple (3, [Sf.Atom "block"; Sf.Integer line; Sf.List sf_exprs]) ->
      let%bind exprs = sf_exprs |> List.map ~f:expr_of_sf |> Result.all |> track ~loc:[%here] in
@@ -868,6 +876,11 @@ and qualifier_of_sf sf : (qualifier_t, err_t) Result.t =
        let%bind pattern = sf_pattern |> pat_of_sf |> track ~loc:[%here] in
        let%bind expr = sf_expr |> expr_of_sf |> track ~loc:[%here] in
        QualifierGenerator {line; pattern; expr} |> return
+    (* bitstring generator qualifier *)
+    | Sf.Tuple (4, [Sf.Atom "b_generate"; Sf.Integer line; sf_pattern; sf_expr]) ->
+       let%bind pattern = sf_pattern |> pat_of_sf |> track ~loc:[%here] in
+       let%bind expr = sf_expr |> expr_of_sf |> track ~loc:[%here] in
+       QualifierBitstrGenerator {line; pattern; expr} |> return
     (* filter qualifier *)
     | sf_filter ->
        let%bind filter = sf_filter |> expr_of_sf |> track ~loc:[%here] in
