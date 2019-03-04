@@ -128,6 +128,8 @@ and guard_test_t =
   | GuardTestBitstr of {line: line_t; elements: guard_test_bin_element_t list}
   | GuardTestCons of {line: line_t; head: guard_test_t; tail: guard_test_t}
   | GuardTestCall of {line: line_t; function_name: literal_t; args: guard_test_t list}
+  | GuardTestRemoteCall of {line: line_t; line_remote: line_t; line_module_name: line_t; module_name: string; (* `module_name` must be "erlang" *)
+                            line_function_name: line_t; function_name: string; args: guard_test_t list}
   | GuardTestMapCreation of {line: line_t; assocs: guard_test_assoc_t list}
   | GuardTestMapUpdate of {line: line_t; map: guard_test_t; assocs: guard_test_assoc_t list}
   | GuardTestNil of {line: line_t}
@@ -1039,6 +1041,19 @@ and guard_test_of_sf sf : (guard_test_t, err_t) Result.t =
      let%bind head = sf_head |> guard_test_of_sf |> track ~loc:[%here] in
      let%bind tail = sf_tail |> guard_test_of_sf |> track ~loc:[%here] in
      GuardTestCons {line; head; tail} |> return
+
+  (* remote function call *)
+  | Sf.Tuple (4, [
+                 Sf.Atom "call";
+                 Sf.Integer line;
+                 Sf.Tuple (4, [Sf.Atom "remote";
+                               Sf.Integer line_remote;
+                               Sf.Tuple (3, [Sf.Atom "atom"; Sf.Integer line_module_name; Sf.Atom module_name]);
+                               Sf.Tuple (3, [Sf.Atom "atom"; Sf.Integer line_function_name; Sf.Atom function_name])]);
+                 Sf.List sf_args
+             ]) ->
+     let%bind args = sf_args |> List.map ~f:guard_test_of_sf |> Result.all |> track ~loc:[%here] in
+     GuardTestRemoteCall {line; line_remote; line_module_name; module_name; line_function_name; function_name; args} |> return
 
   (* function call *)
   | Sf.Tuple (4, [
