@@ -50,6 +50,7 @@ and literal_t =
 
 and pattern_t =
   | PatBitstr of {line: line_t; elements: pattern_bin_element_t list}
+  | PatCompound of {line: line_t; lhs: pattern_t; rhs: pattern_t}
   | PatCons of {line: line_t; head: pattern_t; tail: pattern_t}
   | PatNil of {line: line_t}
   | PatMap of {line: line_t;  assocs: pattern_assoc_t list}
@@ -504,6 +505,12 @@ and pat_of_sf sf : (pattern_t, err_t) Result.t =
        |> track ~loc:[%here]
      in
      PatBitstr {line; elements} |> return
+
+  (* a compound pattern *)
+  | Sf.Tuple (4, [Sf.Atom "match"; Sf.Integer line; sf_lhs; sf_rhs]) ->
+     let%bind lhs = sf_lhs |> pat_of_sf |> track ~loc:[%here] in
+     let%bind rhs = sf_rhs |> pat_of_sf |> track ~loc:[%here] in
+     PatCompound {line; lhs; rhs} |> return
 
   (* a cons pattern *)
   | Sf.Tuple (4, [Sf.Atom "cons"; Sf.Integer line; sf_head; sf_tail]) ->
