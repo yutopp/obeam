@@ -60,6 +60,7 @@ and pattern_t =
   | PatCons of {line: line_t; head: pattern_t; tail: pattern_t}
   | PatNil of {line: line_t}
   | PatMap of {line: line_t;  assocs: pattern_assoc_t list}
+  | PatBinOp of {line: line_t; op: string; lhs: pattern_t; rhs: pattern_t}
   | PatRecordFieldIndex of {line: line_t; name: string; line_field_name: line_t; field_name: string}
   | PatRecord of {line: line_t; name: string; record_fields: (line_t * atom_or_wildcard * pattern_t) list}
   | PatTuple of {line: line_t; pats: pattern_t list}
@@ -555,6 +556,12 @@ and pat_of_sf sf : (pattern_t, err_t) Result.t =
   | Sf.Tuple (3, [Sf.Atom "map"; Sf.Integer line; Sf.List sf_assocs]) ->
      let%bind assocs = sf_assocs |> List.map ~f:pat_assoc_of_sf |> Result.all |> track ~loc:[%here] in
      PatMap {line; assocs} |> return
+
+  (* a binary operator pattern *)
+  | Sf.Tuple (5, [Sf.Atom "op"; Sf.Integer line; Sf.Atom op; sf_lhs; sf_rhs]) ->
+     let%bind lhs = sf_lhs |> pat_of_sf |> track ~loc:[%here] in
+     let%bind rhs = sf_rhs |> pat_of_sf |> track ~loc:[%here] in
+     PatBinOp {line; op; lhs; rhs} |> return
 
   (* a record field index pattern : #user.name *)
   | Sf.Tuple (4, [Sf.Atom "record_index";
