@@ -50,8 +50,26 @@ let%expect_test "test_guard.beam" =
                           (integer 0)))))))))
               (ClsFun
                 (line 8)
-                (patterns ((PatUniversal (line 8))))
-                (guard_sequence ())
+                (patterns ((
+                  PatVar
+                  (line 8)
+                  (id   N))))
+                (guard_sequence ((
+                  GuardSeq (
+                    guards ((
+                      Guard (
+                        guard_tests ((
+                          GuardTestRemoteCall
+                          (line               8)
+                          (line_remote        8)
+                          (line_module_name   8)
+                          (module_name        erlang)
+                          (line_function_name 8)
+                          (function_name      is_integer)
+                          (args ((
+                            GuardTestVar
+                            (line 8)
+                            (id   N)))))))))))))
                 (body (
                   ExprBody (
                     exprs ((
@@ -59,5 +77,52 @@ let%expect_test "test_guard.beam" =
                         lit (
                           LitInteger
                           (line    9)
-                          (integer 2))))))))))))
+                          (integer 1)))))))))
+              (ClsFun
+                (line 10)
+                (patterns ((
+                  PatVar
+                  (line 10)
+                  (id   N))))
+                (guard_sequence ((
+                  GuardSeq (
+                    guards ((
+                      Guard (
+                        guard_tests ((
+                          GuardTestRemoteCall
+                          (line               10)
+                          (line_remote        10)
+                          (line_module_name   10)
+                          (module_name        erlang)
+                          (line_function_name 10)
+                          (function_name      =:=)
+                          (args (
+                            (GuardTestVar
+                              (line 10)
+                              (id   N))
+                            (GuardTestLit (
+                              lit (
+                                LitInteger
+                                (line    10)
+                                (integer 2)))))))))))))))
+                (body (
+                  ExprBody (
+                    exprs ((
+                      ExprLit (
+                        lit (
+                          LitInteger
+                          (line    11)
+                          (integer 2)))))))))
+              (ClsFun
+                (line 12)
+                (patterns ((PatUniversal (line 12))))
+                (guard_sequence ())
+                (body (
+                  ExprBody (
+                    exprs ((
+                      ExprLit (
+                        lit (
+                          LitInteger
+                          (line    13)
+                          (integer 3))))))))))))
           FormEof)))) |}]
