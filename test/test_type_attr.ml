@@ -80,4 +80,23 @@ let%expect_test "test_type_attr.beam" =
                   TyVar
                   (line 13)
                   (id   A)))))))))
+          (DeclType
+            (line 16)
+            (name some_remote)
+            (tvars ((16 A)))
+            (ty (
+              TyRemote
+              (line             16)
+              (line_module_name 16)
+              (module_name      dict)
+              (line_type_name   16)
+              (type_name        dict)
+              (params (
+                (TyPredef
+                  (line 16)
+                  (name integer)
+                  (args ()))
+                (TyVar
+                  (line 16)
+                  (id   A)))))))
           FormEof)))) |}]
