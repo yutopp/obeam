@@ -18,7 +18,8 @@ let%expect_test "test_bitstring.beam" =
             (function_arity_list (
               (f 0)
               (g 1)
-              (h 1))))
+              (h 1)
+              (i 0))))
           (DeclFun
             (line          6)
             (function_name f)
@@ -345,5 +346,236 @@ let%expect_test "test_bitstring.beam" =
                       lit (
                         LitAtom
                         (line 18)
+                        (atom ok))))))))))))
+          (DeclFun
+            (line          21)
+            (function_name i)
+            (arity         0)
+            (clauses ((
+              ClsFun
+              (line 21)
+              (patterns       ())
+              (guard_sequence ())
+              (body (
+                ExprBody (
+                  exprs (
+                    (ExprMatch
+                      (line 22)
+                      (pattern (PatUniversal (line 22)))
+                      (body (
+                        ExprBitstrComprehension
+                        (line 22)
+                        (expr (
+                          ExprBitstr
+                          (line 22)
+                          (elements ((
+                            ExprBinElement
+                            (expr (
+                              ExprVar
+                              (line 22)
+                              (id   X)))
+                            (size ())
+                            (tsl  ()))))))
+                        (qualifiers (
+                          (QualifierBitstrGenerator
+                            (line 22)
+                            (pattern (
+                              PatBitstr
+                              (line 22)
+                              (elements ((
+                                PatBinElement
+                                (pattern (
+                                  PatVar
+                                  (line 22)
+                                  (id   X)))
+                                (size ())
+                                (tsl  ()))))))
+                            (expr (
+                              ExprBitstr
+                              (line 22)
+                              (elements (
+                                (ExprBinElement
+                                  (expr (
+                                    ExprLit (
+                                      lit (
+                                        LitInteger
+                                        (line    22)
+                                        (integer 1)))))
+                                  (size ())
+                                  (tsl  ()))
+                                (ExprBinElement
+                                  (expr (
+                                    ExprLit (
+                                      lit (
+                                        LitInteger
+                                        (line    22)
+                                        (integer 2)))))
+                                  (size ())
+                                  (tsl  ()))
+                                (ExprBinElement
+                                  (expr (
+                                    ExprLit (
+                                      lit (
+                                        LitInteger
+                                        (line    22)
+                                        (integer 3)))))
+                                  (size ())
+                                  (tsl  ())))))))
+                          (QualifierFilter (
+                            filter (
+                              ExprBinOp
+                              (line 22)
+                              (op   >=)
+                              (lhs (
+                                ExprVar
+                                (line 22)
+                                (id   X)))
+                              (rhs (
+                                ExprLit (
+                                  lit (
+                                    LitInteger
+                                    (line    22)
+                                    (integer 2)))))))))))))
+                    (ExprMatch
+                      (line 23)
+                      (pattern (PatUniversal (line 23)))
+                      (body (
+                        ExprBitstrComprehension
+                        (line 23)
+                        (expr (
+                          ExprBitstr
+                          (line 23)
+                          (elements ((
+                            ExprBinElement
+                            (expr (
+                              ExprVar
+                              (line 23)
+                              (id   X)))
+                            (size ())
+                            (tsl  ()))))))
+                        (qualifiers (
+                          (QualifierGenerator
+                            (line 23)
+                            (pattern (
+                              PatVar
+                              (line 23)
+                              (id   X)))
+                            (expr (
+                              ExprCons
+                              (line 23)
+                              (head (
+                                ExprLit (
+                                  lit (
+                                    LitInteger
+                                    (line    23)
+                                    (integer 1)))))
+                              (tail (
+                                ExprCons
+                                (line 23)
+                                (head (
+                                  ExprLit (
+                                    lit (
+                                      LitInteger
+                                      (line    23)
+                                      (integer 2)))))
+                                (tail (
+                                  ExprCons
+                                  (line 23)
+                                  (head (
+                                    ExprLit (
+                                      lit (
+                                        LitInteger
+                                        (line    23)
+                                        (integer 3)))))
+                                  (tail (ExprNil (line 23))))))))))
+                          (QualifierFilter (
+                            filter (
+                              ExprBinOp
+                              (line 23)
+                              (op   >=)
+                              (lhs (
+                                ExprVar
+                                (line 23)
+                                (id   X)))
+                              (rhs (
+                                ExprLit (
+                                  lit (
+                                    LitInteger
+                                    (line    23)
+                                    (integer 2)))))))))))))
+                    (ExprMatch
+                      (line 24)
+                      (pattern (PatUniversal (line 24)))
+                      (body (
+                        ExprListComprehension
+                        (line 24)
+                        (expr (
+                          ExprVar
+                          (line 24)
+                          (id   X)))
+                        (qualifiers (
+                          (QualifierBitstrGenerator
+                            (line 24)
+                            (pattern (
+                              PatBitstr
+                              (line 24)
+                              (elements ((
+                                PatBinElement
+                                (pattern (
+                                  PatVar
+                                  (line 24)
+                                  (id   X)))
+                                (size ())
+                                (tsl  ()))))))
+                            (expr (
+                              ExprBitstr
+                              (line 24)
+                              (elements (
+                                (ExprBinElement
+                                  (expr (
+                                    ExprLit (
+                                      lit (
+                                        LitInteger
+                                        (line    24)
+                                        (integer 1)))))
+                                  (size ())
+                                  (tsl  ()))
+                                (ExprBinElement
+                                  (expr (
+                                    ExprLit (
+                                      lit (
+                                        LitInteger
+                                        (line    24)
+                                        (integer 2)))))
+                                  (size ())
+                                  (tsl  ()))
+                                (ExprBinElement
+                                  (expr (
+                                    ExprLit (
+                                      lit (
+                                        LitInteger
+                                        (line    24)
+                                        (integer 3)))))
+                                  (size ())
+                                  (tsl  ())))))))
+                          (QualifierFilter (
+                            filter (
+                              ExprBinOp
+                              (line 24)
+                              (op   >=)
+                              (lhs (
+                                ExprVar
+                                (line 24)
+                                (id   X)))
+                              (rhs (
+                                ExprLit (
+                                  lit (
+                                    LitInteger
+                                    (line    24)
+                                    (integer 2)))))))))))))
+                    (ExprLit (
+                      lit (
+                        LitAtom
+                        (line 25)
                         (atom ok))))))))))))
           FormEof)))) |}]
