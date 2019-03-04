@@ -163,6 +163,9 @@ and type_t =
   | TyContFun of {line: line_t; function_type: type_t; constraints: type_func_cont_t}
   | TyFun of {line: line_t; line_params: line_t; params: type_t list; ret: type_t}
   | TyRecord of {line: line_t; line_name: line_t; name: string; field_types: record_field_type_t list}
+  | TyRemote of
+      {line: line_t; line_module_name: line_t; module_name: string; line_type_name: line_t; type_name: string;
+       params: type_t list}
   | TyAnyTuple of {line: line_t}
   | TyTuple of {line: line_t; elements: type_t list}
   | TyUnion of {line: line_t; elements: type_t list}
@@ -1242,6 +1245,17 @@ and type_of_sf sf : (type_t, err_t) Result.t =
                       :: sf_field_types)]) ->
      let%bind field_types = sf_field_types |> List.map ~f:record_field_type_of_sf |> Result.all |> track ~loc:[%here] in
      TyRecord {line; line_name; name; field_types} |> return
+
+  (* remote type : dict:dict(integer(), any()) *)
+  | Sf.Tuple (3, [Sf.Atom "remote_type";
+                 Sf.Integer line;
+                 Sf.List [
+                     Sf.Tuple (3, [Sf.Atom "atom"; Sf.Integer line_module_name; Sf.Atom module_name]);
+                     Sf.Tuple (3, [Sf.Atom "atom"; Sf.Integer line_type_name; Sf.Atom type_name]);
+                     Sf.List sf_params;
+             ]]) ->
+     let%bind params = sf_params |> List.map ~f:type_of_sf |> Result.all |> track ~loc:[%here] in
+     TyRemote {line; line_module_name; module_name; line_type_name; type_name; params} |> return
 
   (* tuple type (any) *)
   | Sf.Tuple (4, [Sf.Atom "type"; Sf.Integer line; Sf.Atom "tuple"; Sf.Atom "any"]) ->
