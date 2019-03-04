@@ -153,9 +153,9 @@ and type_t =
   | TyAnn of {line: line_t; annotation: type_t; tyvar: type_t}
   | TyBitstring of {line: line_t; m: type_t; n: type_t}
   | TyPredef of {line: line_t; name: string; args: type_t list}
-  | TyBinOp of {line: line_t; op: string; lhs: type_t; rhs: type_t}
-  | TyUnaryOp of {line: line_t; op: string; operand: type_t}
-  | TyRange of {line: line_t; low: type_t; high: type_t}
+  | TyBinOp of {line: line_t; op: string; lhs: type_t; rhs: type_t} (* lhs and rhs must be an integer, char, binop or unaryop *)
+  | TyUnaryOp of {line: line_t; op: string; operand: type_t} (* operand must be an integer, char, binop or unaryop *)
+  | TyRange of {line: line_t; low: type_t; high: type_t} (* low and high must be an integer, char, binop or unaryop *)
   | TyAnyMap of {line: line_t}
   | TyMap of {line: line_t; assocs: type_assoc_t list}
   | TyVar of {line: line_t; id: string}
