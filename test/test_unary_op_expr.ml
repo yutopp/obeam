@@ -33,7 +33,7 @@ let%expect_test "test_unary_op_expr.beam" =
                         ExprUnaryOp
                         (line 7)
                         (op   not)
-                        (expr (
+                        (operand (
                           ExprLit (
                             lit (
                               LitAtom
@@ -42,7 +42,7 @@ let%expect_test "test_unary_op_expr.beam" =
                     (ExprUnaryOp
                       (line 8)
                       (op   -)
-                      (expr (
+                      (operand (
                         ExprLit (
                           lit (
                             LitInteger
