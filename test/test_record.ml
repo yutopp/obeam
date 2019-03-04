@@ -102,10 +102,7 @@ let%expect_test "test_record.beam" =
                             (name      c)
                             (value (
                               ExprLit (
-                                lit (
-                                  LitString
-                                  (line 12)
-                                  (str  hello)))))))))))
+                                lit (LitString (line 12) (str (Asciis hello))))))))))))
                     (ExprMatch
                       (line 13)
                       (pattern (PatUniversal (line 13)))
@@ -155,10 +152,7 @@ let%expect_test "test_record.beam" =
                           (name      c)
                           (value (
                             ExprLit (
-                              lit (
-                                LitString
-                                (line 15)
-                                (str  hoge)))))))))))))))))
+                              lit (LitString (line 15) (str (Asciis hoge))))))))))))))))))
           (DeclFun
             (line          17)
             (function_name g)

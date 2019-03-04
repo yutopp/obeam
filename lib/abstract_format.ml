@@ -47,7 +47,12 @@ and literal_t =
   | LitFloat of {line: line_t; float: float}
   | LitInteger of {line: line_t; integer: int}
   | LitBigInt of {line: line_t; bigint: Z.t}
-  | LitString of {line: line_t; str: string}
+  | LitString of {line: line_t; str: chars}
+and chars =
+  | Asciis of string
+  (* The char in the [Ascii s] is in 0-255 range chars and length is less than or equal to 65535.
+     See also http://erlang.org/doc/apps/erts/erl_ext_dist.html#string_ext *)
+  | CharList of int list
 
 and pattern_t =
   | PatBitstr of {line: line_t; elements: pattern_bin_element_t list}
@@ -493,8 +498,17 @@ and lit_of_sf sf : (literal_t, err_t) Result.t =
   | Sf.Tuple (3, [Sf.Atom "integer"; Sf.Integer line; Sf.BigInt bigint]) ->
      LitBigInt {line; bigint} |> return
 
-  | Sf.Tuple (3, [Sf.Atom "string"; Sf.Integer line; Sf.String str]) ->
-     LitString {line; str} |> return
+  | Sf.Tuple (3, [Sf.Atom "string"; Sf.Integer line; Sf.String s]) ->
+     LitString {line; str=Asciis s} |> return
+
+  | Sf.Tuple (3, [Sf.Atom "string"; Sf.Integer line; Sf.List sf_chars]) ->
+     let f = function
+       | Sf.Integer char -> return char
+       | _ ->
+          Err.create ~loc:[%here] (Err.Invalid_input ("invalid form of a string literal", sf)) |> Result.fail
+     in
+     let%bind chars = sf_chars |> List.map ~f |> Result.all |> track ~loc:[%here] in
+     LitString {line; str=CharList chars} |> return
 
   | _ ->
      Err.create ~loc:[%here] (Err.Not_supported_absform ("lit", sf)) |> Result.fail

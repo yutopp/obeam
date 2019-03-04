@@ -83,11 +83,7 @@ let%expect_test "test_fun.beam" =
               (body (
                 ExprBody (
                   exprs ((
-                    ExprLit (
-                      lit (
-                        LitString
-                        (line 14)
-                        (str  abcdefg))))))))))))
+                    ExprLit (lit (LitString (line 14) (str (Asciis abcdefg)))))))))))))
           (SpecFun
             (line 16)
             (module_name ())
@@ -119,9 +115,5 @@ let%expect_test "test_fun.beam" =
               (body (
                 ExprBody (
                   exprs ((
-                    ExprLit (
-                      lit (
-                        LitString
-                        (line 18)
-                        (str  abracadabra))))))))))))
+                    ExprLit (lit (LitString (line 18) (str (Asciis abracadabra)))))))))))))
           FormEof)))) |}]
