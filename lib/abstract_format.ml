@@ -145,6 +145,7 @@ and guard_test_t =
   | GuardTestMapUpdate of {line: line_t; map: guard_test_t; assocs: guard_test_assoc_t list}
   | GuardTestNil of {line: line_t}
   | GuardTestBinOp of {line: line_t; op: string; lhs: guard_test_t; rhs: guard_test_t}
+  | GuardTestUnaryOp of {line: line_t; op: string; operand: guard_test_t}
   | GuardTestRecord of {line: line_t; name: string; record_fields: (line_t * atom_or_wildcard * guard_test_t) list}
   | GuardTestRecordFieldAccess of
       {line: line_t; record: guard_test_t; name: string; line_field_name: line_t; field_name: string}
@@ -1144,6 +1145,11 @@ and guard_test_of_sf sf : (guard_test_t, err_t) Result.t =
      let%bind lhs = sf_lhs |> guard_test_of_sf |> track ~loc:[%here] in
      let%bind rhs = sf_rhs |> guard_test_of_sf |> track ~loc:[%here] in
      GuardTestBinOp {line; op; lhs; rhs} |> return
+
+ (* a unary operator *)
+  | Sf.Tuple (4, [Sf.Atom "op"; Sf.Integer line; Sf.Atom op; sf_operand]) ->
+     let%bind operand = sf_operand |> guard_test_of_sf |> track ~loc:[%here] in
+     GuardTestUnaryOp {line; op; operand} |> return
 
   (* a record creation : #user{name = "Taro", admin = true} *)
   | Sf.Tuple (4, [Sf.Atom "record";
