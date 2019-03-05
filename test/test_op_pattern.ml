@@ -29,12 +29,7 @@ let%expect_test "test_op_pattern.beam" =
                   PatBinOp
                   (line 6)
                   (op   ++)
-                  (lhs (
-                    PatLit (
-                      lit (
-                        LitString
-                        (line 6)
-                        (str  abc)))))
+                  (lhs (PatLit (lit (LitString (line 6) (str (Asciis abc))))))
                   (rhs (
                     PatVar
                     (line 6)
@@ -97,7 +92,7 @@ let%expect_test "test_op_pattern.beam" =
                     ExprUnaryOp
                     (line 10)
                     (op   -)
-                    (expr (
+                    (operand (
                       ExprLit (
                         lit (
                           LitInteger
