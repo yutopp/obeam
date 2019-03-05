@@ -91,7 +91,7 @@ and expr_t =
   | ExprMapUpdate of {line: line_t; map: expr_t; assocs: expr_assoc_t list}
   | ExprMatch of {line: line_t; pattern: pattern_t; body: expr_t}
   | ExprBinOp of {line: line_t; op: string; lhs: expr_t; rhs: expr_t}
-  | ExprUnaryOp of {line: line_t; op: string; expr: expr_t}
+  | ExprUnaryOp of {line: line_t; op: string; operand: expr_t}
   | ExprReceive of {line: line_t; clauses: clause_t list} (* `clauses` must be a list of case-clauses (ClsCase) *)
   | ExprReceiveAfter of {line: line_t; clauses: clause_t list; timeout: expr_t; body: expr_t list} (* `clauses` must be a list of case-clauses (ClsCase) *)
   | ExprRecord of {line: line_t; name: string; record_fields: record_field_for_expr list}
@@ -774,9 +774,9 @@ and expr_of_sf sf : (expr_t, err_t) Result.t =
   | Sf.Tuple (4, [Sf.Atom "op";
                   Sf.Integer line;
                   Sf.Atom op;
-                  sf_expr]) ->
-     let%bind expr = sf_expr |> expr_of_sf |> track ~loc:[%here] in
-     ExprUnaryOp {line; op; expr} |> return
+                  sf_operand]) ->
+     let%bind operand = sf_operand |> expr_of_sf |> track ~loc:[%here] in
+     ExprUnaryOp {line; op; operand} |> return
 
   (* a receive expression *)
   | Sf.Tuple (3, [Sf.Atom "receive";
