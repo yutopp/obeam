@@ -30,7 +30,7 @@ and form_t =
   | DeclFun of {line: line_t; function_name: string; arity: int; clauses: clause_t list}
   | SpecFun of {line: line_t; module_name: string option; function_name: string; arity: int; specs: type_t list}
   | Callback of {line: line_t; function_name: string; arity: int; specs: type_t list}
-  | DeclRecord of {line: line_t; fields: record_field_t list}
+  | DeclRecord of {line: line_t; name: string; fields: record_field_t list}
   | DeclType of {line: line_t; name: string; tvars: (line_t * string) list; ty: type_t}
   | DeclOpaqueType of {line: line_t; name: string; tvars: (line_t * string) list; ty: type_t}
   | AttrWild of {line: line_t; attribute: string; term: Sf.t}
@@ -377,7 +377,7 @@ and form_of_sf sf : (form_t, err_t) Result.t =
      let%bind fields =
        sf_fields |> List.map ~f:record_field_of_sf |> Result.all |> track ~loc:[%here]
      in
-     DeclRecord {line; fields} |> return
+     DeclRecord {line; name; fields} |> return
 
   (* type declaration *)
   | Sf.Tuple (4, [Sf.Atom "attribute";
